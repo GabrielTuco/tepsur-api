@@ -1,4 +1,11 @@
 import { DataSource } from "typeorm";
+import { Alumno } from "../entity/Alumno.entity";
+import { Secretaria } from "../entity/Secretaria.entity";
+import { Docente } from "../entity/Docente.entity";
+import { Usuario } from "../entity/Usuario.entity";
+import { Rol } from "../entity/Rol.entity";
+import { Direccion } from "../entity/Direccion.entity";
+import { Sede } from "../entity/Sede.entity";
 
 export const AppDataSource = new DataSource({
     type: "postgres",
@@ -9,7 +16,7 @@ export const AppDataSource = new DataSource({
     password: `${process.env.DB_PASSWORD}`,
     synchronize: true,
     logging: false,
-    entities: ["entity/*.ts"],
+    entities: [Alumno, Secretaria, Docente, Usuario, Rol, Direccion, Sede],
     migrations: [],
     subscribers: [],
 });
