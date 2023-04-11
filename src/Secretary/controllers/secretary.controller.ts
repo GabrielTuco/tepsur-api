@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
+
 import { SecretaryService } from "../services/secretary.service";
+import { encryptPassword } from "../utilities/encryptPassword";
 
 const secretaryService = new SecretaryService();
 
@@ -30,9 +32,10 @@ export const postSecretary = async (req: Request, res: Response) => {
                 msg: "secretary was not created",
             });
         }
+
         const newSecretaryUser = await secretaryService.createUser({
             usuario: newSecretary.dni,
-            password: newSecretary.dni,
+            password: encryptPassword(newSecretary.dni),
             codRol,
             codSecretary: newSecretary!.id,
         });

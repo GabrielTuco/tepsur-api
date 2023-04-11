@@ -1,5 +1,7 @@
 import { Router } from "express";
 import { postSecretary } from "../controllers/secretary.controller";
+import { body } from "express-validator";
+import { validateFields } from "../../middlewares/validateFields";
 
 const router = Router();
 
@@ -76,7 +78,19 @@ const router = Router();
  *              description: Error de servidor
  *
  */
-router.post("/", [], postSecretary);
+router.post(
+    "/",
+    [
+        body("dni", "Debe de contener 8 caracteres").isString(),
+        body("nombres", "Este campo es obligatorio").isString(),
+        body("apePaterno", "Este campo es obligatorio").isString(),
+        body("apeMaterno", "Este campo es obligatorio").isString(),
+        body("codSede", "Este campo es obligatorio").isNumeric(),
+        body("codRol", "Este campo es obligatorio").isNumeric(),
+        validateFields,
+    ],
+    postSecretary
+);
 
 //router.post("/createSecretaryUser", [], );
 
