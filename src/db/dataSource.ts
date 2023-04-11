@@ -1,9 +1,9 @@
 import { DataSource } from "typeorm";
 import { Alumno } from "../entity/Alumno.entity";
-import { Secretaria } from "../entity/Secretaria.entity";
+import { Secretaria } from "../Secretary/entity/Secretaria.entity";
 import { Docente } from "../entity/Docente.entity";
-import { Usuario } from "../entity/Usuario.entity";
-import { Rol } from "../entity/Rol.entity";
+import { Usuario } from "../Auth/entity/Usuario.entity";
+import { Rol } from "../Auth/entity/Rol.entity";
 import { Direccion } from "../entity/Direccion.entity";
 import { Sede } from "../entity/Sede.entity";
 

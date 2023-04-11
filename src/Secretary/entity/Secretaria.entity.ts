@@ -1,12 +1,15 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from "typeorm";
-import { EntityBase } from "./EntityBase";
-import { Usuario } from "./Usuario.entity";
-import { Sede } from "./Sede.entity";
+import { EntityBase } from "../../entity/EntityBase";
+import { Usuario } from "../../Auth/entity/Usuario.entity";
+import { Sede } from "../../entity/Sede.entity";
 
 @Entity()
 export class Secretaria extends EntityBase {
+    @Column({ length: 8, unique: true })
+    dni: string;
+
     @Column()
-    nombre: string;
+    nombres: string;
 
     @Column()
     ape_paterno: string;
@@ -14,10 +17,10 @@ export class Secretaria extends EntityBase {
     @Column()
     ape_materno: string;
 
-    @Column({ length: 9 })
+    @Column({ nullable: true, length: 9 })
     celular: string;
 
-    @Column()
+    @Column({ nullable: true })
     correo: string;
 
     @OneToOne(() => Usuario, { nullable: true })

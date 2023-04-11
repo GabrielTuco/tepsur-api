@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from "typeorm";
 import { EntityBase } from "./EntityBase";
-import { Usuario } from "./Usuario.entity";
+import { Usuario } from "../Auth/entity/Usuario.entity";
 import { Sede } from "./Sede.entity";
 
 @Entity()

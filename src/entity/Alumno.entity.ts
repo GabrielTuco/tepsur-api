@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, OneToOne, Unique } from "typeorm";
 import { EntityBase } from "./EntityBase";
 import { Direccion } from "./Direccion.entity";
-import { Usuario } from "./Usuario.entity";
+import { Usuario } from "../Auth/entity/Usuario.entity";
 
 @Entity()
 export class Alumno extends EntityBase {

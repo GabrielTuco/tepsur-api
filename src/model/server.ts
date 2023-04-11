@@ -4,11 +4,20 @@ dotenv.config();
 import express, { Application } from "express";
 import cors from "cors";
 import morgan from "morgan";
+import swaggerUi from "swagger-ui-express";
+import swaggerJSDoc from "swagger-jsdoc";
+
+import { options } from "../swaggerOptions";
 import { AppDataSource } from "../db/dataSource";
 import { ServerBase } from "../interfaces/server";
-
+import secretaryRoutes from "../Secretary/routes/secretary.routes";
+import roleRoutes from "../Auth/routes/role.routes";
+import authRoutes from "../Auth/routes/auth.routes";
 interface Paths {
     index: string;
+    auth: string;
+    secretary: string;
+    role: string;
 }
 
 class Server implements ServerBase {
@@ -17,6 +26,9 @@ class Server implements ServerBase {
         private port: string | number = process.env.PORT || 3000,
         private paths: Paths = {
             index: "/api",
+            auth: "/api/auth",
+            secretary: "/api/secretary",
+            role: "/api/role",
         }
     ) {
         this.connectDB();
@@ -49,8 +61,13 @@ class Server implements ServerBase {
         this.app.get(this.paths.index, (_req, res) => {
             res.json({ msg: "Server online..." });
         });
+        //Documentation
+        const specs = swaggerJSDoc(options);
+        this.app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(specs));
 
-        // this.app.use(this.paths.auth, authRoutes);
+        this.app.use(this.paths.auth, authRoutes);
+        this.app.use(this.paths.secretary, secretaryRoutes);
+        this.app.use(this.paths.role, roleRoutes);
     }
 
     listen() {
