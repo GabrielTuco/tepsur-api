@@ -3,6 +3,7 @@ import { postSecretary } from "../controllers/secretary.controller";
 import { body } from "express-validator";
 import { validateFields } from "../../middlewares/validateFields";
 import { isAdminRole } from "../../middlewares/isAdminRole";
+import { hasPermissionRole } from "../../middlewares/hasPermissionRole";
 
 const router = Router();
 
@@ -92,7 +93,7 @@ router.post(
         body("apeMaterno", "Este campo es obligatorio").isString(),
         body("codSede", "Este campo es obligatorio").isNumeric(),
         body("codRol", "Este campo es obligatorio").isNumeric(),
-        body("userCodRol", "ESte campo es obligatorio").custom(isAdminRole),
+        body("userCodRol", "ESte campo es obligatorio").custom((value)=>hasPermissionRole(value,'Administrador')),
         validateFields,
     ],
     postSecretary
