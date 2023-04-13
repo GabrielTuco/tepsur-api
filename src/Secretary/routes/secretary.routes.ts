@@ -2,6 +2,7 @@ import { Router } from "express";
 import { postSecretary } from "../controllers/secretary.controller";
 import { body } from "express-validator";
 import { validateFields } from "../../middlewares/validateFields";
+import { isAdminRole } from "../../middlewares/isAdminRole";
 
 const router = Router();
 
@@ -38,6 +39,9 @@ const router = Router();
  *              codRol:
  *                  type: number
  *                  description: El tipo de usuario(rol)
+ *              userCodRol:
+ *                  type: number
+ *                  description: El rol del usuario que realiza la peticion
  *          required:
  *              - dni
  *              - nombre
@@ -45,6 +49,7 @@ const router = Router();
  *              - apeMaterno
  *              - codSede
  *              - codRol
+ *              - userCodRol
  */
 
 /**
@@ -87,6 +92,7 @@ router.post(
         body("apeMaterno", "Este campo es obligatorio").isString(),
         body("codSede", "Este campo es obligatorio").isNumeric(),
         body("codRol", "Este campo es obligatorio").isNumeric(),
+        body("userCodRol", "ESte campo es obligatorio").custom(isAdminRole),
         validateFields,
     ],
     postSecretary
