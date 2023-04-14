@@ -1,7 +1,5 @@
-import { Rol } from "../../Auth/entity/Rol.entity";
-import { Usuario } from "../../Auth/entity/Usuario.entity";
-import { Docente } from "../../entity/Docente.entity";
-import { Sede } from "../../entity/Sede.entity";
+import { Rol, Usuario } from "../../Auth/entity";
+import { Docente, Sede } from "../../entity";
 import { TeacherSchema } from "../interfaces/teacher";
 
 export class TeacherService {

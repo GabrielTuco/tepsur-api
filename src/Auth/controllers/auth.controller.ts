@@ -6,11 +6,19 @@ import { generateJWT } from "../../helpers/generateJWT";
 import { verifyPassword } from "../../helpers/verifyPassword";
 import { FindUserTypesDictionary } from "../interfaces/auth";
 import { TeacherService } from "../../Teacher/services/teacher.service";
+import { encryptPassword } from "../../helpers/encryptPassword";
 
 const authService = new AuthService();
 const userService = new UserService();
 const secretaryService = new SecretaryService();
 const teacherService = new TeacherService();
+
+declare module "express-serve-static-core" {
+    interface Request {
+        id: number;
+        user: string;
+    }
+}
 export class AuthController {
     async postLogin(req: Request, res: Response) {
         //Validar la sede a la que pertenece el usuario
@@ -19,7 +27,7 @@ export class AuthController {
             const { usuario, password, codRol } = req.body;
 
             //Busqueda del usuario
-            const userRegistered = await userService.getByUser(usuario);
+            const userRegistered = await userService.findByUser(usuario);
             if (!userRegistered) {
                 return res.status(400).json({
                     msg: "El usuario no existe",
@@ -56,13 +64,60 @@ export class AuthController {
                     msg: "Password incorrecto",
                 });
             }
+
             res.json({
                 userTypeRegistered,
-                token: await generateJWT(userRegistered.usuario),
+                token: await generateJWT(
+                    userRegistered.id,
+                    userRegistered.usuario
+                ),
             });
         } catch (error) {
             console.log(error);
             res.status(500).json({
+                msg: "contact the administrator",
+            });
+        }
+    }
+
+    async revalidateToken(req: Request, res: Response) {
+        try {
+            const { id, user } = req;
+
+            const token = await generateJWT(id, user);
+
+            return res.json({
+                token,
+            });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: "contact the administrator",
+            });
+        }
+    }
+
+    async changePassword(req: Request, res: Response) {
+        try {
+            const { codUser, newPassword } = req.body;
+
+            const user = await userService.findById(codUser);
+            if (!user) {
+                return res.status(400).json({
+                    msg: "El usuario no existe",
+                });
+            }
+
+            const newPasswordUser = encryptPassword(newPassword);
+            user.password = newPasswordUser;
+            user.securePasswordUpdated = true;
+            const saved = await user.save();
+            return res.json({
+                usuario: saved,
+            });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
                 msg: "contact the administrator",
             });
         }

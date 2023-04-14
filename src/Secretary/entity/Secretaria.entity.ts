@@ -23,9 +23,6 @@ export class Secretaria extends EntityBase {
     @Column({ nullable: true })
     correo: string;
 
-    @Column({ default: false })
-    securePasswordUpdated: boolean;
-
     @OneToOne(() => Usuario, { nullable: true })
     @JoinColumn()
     usuario: Usuario;

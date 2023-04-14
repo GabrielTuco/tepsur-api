@@ -2,7 +2,7 @@ import { Secretaria } from "../../Secretary/entity/Secretaria.entity";
 import { Usuario } from "../entity/Usuario.entity";
 
 export class UserService {
-    async getByUser(user: string) {
+    async findByUser(user: string) {
         try {
             const userExists = await Usuario.createQueryBuilder("u")
                 .innerJoinAndSelect("u.rol", "r")
@@ -10,6 +10,15 @@ export class UserService {
                 .getOne();
 
             return userExists || null;
+        } catch (error) {
+            console.log(error);
+            return null;
+        }
+    }
+    async findById(id: number) {
+        try {
+            const userExists = await Usuario.findOneBy({ id });
+            return userExists;
         } catch (error) {
             console.log(error);
             return null;

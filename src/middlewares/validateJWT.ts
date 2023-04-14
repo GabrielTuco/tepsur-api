@@ -1,22 +1,27 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import { UserService } from "../Auth/services/user.service";
 
 interface JwtPayload {
+    id: number;
     user: string;
 }
 
 declare module "express-serve-static-core" {
     interface Request {
+        id: number;
         user: string;
     }
 }
+
+const userService = new UserService();
 
 export const validateJWT = async (
     req: Request,
     res: Response,
     next: NextFunction
 ) => {
-    const token = req.header("access-token");
+    const token = req.header("x-token");
 
     if (!token) {
         return res.status(401).json({
@@ -24,21 +29,22 @@ export const validateJWT = async (
         });
     }
     try {
-        const { user } = jwt.verify(
+        const { id, user } = jwt.verify(
             token,
             process.env.SECRETORPRIVATEKEY as string
         ) as JwtPayload;
 
-        //const usuario = await userService.searchById(id);
+        const usuario = await userService.findByUser(user);
 
         //Validar que el usuario exista en la base de datos
-        // if (!usuario) {
-        //     return res.status(401).json({
-        //         msg: "Token no valido",
-        //     });
-        // }
+        if (!usuario) {
+            return res.status(401).json({
+                msg: "Token no valido",
+            });
+        }
 
-        // req.user = usuario.user;
+        req.id = usuario.id;
+        req.user = usuario.usuario;
 
         next();
         return;

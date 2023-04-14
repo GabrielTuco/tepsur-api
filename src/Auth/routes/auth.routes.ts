@@ -3,6 +3,7 @@ import { AuthController } from "../controllers/auth.controller";
 import { body } from "express-validator";
 import { isRoleValid } from "../../middlewares/isRoleValid";
 import { validateFields } from "../../middlewares/validateFields";
+import { validateJWT } from "../../middlewares/validateJWT";
 
 const router = Router();
 const authController = new AuthController();
@@ -83,6 +84,24 @@ router.post(
         validateFields,
     ],
     authController.postLogin
+);
+
+router.get("/renew", validateJWT, authController.revalidateToken);
+
+router.put(
+    "/updatePassword",
+    [
+        validateJWT,
+        body("codUser", "El campo es obligatorio").isNumeric(),
+        body(
+            "newPassword",
+            "El password debe tener 8 caracteres como minimo"
+        ).isLength({
+            min: 8,
+        }),
+        validateFields,
+    ],
+    authController.changePassword
 );
 
 export default router;
