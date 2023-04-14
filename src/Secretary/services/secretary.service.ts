@@ -60,4 +60,17 @@ export class SecretaryService {
             return null;
         }
     }
+    async searchByUser(usuario: Usuario) {
+        try {
+            const secretaryExists = await Secretaria.createQueryBuilder("s")
+                .innerJoinAndSelect("s.usuario", "u")
+                .innerJoinAndSelect("u.rol", "r")
+                .where("u.id= :id", { id: usuario.id })
+                .getOne();
+            return secretaryExists || null;
+        } catch (error) {
+            console.log(error);
+            return null;
+        }
+    }
 }

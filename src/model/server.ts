@@ -13,11 +13,14 @@ import { ServerBase } from "../interfaces/server";
 import secretaryRoutes from "../Secretary/routes/secretary.routes";
 import roleRoutes from "../Auth/routes/role.routes";
 import authRoutes from "../Auth/routes/auth.routes";
+import teacherRoutes from "../Teacher/routes/teacher.routes";
+
 interface Paths {
-    index: string;
     auth: string;
-    secretary: string;
+    index: string;
     role: string;
+    secretary: string;
+    teacher: string;
 }
 
 class Server implements ServerBase {
@@ -29,6 +32,7 @@ class Server implements ServerBase {
             auth: "/api/auth",
             secretary: "/api/secretary",
             role: "/api/role",
+            teacher: "/api/teacher",
         }
     ) {
         this.connectDB();
@@ -68,6 +72,7 @@ class Server implements ServerBase {
         this.app.use(this.paths.auth, authRoutes);
         this.app.use(this.paths.secretary, secretaryRoutes);
         this.app.use(this.paths.role, roleRoutes);
+        this.app.use(this.paths.teacher, teacherRoutes);
     }
 
     listen() {

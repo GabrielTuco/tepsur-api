@@ -1,21 +1,13 @@
 import { Request, Response } from "express";
 
 import { SecretaryService } from "../services/secretary.service";
-import { encryptPassword } from "../utilities/encryptPassword";
+import { encryptPassword } from "../../helpers/encryptPassword";
 
 const secretaryService = new SecretaryService();
 
 export const postSecretary = async (req: Request, res: Response) => {
-    const {
-        codSede,
-        codRol,
-        dni,
-        nombres,
-        apePaterno,
-        apeMaterno,
-        celular,
-        correo,
-    } = req.body;
+    const { apeMaterno, apePaterno, celular, codSede, correo, dni, nombres } =
+        req.body;
     try {
         //Registrar nueva secretaria
         const newSecretary = await secretaryService.register({
@@ -29,14 +21,14 @@ export const postSecretary = async (req: Request, res: Response) => {
         });
         if (!newSecretary) {
             return res.status(400).json({
-                msg: "secretary was not created",
+                msg: "No se pudo crear el registro",
             });
         }
 
         const newSecretaryUser = await secretaryService.createUser({
             usuario: newSecretary.dni,
             password: encryptPassword(newSecretary.dni),
-            codRol,
+            codRol: 2,
             codSecretary: newSecretary!.id,
         });
 

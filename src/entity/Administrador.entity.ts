@@ -1,11 +1,10 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from "typeorm";
 import { EntityBase } from "./EntityBase";
 import { Usuario } from "../Auth/entity/Usuario.entity";
-import { Sede } from "./Sede.entity";
 
 @Entity()
-export class Docente extends EntityBase {
-    @Column({ length: 8 })
+export class Administrador extends EntityBase {
+    @Column({ length: 8, unique: true })
     dni: string;
 
     @Column()
@@ -17,10 +16,16 @@ export class Docente extends EntityBase {
     @Column()
     ape_materno: string;
 
+    @Column({ nullable: true, length: 9 })
+    celular: string;
+
+    @Column({ nullable: true })
+    correo: string;
+
+    @Column({ default: false })
+    securePasswordUpdated: boolean;
+
     @OneToOne(() => Usuario, { nullable: true })
     @JoinColumn()
     usuario: Usuario;
-
-    @ManyToOne(() => Sede, (sede) => sede.docentes, { nullable: true })
-    sede: Sede;
 }

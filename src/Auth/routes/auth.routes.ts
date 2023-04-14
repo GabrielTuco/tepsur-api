@@ -1,5 +1,8 @@
 import { Router } from "express";
 import { AuthController } from "../controllers/auth.controller";
+import { body } from "express-validator";
+import { isRoleValid } from "../../middlewares/isRoleValid";
+import { validateFields } from "../../middlewares/validateFields";
 
 const router = Router();
 const authController = new AuthController();
@@ -39,12 +42,47 @@ const authController = new AuthController();
  *  description: Endpoints para la autenticacion
  */
 
-router.get("/login", [], () => {});
-
-//crear usuario para alumno
-//router.post("/createStudentUser", [], postSecretaryUser);
-
-//crear usuario para docente
-//router.post("/createTeacherUser", [], postSecretaryUser);
+/**
+ * @swagger
+ * /auth/login:
+ *  post:
+ *      summary: Realizar la autenticacion de la secretaria (BETA :v)
+ *      tags: [Auth]
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      items:
+ *                          usuario:
+ *                              type: string
+ *                              description: Nombre de usuario
+ *                          password:
+ *                              type: string
+ *                              description: Contraseña del usuario
+ *      responses:
+ *          200:
+ *              description: El usuario con sus respectiva informacion y su token de autenticacion
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *
+ *          500:
+ *              description: Error de servidor
+ *
+ */
+router.post(
+    "/login",
+    [
+        body("usuario", "Este campo es obligatorio").isString(),
+        body("password", "Este campo es obligatorio").isString(),
+        body("codRol", "Este campo es obligatorio").isNumeric(),
+        body("codRol").custom(isRoleValid),
+        validateFields,
+    ],
+    authController.postLogin
+);
 
 export default router;

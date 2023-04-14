@@ -10,9 +10,9 @@ export class EntityBase extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @CreateDateColumn()
+    @CreateDateColumn({ select: false })
     createdAt: Date;
 
-    @CreateDateColumn()
+    @CreateDateColumn({ select: false })
     updatedAt: Date;
 }
