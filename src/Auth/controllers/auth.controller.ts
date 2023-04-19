@@ -7,11 +7,13 @@ import { verifyPassword } from "../../helpers/verifyPassword";
 import { FindUserTypesDictionary } from "../interfaces/auth";
 import { TeacherService } from "../../Teacher/services/teacher.service";
 import { encryptPassword } from "../../helpers/encryptPassword";
+import { AdministratorService } from "../../services/admin.service";
 
 const authService = new AuthService();
 const userService = new UserService();
 const secretaryService = new SecretaryService();
 const teacherService = new TeacherService();
+const administratorService = new AdministratorService();
 
 declare module "express-serve-static-core" {
     interface Request {
@@ -21,7 +23,7 @@ declare module "express-serve-static-core" {
 }
 export class AuthController {
     async postLogin(req: Request, res: Response) {
-        //Validar la sede a la que pertenece el usuario
+        //TODO: Validar la sede a la que pertenece el usuario
 
         try {
             const { usuario, password, codRol } = req.body;
@@ -42,7 +44,9 @@ export class AuthController {
             const userTypes: FindUserTypesDictionary = {
                 Secretaria: secretaryService.searchByUser(userRegistered!),
                 Docente: teacherService.searchByUser(userRegistered!),
-                Administrador: secretaryService.searchByUser(userRegistered!),
+                Administrador: administratorService.searchByUser(
+                    userRegistered!
+                ),
                 Alumno: secretaryService.searchByUser(userRegistered!),
             };
 
@@ -66,7 +70,7 @@ export class AuthController {
             }
 
             res.json({
-                userTypeRegistered,
+                userRegistered: userTypeRegistered,
                 token: await generateJWT(
                     userRegistered.id,
                     userRegistered.usuario

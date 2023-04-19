@@ -14,6 +14,8 @@ import secretaryRoutes from "../Secretary/routes/secretary.routes";
 import roleRoutes from "../Auth/routes/role.routes";
 import authRoutes from "../Auth/routes/auth.routes";
 import teacherRoutes from "../Teacher/routes/teacher.routes";
+import adminRutes from "../routes/admin.routes";
+import sedeRutes from "../Sede/routes/sede.routes";
 
 interface Paths {
     auth: string;
@@ -21,6 +23,8 @@ interface Paths {
     role: string;
     secretary: string;
     teacher: string;
+    admin: string;
+    sede: string;
 }
 
 class Server implements ServerBase {
@@ -33,6 +37,8 @@ class Server implements ServerBase {
             secretary: "/api/secretary",
             role: "/api/role",
             teacher: "/api/teacher",
+            admin: "/api/admin",
+            sede: "/api/sede",
         }
     ) {
         this.connectDB();
@@ -73,6 +79,8 @@ class Server implements ServerBase {
         this.app.use(this.paths.secretary, secretaryRoutes);
         this.app.use(this.paths.role, roleRoutes);
         this.app.use(this.paths.teacher, teacherRoutes);
+        this.app.use(this.paths.admin, adminRutes);
+        this.app.use(this.paths.sede, sedeRutes);
     }
 
     listen() {

@@ -1,8 +1,8 @@
 import { Column, Entity, JoinColumn, OneToMany, OneToOne } from "typeorm";
-import { EntityBase } from "./EntityBase";
-import { Direccion } from "./Direccion.entity";
-import { Docente } from "./Docente.entity";
-import { Secretaria } from "../Secretary/entity/Secretaria.entity";
+import { EntityBase } from "../../entity/EntityBase";
+import { Direccion } from "../../entity/Direccion.entity";
+import { Docente } from "../../entity/Docente.entity";
+import { Secretaria } from "../../Secretary/entity/Secretaria.entity";
 
 @Entity()
 export class Sede extends EntityBase {

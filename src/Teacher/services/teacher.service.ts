@@ -1,9 +1,10 @@
 import { Rol, Usuario } from "../../Auth/entity";
-import { Docente, Sede } from "../../entity";
+import { Sede } from "../../Sede/entity/Sede.entity";
+import { Docente } from "../../entity";
 import { TeacherSchema } from "../interfaces/teacher";
 
 export class TeacherService {
-    async listAll() {
+    public async listAll() {
         try {
             const data = await Docente.find();
             return data;
@@ -13,7 +14,7 @@ export class TeacherService {
         }
     }
 
-    async register({
+    public async register({
         apeMaterno,
         apePaterno,
         dni,
@@ -39,7 +40,7 @@ export class TeacherService {
         }
     }
 
-    async createUser(
+    public async createUser(
         usuario: string,
         password: string,
         codRol: number,
@@ -68,7 +69,7 @@ export class TeacherService {
         }
     }
 
-    async searchByUser(usuario: Usuario) {
+    public async searchByUser(usuario: Usuario) {
         try {
             const teacherExists = await Docente.createQueryBuilder("d")
                 .innerJoinAndSelect("d.usuario", "u")

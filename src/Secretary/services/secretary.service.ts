@@ -1,5 +1,5 @@
 import { Secretaria } from "../entity/Secretaria.entity";
-import { Sede } from "../../entity/Sede.entity";
+import { Sede } from "../../Sede/entity/Sede.entity";
 import { SecretaryEntity, UserEntity } from "../../interfaces/entities";
 import { Rol } from "../../Auth/entity/Rol.entity";
 import { Usuario } from "../../Auth/entity/Usuario.entity";
@@ -65,6 +65,8 @@ export class SecretaryService {
             const secretaryExists = await Secretaria.createQueryBuilder("s")
                 .innerJoinAndSelect("s.usuario", "u")
                 .innerJoinAndSelect("u.rol", "r")
+                .innerJoinAndSelect("s.sede", "se")
+                .innerJoinAndSelect("se.direccion", "d")
                 .where("u.id= :id", { id: usuario.id })
                 .getOne();
             return secretaryExists || null;
