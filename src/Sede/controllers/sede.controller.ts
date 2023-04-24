@@ -10,9 +10,7 @@ export class SedeController {
         try {
             const sedes = await sedeService.listAll();
 
-            return res.json({
-                sedes,
-            });
+            return res.json(sedes);
         } catch (error: any) {
             console.log(error);
             if (error instanceof DatabaseError) {
@@ -30,7 +28,7 @@ export class SedeController {
             const { id } = req.params;
             const sede = await sedeService.findById(parseInt(id));
 
-            return res.json({ sede });
+            return res.json(sede);
         } catch (error) {
             console.log(error);
             if (error instanceof DatabaseError) {
@@ -52,9 +50,7 @@ export class SedeController {
                 direccion,
             });
 
-            return res.json({
-                sede: createdSede,
-            });
+            return res.json(createdSede);
         } catch (error: any) {
             console.log(error);
             if (error instanceof DatabaseError) {

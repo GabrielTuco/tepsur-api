@@ -5,7 +5,7 @@ import { Sede } from "../Sede/entity/Sede.entity";
 
 @Entity()
 export class Docente extends EntityBase {
-    @Column({ length: 8 })
+    @Column({ length: 8, unique: true })
     dni: string;
 
     @Column()

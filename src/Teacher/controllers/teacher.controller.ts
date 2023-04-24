@@ -27,9 +27,7 @@ export class TeacherController {
                 newTeacher.id
             );
 
-            return res.json({
-                secretary: newTeacherUser,
-            });
+            return res.json(newTeacherUser);
         } catch (error) {}
     }
     async getList(_req: Request, res: Response) {

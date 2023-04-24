@@ -14,7 +14,7 @@ export class SedeService implements SedeRepository {
             console.log(error);
             throw new DatabaseError(
                 "No se pudieron obtener los registros",
-                500,
+                404,
                 ""
             );
         }
@@ -29,7 +29,7 @@ export class SedeService implements SedeRepository {
         } catch (error) {
             throw new DatabaseError(
                 "No se pudo encontrar el registro",
-                500,
+                404,
                 ""
             );
         }

@@ -107,7 +107,7 @@ export class AuthController {
 
             const user = await userService.findById(codUser);
             if (!user) {
-                return res.status(400).json({
+                return res.status(404).json({
                     msg: "El usuario no existe",
                 });
             }
@@ -116,9 +116,7 @@ export class AuthController {
             user.password = newPasswordUser;
             user.securePasswordUpdated = true;
             const saved = await user.save();
-            return res.json({
-                usuario: saved,
-            });
+            return res.json(saved);
         } catch (error) {
             console.log(error);
             return res.status(500).json({

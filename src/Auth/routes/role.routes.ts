@@ -36,7 +36,7 @@ const roleController = new RoleController();
  *          required: true
  *          schema:
  *              type: number
- *          description: El codigo del rol
+ *              description: El codigo del rol
  */
 
 /**

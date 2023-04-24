@@ -17,6 +17,8 @@ import teacherRoutes from "../Teacher/routes/teacher.routes";
 import adminRutes from "../routes/admin.routes";
 import sedeRutes from "../Sede/routes/sede.routes";
 
+import carreraWebRouter from "../Web/carrera.routes";
+
 interface Paths {
     auth: string;
     index: string;
@@ -25,6 +27,7 @@ interface Paths {
     teacher: string;
     admin: string;
     sede: string;
+    web: string;
 }
 
 class Server implements ServerBase {
@@ -39,6 +42,7 @@ class Server implements ServerBase {
             teacher: "/api/teacher",
             admin: "/api/admin",
             sede: "/api/sede",
+            web: "/api/contenido_web",
         }
     ) {
         this.connectDB();
@@ -81,6 +85,8 @@ class Server implements ServerBase {
         this.app.use(this.paths.teacher, teacherRoutes);
         this.app.use(this.paths.admin, adminRutes);
         this.app.use(this.paths.sede, sedeRutes);
+
+        this.app.use(this.paths.web, carreraWebRouter);
     }
 
     listen() {

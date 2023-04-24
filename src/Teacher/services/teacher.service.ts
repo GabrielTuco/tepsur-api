@@ -59,7 +59,9 @@ export class TeacherService {
                     const savedUsuario = await newUsuario.save();
                     teacher.usuario = savedUsuario;
 
-                    return await teacher.save();
+                    await teacher.save();
+
+                    return await this.searchByUser(savedUsuario);
                 }
             }
             return null;
@@ -74,6 +76,7 @@ export class TeacherService {
             const teacherExists = await Docente.createQueryBuilder("d")
                 .innerJoinAndSelect("d.usuario", "u")
                 .innerJoinAndSelect("u.rol", "r")
+                .innerJoinAndSelect("d.sede", "s")
                 .where("u.id= :id", { id: usuario.id })
                 .getOne();
             return teacherExists || null;

@@ -10,6 +10,8 @@ import { Rol } from "../Auth/entity/Rol.entity";
 import { Sede } from "../Sede/entity/Sede.entity";
 import { Permiso } from "../Auth/entity/Permiso.entity";
 import { Administrador } from "../entity/Administrador.entity";
+import { Carrera } from "../Web/carrera.entity";
+import { Modulo } from "../Web/modulo.entity";
 
 //Yargs config
 const argv = yargs(process.argv.slice(2))
@@ -53,6 +55,10 @@ export const AppDataSource = new DataSource({
         Permiso,
         Direccion,
         Sede,
+
+        //Web
+        Carrera,
+        Modulo,
     ],
     migrations: [],
     subscribers: [],
