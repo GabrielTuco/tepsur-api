@@ -14,7 +14,19 @@ export class Carrera extends EntityBase {
     perfil_egreso: string;
 
     @Column()
-    url_video: string;
+    url_video: string[];
+
+    @Column()
+    fecha_inicio: Date;
+
+    @Column()
+    fin_inscripcion: Date;
+
+    @Column()
+    duracion_meses: number;
+
+    @Column()
+    images: string[];
 
     @ManyToMany(() => Modulo)
     @JoinTable()

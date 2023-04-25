@@ -11,4 +11,7 @@ export class Modulo extends EntityBase {
 
     @Column({ nullable: true })
     url_video: string;
+
+    @Column()
+    images: string[];
 }
