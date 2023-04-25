@@ -4,6 +4,10 @@ import { Modulo } from "./modulo.entity";
 
 @Entity()
 export class Carrera extends EntityBase {
+
+    @Column()
+    uuid: string;
+
     @Column()
     nombre: string;
 
