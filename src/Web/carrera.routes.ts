@@ -5,6 +5,7 @@ const router = Router();
 
 const carreraController = new CarreraController();
 
-router.get("/carrera/:id", [], carreraController.getCarrera);
+router.post("/", [], carreraController.postCarrera);
+router.get("/:id", [], carreraController.getCarrera);
 
 export default router;

@@ -18,6 +18,7 @@ import adminRutes from "../routes/admin.routes";
 import sedeRutes from "../Sede/routes/sede.routes";
 
 import carreraWebRouter from "../Web/carrera.routes";
+import moduloWebRouter from "../Web/modulo.routes";
 
 interface Paths {
     auth: string;
@@ -27,7 +28,8 @@ interface Paths {
     teacher: string;
     admin: string;
     sede: string;
-    web: string;
+    carrera_web: string;
+    modulo_web: string;
 }
 
 class Server implements ServerBase {
@@ -42,7 +44,8 @@ class Server implements ServerBase {
             teacher: "/api/teacher",
             admin: "/api/admin",
             sede: "/api/sede",
-            web: "/api/contenido_web",
+            carrera_web: "/api/contenido_web/carrera",
+            modulo_web: "/api/contenido_web/modulo",
         }
     ) {
         this.connectDB();
@@ -86,7 +89,8 @@ class Server implements ServerBase {
         this.app.use(this.paths.admin, adminRutes);
         this.app.use(this.paths.sede, sedeRutes);
 
-        this.app.use(this.paths.web, carreraWebRouter);
+        this.app.use(this.paths.carrera_web, carreraWebRouter);
+        this.app.use(this.paths.modulo_web, moduloWebRouter);
     }
 
     listen() {

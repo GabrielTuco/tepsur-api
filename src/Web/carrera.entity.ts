@@ -4,7 +4,6 @@ import { Modulo } from "./modulo.entity";
 
 @Entity()
 export class Carrera extends EntityBase {
-
     @Column()
     uuid: string;
 
@@ -17,22 +16,22 @@ export class Carrera extends EntityBase {
     @Column()
     perfil_egreso: string;
 
-    @Column()
+    @Column("text", { array: true })
     url_video: string[];
 
-    @Column()
+    @Column({ nullable: true })
     fecha_inicio: Date;
 
-    @Column()
+    @Column({ nullable: true })
     fin_inscripcion: Date;
 
     @Column()
-    duracion_meses: number;
+    duracion_meses: string;
 
-    @Column()
+    @Column("text", { array: true })
     images: string[];
 
-    @ManyToMany(() => Modulo)
+    @ManyToMany(() => Modulo, { nullable: true })
     @JoinTable()
     modulos: Modulo[];
 }

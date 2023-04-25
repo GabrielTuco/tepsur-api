@@ -3,15 +3,18 @@ import { EntityBase } from "../entity";
 
 @Entity()
 export class Modulo extends EntityBase {
+    @Column({ unique: true })
+    uuid: string;
+
     @Column()
     nombre: string;
 
-    @Column({ nullable: true })
+    @Column()
     descripcion: string;
 
     @Column({ nullable: true })
     url_video: string;
 
-    @Column()
+    @Column("text", { array: true, nullable: true })
     images: string[];
 }
