@@ -12,6 +12,8 @@ router.post(
     moduloController.postModulo
 );
 
+router.get("/:id", [], moduloController.getModulo);
+
 router.get("/", [], moduloController.getModulos);
 
 export default router;
