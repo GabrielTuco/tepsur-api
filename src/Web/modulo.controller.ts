@@ -26,6 +26,26 @@ export class ModuloController {
         }
     }
 
+     public async getModulo(req: Request, res: Response) {
+        try {
+            const { id } = req.params;
+
+            const modulo = await moduloService.findByUuid(id);
+
+            return res.json(modulo);
+        } catch (error: any) {
+            if (error instanceof DatabaseError) {
+                return res.status(error.codeStatus).json({
+                    errName: error.name,
+                    msg: error.message,
+                });
+            }
+            return res.status(500).json({
+                msg: "contact the administrator",
+            });
+        }
+    }
+    
     public async getModulos(req: Request, res: Response) {
         try {
             const { id } = req.params;
