@@ -3,8 +3,9 @@ import { DatabaseError } from "../errors/DatabaseError";
 import { Carrera } from "./carrera.entity";
 import { CarreraDTO } from "./interfaces/dtos";
 import { Modulo } from "./modulo.entity";
+import { CarreraRepository } from "./interfaces/repositories";
 
-export class CarreraService {
+export class CarreraService implements CarreraRepository {
     public async register({
         descripcion,
         duracionMeses,
@@ -51,7 +52,7 @@ export class CarreraService {
     public async findByUuid(uuid: string) {
         try {
             const data = await Carrera.createQueryBuilder("c")
-                .innerJoinAndSelect("c.modulos", "m")
+                .leftJoinAndSelect("c.modulos", "m")
                 .where("c.uuid = :id", { id: uuid })
                 .getOne();
 

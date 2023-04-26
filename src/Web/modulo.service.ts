@@ -2,8 +2,9 @@ import { v4 as uuid } from "uuid";
 import { Modulo } from "./modulo.entity";
 import { DatabaseError } from "../errors/DatabaseError";
 import { ModuloDTO } from "./interfaces/dtos";
+import { ModuloRepository } from "./interfaces/repositories";
 
-export class ModuloService {
+export class ModuloService implements ModuloRepository {
     public async register({
         nombre,
         descripcion,
