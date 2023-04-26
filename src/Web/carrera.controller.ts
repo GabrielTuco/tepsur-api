@@ -19,9 +19,9 @@ export class CarreraController {
 
     public async getCarrera(req: Request, res: Response) {
         try {
-            const { uuid } = req.params;
+            const { id } = req.params;
 
-            const carrera = await carreraService.findByUuid(uuid);
+            const carrera = await carreraService.findByUuid(id);
 
             return res.json(carrera);
         } catch (error: any) {

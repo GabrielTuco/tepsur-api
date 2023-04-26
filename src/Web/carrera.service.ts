@@ -17,10 +17,13 @@ export class CarreraService {
         modulos,
     }: CarreraDTO) {
         try {
-            const data = await Promise.all(
-                modulos.map((m) => Modulo.findOneBy({ uuid: m }))
-            );
-            const modulesExists = data.filter(Boolean);
+            let modulesExists;
+            if (modulos) {
+                const data = await Promise.all(
+                    modulos.map((m) => Modulo.findOneBy({ uuid: m }))
+                );
+                modulesExists = data.filter(Boolean);
+            }
 
             const carrera = new Carrera();
             carrera.uuid = uuid();
@@ -32,17 +35,26 @@ export class CarreraService {
             carrera.images = images;
             carrera.perfil_egreso = perfilEgreso;
             carrera.url_video = urlVideo;
-            carrera.modulos = modulesExists as Modulo[];
+            carrera.modulos = (modulesExists as Modulo[]) || null;
 
             return await carrera.save();
         } catch (error) {
             console.log(error);
+            throw new DatabaseError(
+                "No se puedo registrar la carrera",
+                500,
+                ""
+            );
         }
     }
 
     public async findByUuid(uuid: string) {
         try {
-            const data = await Carrera.findOneBy({ uuid });
+            const data = await Carrera.createQueryBuilder("c")
+                .innerJoinAndSelect("c.modulos", "m")
+                .where("c.uuid = :id", { id: uuid })
+                .getOne();
+
             if (!data) {
                 throw new DatabaseError(
                     "No se pudo encontrar el registro",
