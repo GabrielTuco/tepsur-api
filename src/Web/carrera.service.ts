@@ -68,4 +68,23 @@ export class CarreraService {
             throw error;
         }
     }
+
+    public async listAll() {
+        try {
+            const data = await Carrera.createQueryBuilder("c")
+                .leftJoinAndSelect("c.modulos", "m")
+                .getMany();
+            if (!data) {
+                throw new DatabaseError(
+                    "No se pudo encontrar el registro",
+                    404,
+                    "Register not found"
+                );
+            }
+            return data;
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
 }

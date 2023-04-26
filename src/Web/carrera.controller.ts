@@ -36,4 +36,22 @@ export class CarreraController {
             });
         }
     }
+
+    public async getCarreras(_req: Request, res: Response) {
+        try {
+            const carreras = await carreraService.listAll();
+
+            return res.json(carreras);
+        } catch (error) {
+            if (error instanceof DatabaseError) {
+                return res.status(error.codeStatus).json({
+                    errName: error.name,
+                    msg: error.message,
+                });
+            }
+            return res.status(500).json({
+                msg: "contact the administrator",
+            });
+        }
+    }
 }
