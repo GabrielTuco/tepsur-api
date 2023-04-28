@@ -26,18 +26,13 @@ export class AuthController {
         //TODO: Validar la sede a la que pertenece el usuario
 
         try {
-            const { usuario, password, codRol } = req.body;
+            const { usuario, password } = req.body;
 
             //Busqueda del usuario
             const userRegistered = await userService.findByUser(usuario);
             if (!userRegistered) {
                 return res.status(400).json({
                     msg: "El usuario no existe",
-                });
-            }
-            if (userRegistered.rol.id !== codRol) {
-                return res.status(400).json({
-                    msg: "El rol proporcionado para el usuario no es el correcto",
                 });
             }
 

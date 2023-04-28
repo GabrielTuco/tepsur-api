@@ -26,13 +26,14 @@ export class ModuloController {
         }
     }
 
-    public async getModulo(req:Request,res:Response){
+    public async getModulo(req: Request, res: Response) {
         try {
             const { id } = req.params;
+
             const modulo = await moduloService.findByUuid(id);
 
-            return res.json(modulo)
-        } catch (error) {
+            return res.json(modulo);
+        } catch (error: any) {
             if (error instanceof DatabaseError) {
                 return res.status(error.codeStatus).json({
                     errName: error.name,
@@ -47,8 +48,6 @@ export class ModuloController {
 
     public async getModulos(_req: Request, res: Response) {
         try {
-            
-
             const modulos = await moduloService.findAll();
 
             return res.json(modulos);

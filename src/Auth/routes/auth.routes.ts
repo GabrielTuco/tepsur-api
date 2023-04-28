@@ -87,8 +87,6 @@ router.post(
     [
         body("usuario", "Este campo es obligatorio").isString(),
         body("password", "Este campo es obligatorio").isString(),
-        body("codRol", "Este campo es obligatorio").isNumeric(),
-        body("codRol").custom(isRoleValid),
         validateFields,
     ],
     authController.postLogin
