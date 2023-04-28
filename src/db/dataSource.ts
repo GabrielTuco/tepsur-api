@@ -1,7 +1,6 @@
 import { DataSource, DataSourceOptions } from "typeorm";
 import yargs from "yargs/yargs";
 
-import { Alumno } from "../entity/Alumno.entity";
 import { Direccion } from "../entity/Direccion.entity";
 import { Secretaria } from "../Secretary/entity/Secretaria.entity";
 import { Docente } from "../entity/Docente.entity";
@@ -10,6 +9,8 @@ import { Rol } from "../Auth/entity/Rol.entity";
 import { Sede } from "../Sede/entity/Sede.entity";
 import { Permiso } from "../Auth/entity/Permiso.entity";
 import { Administrador } from "../entity/Administrador.entity";
+import { Alumno } from "../Student/entity/Alumno.entity";
+
 import { Carrera } from "../Web/carrera.entity";
 import { Modulo } from "../Web/modulo.entity";
 

@@ -1,11 +1,13 @@
-import { Column, Entity, JoinColumn, OneToOne, Unique } from "typeorm";
-import { EntityBase } from "./EntityBase";
-import { Direccion } from "./Direccion.entity";
-import { Usuario } from "../Auth/entity/Usuario.entity";
+import { Column, Entity, JoinColumn, OneToOne } from "typeorm";
+import { Direccion, EntityBase } from "../../entity";
+import { Usuario } from "../../Auth/entity";
 
 @Entity()
 export class Alumno extends EntityBase {
-    @Column({ unique: true, length: 8 })
+    @Column()
+    uuid: string;
+
+    @Column({ length: 8, unique: true })
     dni: string;
 
     @Column()
@@ -18,13 +20,13 @@ export class Alumno extends EntityBase {
     ape_materno: string;
 
     @Column()
-    sexo: string;
+    sexo: "m" | "f";
 
-    @Column()
+    @Column({ nullable: true })
     edad: number;
 
     @Column({ nullable: true })
-    est_civil: string;
+    estado_civil: string;
 
     @Column({ nullable: true })
     grado_estudios: string;
@@ -32,17 +34,14 @@ export class Alumno extends EntityBase {
     @Column({ nullable: true })
     lugar_nacimiento: string;
 
-    @Column({ length: 9, nullable: true })
-    telefono: string;
+    @Column({ nullable: true })
+    celular: string;
 
     @Column({ nullable: true })
     correo: string;
 
-    @Column({ default: true })
+    @Column({ default: false })
     estado: boolean;
-
-    @Column({ nullable: true })
-    ultimo_grupo: string;
 
     @OneToOne(() => Usuario, { nullable: true })
     @JoinColumn()
@@ -51,4 +50,6 @@ export class Alumno extends EntityBase {
     @OneToOne(() => Direccion)
     @JoinColumn()
     direccion: Direccion;
+
+    //TODO: ultimo_grupo
 }
