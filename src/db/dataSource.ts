@@ -1,9 +1,9 @@
-import { DataSource, DataSourceOptions } from "typeorm";
+import { DataSource } from "typeorm";
 import yargs from "yargs/yargs";
 
 import { Direccion } from "../entity/Direccion.entity";
 import { Secretaria } from "../Secretary/entity/Secretaria.entity";
-import { Docente } from "../entity/Docente.entity";
+import { Docente } from "../Teacher/entity/Docente.entity";
 import { Usuario } from "../Auth/entity/Usuario.entity";
 import { Rol } from "../Auth/entity/Rol.entity";
 import { Sede } from "../Sede/entity/Sede.entity";
@@ -11,8 +11,10 @@ import { Permiso } from "../Auth/entity/Permiso.entity";
 import { Administrador } from "../entity/Administrador.entity";
 import { Alumno } from "../Student/entity/Alumno.entity";
 
-import { Carrera } from "../Web/carrera.entity";
-import { Modulo } from "../Web/modulo.entity";
+import { Carrera as CarreraWeb } from "../Web/carrera.entity";
+import { Modulo as ModuloWeb } from "../Web/modulo.entity";
+import { Carrera, Grupo, Modulo } from "../Matricula/entity";
+import { GruposModulo } from "../Matricula/entity/GruposModulo.entity";
 
 //Yargs config
 const argv = yargs(process.argv.slice(2))
@@ -56,10 +58,14 @@ export const AppDataSource = new DataSource({
         Permiso,
         Direccion,
         Sede,
-
-        //Web
         Carrera,
         Modulo,
+        Grupo,
+        GruposModulo,
+
+        //Web
+        CarreraWeb,
+        ModuloWeb,
     ],
     migrations: [],
     subscribers: [],

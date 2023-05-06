@@ -1,7 +1,7 @@
 import { Column, Entity } from "typeorm";
 import { EntityBase } from "../entity";
 
-@Entity()
+@Entity({ name: "ModuloWeb", schema: "web" })
 export class Modulo extends EntityBase {
     @Column({ unique: true })
     uuid: string;

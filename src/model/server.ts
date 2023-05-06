@@ -14,8 +14,10 @@ import secretaryRoutes from "../Secretary/routes/secretary.routes";
 import roleRoutes from "../Auth/routes/role.routes";
 import authRoutes from "../Auth/routes/auth.routes";
 import teacherRoutes from "../Teacher/routes/teacher.routes";
-import adminRutes from "../routes/admin.routes";
-import sedeRutes from "../Sede/routes/sede.routes";
+import adminRoutes from "../routes/admin.routes";
+import sedeRoutes from "../Sede/routes/sede.routes";
+import moduleRoutes from "../Matricula/routes/module.routes";
+import careerRoutes from "../Matricula/routes/career.routes";
 
 import carreraWebRouter from "../Web/carrera.routes";
 import moduloWebRouter from "../Web/modulo.routes";
@@ -28,6 +30,9 @@ interface Paths {
     teacher: string;
     admin: string;
     sede: string;
+    module: string;
+    career: string;
+
     carrera_web: string;
     modulo_web: string;
 }
@@ -44,6 +49,9 @@ class Server implements ServerBase {
             teacher: "/api/teacher",
             admin: "/api/admin",
             sede: "/api/sede",
+            module: "/api/module",
+            career: "/api/career",
+
             carrera_web: "/api/contenido_web/carrera",
             modulo_web: "/api/contenido_web/modulo",
         }
@@ -86,8 +94,10 @@ class Server implements ServerBase {
         this.app.use(this.paths.secretary, secretaryRoutes);
         this.app.use(this.paths.role, roleRoutes);
         this.app.use(this.paths.teacher, teacherRoutes);
-        this.app.use(this.paths.admin, adminRutes);
-        this.app.use(this.paths.sede, sedeRutes);
+        this.app.use(this.paths.admin, adminRoutes);
+        this.app.use(this.paths.sede, sedeRoutes);
+        this.app.use(this.paths.module, moduleRoutes);
+        this.app.use(this.paths.career, careerRoutes);
 
         this.app.use(this.paths.carrera_web, carreraWebRouter);
         this.app.use(this.paths.modulo_web, moduloWebRouter);

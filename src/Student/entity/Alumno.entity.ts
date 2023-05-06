@@ -4,7 +4,7 @@ import { Usuario } from "../../Auth/entity";
 
 @Entity()
 export class Alumno extends EntityBase {
-    @Column()
+    @Column({ unique: true })
     uuid: string;
 
     @Column({ length: 8, unique: true })

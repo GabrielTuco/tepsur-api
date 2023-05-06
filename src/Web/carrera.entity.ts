@@ -2,7 +2,7 @@ import { Column, Entity, JoinTable, ManyToMany } from "typeorm";
 import { EntityBase } from "../entity";
 import { Modulo } from "./modulo.entity";
 
-@Entity()
+@Entity({ name: "CarreraWeb", schema: "web" })
 export class Carrera extends EntityBase {
     @Column()
     uuid: string;

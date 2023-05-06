@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, OneToMany, OneToOne } from "typeorm";
 import { EntityBase } from "../../entity/EntityBase";
 import { Direccion } from "../../entity/Direccion.entity";
-import { Docente } from "../../entity/Docente.entity";
+import { Docente } from "../../Teacher/entity/Docente.entity";
 import { Secretaria } from "../../Secretary/entity/Secretaria.entity";
 
 @Entity()
