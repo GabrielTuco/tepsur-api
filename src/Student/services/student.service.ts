@@ -7,6 +7,7 @@ import { Alumno } from "../entity/Alumno.entity";
 import { StudentDTO } from "../interfaces/dtos";
 import { StudentRepository } from "../interfaces/repositories";
 import { encryptPassword } from "../../helpers/encryptPassword";
+import { GradoEstudios } from "../../Matricula/entity";
 
 export class StudentService implements StudentRepository {
     public async register(data: StudentDTO): Promise<Alumno> {
@@ -20,7 +21,7 @@ export class StudentService implements StudentRepository {
                 dni,
                 edad,
                 estadoCivil,
-                gradoEstudios,
+                gradoEstudiosUuid,
                 lugarNacimiento,
                 nombres,
                 sexo,
@@ -34,6 +35,10 @@ export class StudentService implements StudentRepository {
 
             const savedDireccion = await newDireccion.save();
 
+            const gradoEstudiosExists = await GradoEstudios.findOneBy({
+                uuid: gradoEstudiosUuid,
+            });
+
             const alumno = new Alumno();
 
             alumno.ape_materno = apeMaterno;
@@ -44,7 +49,7 @@ export class StudentService implements StudentRepository {
             alumno.dni = dni;
             alumno.edad = edad!;
             alumno.estado_civil = estadoCivil!;
-            alumno.grado_estudios = gradoEstudios!;
+            alumno.grado_estudios = gradoEstudiosExists!;
             alumno.lugar_nacimiento = lugarNacimiento!;
             alumno.nombres = nombres;
             alumno.sexo = sexo;
