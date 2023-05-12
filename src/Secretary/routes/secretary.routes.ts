@@ -22,10 +22,10 @@ const secretaryController = new SecretaryController();
  *              nombres:
  *                  type: string
  *                  description: Primero y/o segundo nombre
- *              ape_paterno:
+ *              apePaterno:
  *                  type: string
  *                  description: Apellido paterno
- *              ape_materno:
+ *              apeMaterno:
  *                  type: string
  *                  description: Apellido materno
  *              celular:
@@ -85,8 +85,8 @@ router.post(
     [
         body("dni", "Debe de contener 8 caracteres").isString(),
         body("nombres", "Este campo es obligatorio").isString(),
-        body("ape_paterno", "Este campo es obligatorio").isString(),
-        body("ape_materno", "Este campo es obligatorio").isString(),
+        body("apePaterno", "Este campo es obligatorio").isString(),
+        body("apeMaterno", "Este campo es obligatorio").isString(),
         body("codSede", "Este campo es obligatorio").isNumeric(),
         body("userCodRol", "ESte campo es obligatorio").custom((value) =>
             hasPermissionRole(value, "Administrador")
