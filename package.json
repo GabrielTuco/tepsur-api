@@ -8,7 +8,7 @@
         "build": "tsc",
         "dev": "ts-node-dev --respawn src/index.ts",
         "dev:remote": "ts-node-dev --respawn src/index.ts",
-        "start": "tsc && node dist/index.js --dev",
+        "start": "tsc && node dist/index.js",
         "swagger": "tsoa spec"
     },
     "keywords": [],
