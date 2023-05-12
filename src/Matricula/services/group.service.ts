@@ -37,13 +37,13 @@ export class GroupService implements GroupRepository {
             throw error;
         }
     }
-    public async listEstudents(uuid: string): Promise<any> {
+    public async listEstudents(_uuid: string): Promise<any> {
         throw new Error("Method not implemented.");
     }
-    public async findByUuid(uuid: string): Promise<Grupo> {
+    public async findByUuid(_uuid: string): Promise<Grupo> {
         throw new Error("Method not implemented.");
     }
-    public async findByName(name: string): Promise<Grupo> {
+    public async findByName(_name: string): Promise<Grupo> {
         throw new Error("Method not implemented.");
     }
 }
