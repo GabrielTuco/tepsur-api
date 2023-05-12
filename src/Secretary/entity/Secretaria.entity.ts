@@ -1,10 +1,22 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from "typeorm";
+import {
+    Column,
+    Entity,
+    JoinColumn,
+    ManyToOne,
+    OneToMany,
+    OneToOne,
+    PrimaryColumn,
+} from "typeorm";
 import { EntityBase } from "../../entity/EntityBase";
 import { Usuario } from "../../Auth/entity/Usuario.entity";
 import { Sede } from "../../Sede/entity/Sede.entity";
+import { Matricula } from "../../Matricula/entity";
 
 @Entity()
 export class Secretaria extends EntityBase {
+    @PrimaryColumn()
+    uuid: string;
+
     @Column({ length: 8, unique: true })
     dni: string;
 
@@ -29,4 +41,7 @@ export class Secretaria extends EntityBase {
 
     @ManyToOne(() => Sede, (sede) => sede.secretarias)
     sede: Sede;
+
+    @OneToMany(() => Matricula, (matricula) => matricula.secretaria)
+    matriculas: Matricula[];
 }

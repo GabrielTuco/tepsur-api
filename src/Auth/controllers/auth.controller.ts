@@ -1,15 +1,13 @@
 import { Request, Response } from "express";
-import { AuthService } from "../services/auth.service";
 import { UserService } from "../services/user.service";
-import { SecretaryService } from "../../Secretary/services/secretary.service";
 import { generateJWT } from "../../helpers/generateJWT";
 import { verifyPassword } from "../../helpers/verifyPassword";
-import { FindUserTypesDictionary } from "../interfaces/auth";
-import { TeacherService } from "../../Teacher/services/teacher.service";
 import { encryptPassword } from "../../helpers/encryptPassword";
+import { FindUserTypesDictionary } from "../interfaces/auth";
+import { SecretaryService } from "../../Secretary/services/secretary.service";
+import { TeacherService } from "../../Teacher/services/teacher.service";
 import { AdministratorService } from "../../services/admin.service";
 
-const authService = new AuthService();
 const userService = new UserService();
 const secretaryService = new SecretaryService();
 const teacherService = new TeacherService();
@@ -37,17 +35,17 @@ export class AuthController {
             }
 
             const userTypes: FindUserTypesDictionary = {
-                Secretaria: secretaryService.searchByUser(userRegistered!),
-                Docente: teacherService.searchByUser(userRegistered!),
-                Administrador: administratorService.searchByUser(
-                    userRegistered!
-                ),
-                Alumno: secretaryService.searchByUser(userRegistered!),
+                Docente: teacherService.searchByUser,
+                Secretaria: secretaryService.searchByUser,
+                Administrador: administratorService.searchByUser,
+                Alumno: administratorService.searchByUser,
             };
 
+            const role = userRegistered.rol.nombre;
+
             const userTypeRegistered = await userTypes[
-                userRegistered.rol.nombre as keyof FindUserTypesDictionary
-            ];
+                role as keyof FindUserTypesDictionary
+            ](userRegistered!);
 
             if (!userTypeRegistered) {
                 return res.status(400).json({

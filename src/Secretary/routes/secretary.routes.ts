@@ -1,10 +1,11 @@
 import { Router } from "express";
-import { postSecretary } from "../controllers/secretary.controller";
-import { body } from "express-validator";
+import { SecretaryController } from "../controllers/secretary.controller";
+import { body, param } from "express-validator";
 import { validateFields } from "../../middlewares/validateFields";
 import { hasPermissionRole } from "../../middlewares/hasPermissionRole";
 
 const router = Router();
+const secretaryController = new SecretaryController();
 
 /**
  * @swagger
@@ -21,10 +22,10 @@ const router = Router();
  *              nombres:
  *                  type: string
  *                  description: Primero y/o segundo nombre
- *              apePaterno:
+ *              ape_paterno:
  *                  type: string
  *                  description: Apellido paterno
- *              apeMaterno:
+ *              ape_materno:
  *                  type: string
  *                  description: Apellido materno
  *              celular:
@@ -84,17 +85,21 @@ router.post(
     [
         body("dni", "Debe de contener 8 caracteres").isString(),
         body("nombres", "Este campo es obligatorio").isString(),
-        body("apePaterno", "Este campo es obligatorio").isString(),
-        body("apeMaterno", "Este campo es obligatorio").isString(),
+        body("ape_paterno", "Este campo es obligatorio").isString(),
+        body("ape_materno", "Este campo es obligatorio").isString(),
         body("codSede", "Este campo es obligatorio").isNumeric(),
         body("userCodRol", "ESte campo es obligatorio").custom((value) =>
             hasPermissionRole(value, "Administrador")
         ),
         validateFields,
     ],
-    postSecretary
+    secretaryController.postSecretary
 );
 
-//router.post("/createSecretaryUser", [], );
+router.patch(
+    "/:id",
+    [param("id").exists(), param("id").isNumeric(), validateFields],
+    secretaryController.patchSecretary
+);
 
 export default router;

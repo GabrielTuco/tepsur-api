@@ -1,10 +1,18 @@
-import { Column, Entity, JoinColumn, OneToOne } from "typeorm";
+import {
+    Column,
+    Entity,
+    JoinColumn,
+    ManyToOne,
+    OneToOne,
+    PrimaryColumn,
+} from "typeorm";
 import { Direccion, EntityBase } from "../../entity";
 import { Usuario } from "../../Auth/entity";
+import { GradoEstudios } from "../../Matricula/entity";
 
 @Entity()
 export class Alumno extends EntityBase {
-    @Column({ unique: true })
+    @PrimaryColumn()
     uuid: string;
 
     @Column({ length: 8, unique: true })
@@ -28,8 +36,8 @@ export class Alumno extends EntityBase {
     @Column({ nullable: true })
     estado_civil: string;
 
-    @Column({ nullable: true })
-    grado_estudios: string;
+    @ManyToOne(() => GradoEstudios, (gradoEstudios) => gradoEstudios.alumnos)
+    grado_estudios: GradoEstudios;
 
     @Column({ nullable: true })
     lugar_nacimiento: string;

@@ -1,3 +1,4 @@
+import { v4 as uuid } from "uuid";
 import { Rol, Usuario } from "../../Auth/entity";
 import { Sede } from "../../Sede/entity/Sede.entity";
 import { Docente } from "../entity/Docente.entity";
@@ -26,10 +27,11 @@ export class TeacherService {
             const sedeExists = await Sede.findOneBy({ id: sede });
 
             if (sedeExists) {
-                newTeacher.ape_materno = apeMaterno;
-                newTeacher.ape_paterno = apePaterno;
+                newTeacher.uuid = uuid();
                 newTeacher.dni = dni;
                 newTeacher.nombres = nombres;
+                newTeacher.ape_materno = apeMaterno;
+                newTeacher.ape_paterno = apePaterno;
                 newTeacher.sede = sedeExists!;
                 return await newTeacher.save();
             }

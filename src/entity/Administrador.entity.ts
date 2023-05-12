@@ -1,9 +1,19 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from "typeorm";
+import {
+    Column,
+    Entity,
+    JoinColumn,
+    ManyToOne,
+    OneToOne,
+    PrimaryColumn,
+} from "typeorm";
 import { EntityBase } from "./EntityBase";
 import { Usuario } from "../Auth/entity/Usuario.entity";
 
 @Entity()
 export class Administrador extends EntityBase {
+    @PrimaryColumn()
+    uuid: string;
+
     @Column({ length: 8, unique: true })
     dni: string;
 

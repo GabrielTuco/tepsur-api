@@ -11,10 +11,15 @@ import { Permiso } from "../Auth/entity/Permiso.entity";
 import { Administrador } from "../entity/Administrador.entity";
 import { Alumno } from "../Student/entity/Alumno.entity";
 
-import { Carrera as CarreraWeb } from "../Web/carrera.entity";
-import { Modulo as ModuloWeb } from "../Web/modulo.entity";
-import { Carrera, Grupo, Modulo } from "../Matricula/entity";
-import { GruposModulo } from "../Matricula/entity/GruposModulo.entity";
+import {
+    Carrera,
+    GradoEstudios,
+    Grupo,
+    Matricula,
+    Modulo,
+    PagoMatricula,
+} from "../Matricula/entity";
+import { Horario } from "../Matricula/entity/Horario.entity";
 
 //Yargs config
 const argv = yargs(process.argv.slice(2))
@@ -61,11 +66,10 @@ export const AppDataSource = new DataSource({
         Carrera,
         Modulo,
         Grupo,
-        GruposModulo,
-
-        //Web
-        CarreraWeb,
-        ModuloWeb,
+        Horario,
+        GradoEstudios,
+        Matricula,
+        PagoMatricula,
     ],
     migrations: [],
     subscribers: [],

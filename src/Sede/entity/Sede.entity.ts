@@ -3,6 +3,7 @@ import { EntityBase } from "../../entity/EntityBase";
 import { Direccion } from "../../entity/Direccion.entity";
 import { Docente } from "../../Teacher/entity/Docente.entity";
 import { Secretaria } from "../../Secretary/entity/Secretaria.entity";
+import { Matricula } from "../../Matricula/entity";
 
 @Entity()
 export class Sede extends EntityBase {
@@ -18,4 +19,7 @@ export class Sede extends EntityBase {
 
     @OneToMany(() => Secretaria, (secretaria) => secretaria.sede)
     secretarias: Secretaria[];
+
+    @OneToMany(() => Matricula, (matricula) => matricula.sede)
+    matriculas: Matricula[];
 }

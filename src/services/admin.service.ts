@@ -1,3 +1,4 @@
+import { v4 as uuid } from "uuid";
 import { Rol, Usuario } from "../Auth/entity";
 import { Administrador } from "../entity";
 import { DatabaseError } from "../errors/DatabaseError";
@@ -16,6 +17,7 @@ export class AdministratorService {
         try {
             const newAdministrator = new Administrador();
             newAdministrator.dni = dni;
+            newAdministrator.uuid = uuid();
             newAdministrator.nombres = nombres;
             newAdministrator.ape_materno = apeMaterno;
             newAdministrator.ape_paterno = apePaterno;

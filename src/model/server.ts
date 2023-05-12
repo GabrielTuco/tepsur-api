@@ -19,9 +19,6 @@ import sedeRoutes from "../Sede/routes/sede.routes";
 import moduleRoutes from "../Matricula/routes/module.routes";
 import careerRoutes from "../Matricula/routes/career.routes";
 
-import carreraWebRouter from "../Web/carrera.routes";
-import moduloWebRouter from "../Web/modulo.routes";
-
 interface Paths {
     auth: string;
     index: string;
@@ -32,9 +29,6 @@ interface Paths {
     sede: string;
     module: string;
     career: string;
-
-    carrera_web: string;
-    modulo_web: string;
 }
 
 class Server implements ServerBase {
@@ -51,9 +45,6 @@ class Server implements ServerBase {
             sede: "/api/sede",
             module: "/api/module",
             career: "/api/career",
-
-            carrera_web: "/api/contenido_web/carrera",
-            modulo_web: "/api/contenido_web/modulo",
         }
     ) {
         this.connectDB();
@@ -98,9 +89,6 @@ class Server implements ServerBase {
         this.app.use(this.paths.sede, sedeRoutes);
         this.app.use(this.paths.module, moduleRoutes);
         this.app.use(this.paths.career, careerRoutes);
-
-        this.app.use(this.paths.carrera_web, carreraWebRouter);
-        this.app.use(this.paths.modulo_web, moduloWebRouter);
     }
 
     listen() {

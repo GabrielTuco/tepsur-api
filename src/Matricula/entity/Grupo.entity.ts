@@ -1,7 +1,8 @@
 import { Column, Entity, ManyToOne, OneToMany } from "typeorm";
 import { EntityBase } from "../../entity/EntityBase";
 import { Carrera } from "./Carrera.entity";
-import { GruposModulo } from "./GruposModulo.entity";
+import { Horario } from "./Horario.entity";
+import { Docente } from "../../Teacher/entity/Docente.entity";
 
 @Entity()
 export class Grupo extends EntityBase {
@@ -15,11 +16,14 @@ export class Grupo extends EntityBase {
     fecha_inicio: Date;
 
     @Column()
-    horario: string;
+    estado: string;
+
+    @ManyToOne(() => Horario, (horario) => horario.grupos)
+    horario: Horario;
 
     @ManyToOne(() => Carrera, (carrera) => carrera.grupos)
     carrera: Carrera;
 
-    @OneToMany(() => GruposModulo, (grupo_modulo) => grupo_modulo.grupo)
-    grupo_modulo: GruposModulo[];
+    @ManyToOne(() => Docente, (docente) => docente.grupos)
+    docente: Docente;
 }

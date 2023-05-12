@@ -1,10 +1,22 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from "typeorm";
+import {
+    Column,
+    Entity,
+    JoinColumn,
+    ManyToOne,
+    OneToMany,
+    OneToOne,
+    PrimaryColumn,
+} from "typeorm";
 import { EntityBase } from "../../entity/EntityBase";
 import { Usuario } from "../../Auth/entity/Usuario.entity";
 import { Sede } from "../../Sede/entity/Sede.entity";
+import { Grupo } from "../../Matricula/entity";
 
 @Entity()
 export class Docente extends EntityBase {
+    @PrimaryColumn()
+    uuid: string;
+
     @Column({ length: 8, unique: true })
     dni: string;
 
@@ -23,4 +35,7 @@ export class Docente extends EntityBase {
 
     @ManyToOne(() => Sede, (sede) => sede.docentes, { nullable: true })
     sede: Sede;
+
+    @OneToMany(() => Grupo, (grupo) => grupo.docente, { nullable: true })
+    grupos: Grupo[];
 }
