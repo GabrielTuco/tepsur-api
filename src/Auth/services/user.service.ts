@@ -17,7 +17,10 @@ export class UserService {
     }
     async findById(id: number) {
         try {
-            const userExists = await Usuario.findOneBy({ id });
+            const userExists = await Usuario.createQueryBuilder("u")
+                .innerJoinAndSelect("u.rol", "r")
+                .where("u.id=:id", { id })
+                .getOne();
             return userExists;
         } catch (error) {
             console.log(error);

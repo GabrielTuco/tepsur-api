@@ -1,17 +1,17 @@
 import { Request, Response } from "express";
-import { GroupService } from "../services/group.service";
+import { ScheduleService } from "../services/schedule.service";
 import { DatabaseError } from "../../errors/DatabaseError";
+import { adaptedSchedule } from "../adapters/schedule.adapter";
 
-const groupService = new GroupService();
+const scheduleService = new ScheduleService();
 
-export class GroupController {
-    public async postGroup(req: Request, res: Response) {
+export class ScheduleController {
+    public async postSchedule(req: Request, res: Response) {
         try {
-            const grupo = await groupService.register(req.body);
+            const horario = await scheduleService.register(req.body);
 
-            return res.json(grupo);
-        } catch (error) {
-            console.log(error);
+            return res.json(horario);
+        } catch (error: any) {
             if (error instanceof DatabaseError) {
                 return res.status(error.codeStatus).json({
                     msg: error.message,
@@ -19,15 +19,16 @@ export class GroupController {
                 });
             }
             return res.status(500).json({
-                msg: "Internal Server Error, contact the administrator",
+                msg: "contact the administrator",
             });
         }
     }
 
     public async getAll(_req: Request, res: Response) {
         try {
-            const grupos = await groupService.listGroups();
-            return res.json(grupos);
+            const horarios = await scheduleService.listAll();
+
+            return res.json(horarios);
         } catch (error) {
             if (error instanceof DatabaseError) {
                 return res.status(error.codeStatus).json({
@@ -36,26 +37,7 @@ export class GroupController {
                 });
             }
             return res.status(500).json({
-                msg: "Internal Server Error, contact the administrator",
-            });
-        }
-    }
-
-    public async getStudents(req: Request, res: Response) {
-        try {
-            const { id } = req.params;
-            const students = await groupService.listEstudents(id);
-
-            return res.json(students);
-        } catch (error) {
-            if (error instanceof DatabaseError) {
-                return res.status(error.codeStatus).json({
-                    msg: error.message,
-                    name: error.name,
-                });
-            }
-            return res.status(500).json({
-                msg: "Internal Server Error, contact the administrator",
+                msg: "contact the administrator",
             });
         }
     }
@@ -63,8 +45,9 @@ export class GroupController {
     public async getByUuid(req: Request, res: Response) {
         try {
             const { id } = req.params;
-            const grupo = await groupService.findByUuid(id);
-            return res.json(grupo);
+            const horario = scheduleService.findByUuid(id);
+
+            return res.json(horario);
         } catch (error) {
             if (error instanceof DatabaseError) {
                 return res.status(error.codeStatus).json({
@@ -73,16 +56,20 @@ export class GroupController {
                 });
             }
             return res.status(500).json({
-                msg: "Internal Server Error, contact the administrator",
+                msg: "contact the administrator",
             });
         }
     }
-    public async getByName(req: Request, res: Response) {
-        try {
-            const { name } = req.params;
-            const grupo = await groupService.findByName(name);
 
-            return res.json(grupo);
+    public async patchSchedule(req: Request, res: Response) {
+        try {
+            const { id } = req.params;
+            const horario = scheduleService.update(
+                id,
+                adaptedSchedule(req.body)
+            );
+
+            return res.json(horario);
         } catch (error) {
             if (error instanceof DatabaseError) {
                 return res.status(error.codeStatus).json({
@@ -91,7 +78,24 @@ export class GroupController {
                 });
             }
             return res.status(500).json({
-                msg: "Internal Server Error, contact the administrator",
+                msg: "contact the administrator",
+            });
+        }
+    }
+
+    public async deleteSchedule(req: Request, res: Response) {
+        try {
+            const { id } = req.params;
+            await scheduleService.delete(id);
+        } catch (error) {
+            if (error instanceof DatabaseError) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                    name: error.name,
+                });
+            }
+            return res.status(500).json({
+                msg: "contact the administrator",
             });
         }
     }

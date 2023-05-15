@@ -6,7 +6,7 @@ import { Matricula } from "./Matricula.entity";
 
 @Entity()
 export class Carrera extends EntityBase {
-    @Column()
+    @Column({ unique: true })
     uuid: string;
 
     @Column()
@@ -25,6 +25,8 @@ export class Carrera extends EntityBase {
     @JoinTable()
     modulos: Modulo[];
 
-    @OneToMany(() => Matricula, (matricula) => matricula.carrera)
+    @OneToMany(() => Matricula, (matricula) => matricula.carrera, {
+        nullable: true,
+    })
     matriculas: Matricula[];
 }

@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, OneToMany } from "typeorm";
+import { Column, Entity, ManyToOne } from "typeorm";
 import { EntityBase } from "../../entity/EntityBase";
 import { Carrera } from "./Carrera.entity";
 import { Horario } from "./Horario.entity";
@@ -15,7 +15,7 @@ export class Grupo extends EntityBase {
     @Column()
     fecha_inicio: Date;
 
-    @Column()
+    @Column({ default: "ABIERTO" }) //EN_CURSO CERRADO
     estado: string;
 
     @ManyToOne(() => Horario, (horario) => horario.grupos)

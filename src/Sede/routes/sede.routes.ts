@@ -1,6 +1,8 @@
 import { Router } from "express";
 import { SedeController } from "../controllers/sede.controller";
 import { validateJWT } from "../../middlewares/validateJWT";
+import { checkAuthRole } from "../../middlewares/checkAuthRole";
+import { ROLES } from "../../interfaces/enums";
 
 const router = Router();
 
@@ -92,7 +94,11 @@ const sedeController = new SedeController();
  *              description: Error de servidor
  *
  */
-router.get("/", [validateJWT], sedeController.getAll);
+router.get(
+    "/",
+    [validateJWT, checkAuthRole([ROLES.ADMIN])],
+    sedeController.getAll
+);
 
 /**
  * @swagger
@@ -124,7 +130,11 @@ router.get("/", [validateJWT], sedeController.getAll);
  *              description: Error de servidor
  *
  */
-router.get("/:id", [validateJWT], sedeController.getOneById);
+router.get(
+    "/:id",
+    [validateJWT, checkAuthRole([ROLES.ADMIN])],
+    sedeController.getOneById
+);
 
 /**
  * @swagger
@@ -167,6 +177,10 @@ router.get("/:id", [validateJWT], sedeController.getOneById);
  *              description: Error de servidor
  *
  */
-router.post("/", [validateJWT], sedeController.postSede);
+router.post(
+    "/",
+    [validateJWT, checkAuthRole([ROLES.ADMIN])],
+    sedeController.postSede
+);
 
 export default router;

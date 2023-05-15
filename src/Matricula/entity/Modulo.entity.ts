@@ -1,9 +1,9 @@
-import { Column, Entity, OneToMany } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
 import { EntityBase } from "../../entity";
 
 @Entity()
 export class Modulo extends EntityBase {
-    @Column({ unique: true })
+    @PrimaryColumn()
     uuid: string;
 
     @Column({ unique: true })

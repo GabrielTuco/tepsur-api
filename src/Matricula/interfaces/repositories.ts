@@ -1,5 +1,5 @@
-import { Carrera, Grupo, Modulo } from "../entity";
-import { CareerDTO, GroupDTO, ModuleDTO } from "./dtos";
+import { Carrera, Grupo, Horario, Modulo } from "../entity";
+import { CareerDTO, GroupDTO, ModuleDTO, ScheduleDTO } from "./dtos";
 
 export interface ModuleRepository {
     register(data: ModuleDTO): Promise<Modulo>;
@@ -20,4 +20,12 @@ export interface GroupRepository {
     listEstudents(uuid: string): Promise<any>; //TODO Debe retornar un arreglo de matriculas o alumnos
     findByUuid(uuid: string): Promise<Grupo>;
     findByName(name: string): Promise<Grupo>;
+}
+
+export interface ScheduleRepository {
+    register(data: ScheduleDTO): Promise<Horario>;
+    listAll(): Promise<Horario[]>;
+    findByUuid(uuid: string): Promise<Horario>;
+    update(uuid: string, data: Partial<Horario>): Promise<Horario>;
+    delete(uuid: string): Promise<void>;
 }

@@ -96,12 +96,21 @@ export class AuthController {
 
     async changePassword(req: Request, res: Response) {
         try {
-            const { codUser, newPassword } = req.body;
+            const { codUser, currentPassword, newPassword } = req.body;
 
             const user = await userService.findById(codUser);
             if (!user) {
                 return res.status(404).json({
                     msg: "El usuario no existe",
+                });
+            }
+            const currentPasswordIsValid = verifyPassword(
+                currentPassword,
+                user.password
+            );
+            if (!currentPasswordIsValid) {
+                return res.status(404).json({
+                    msg: "La contraseña actual no es correcta",
                 });
             }
 

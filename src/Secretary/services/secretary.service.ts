@@ -6,7 +6,6 @@ import { Usuario } from "../../Auth/entity/Usuario.entity";
 import {
     CreateSecretaryUserDTO,
     CreateSecretaryDTO,
-    UpdateSecretaryDTO,
 } from "../interfaces/secretary.dto";
 import { SecretaryRepository } from "../interfaces/repositories";
 import { DatabaseError } from "../../errors/DatabaseError";
@@ -86,17 +85,20 @@ export class SecretaryService implements SecretaryRepository {
     }
 
     public async update(
-        uuid: number,
-        data: UpdateSecretaryDTO
+        uuid: string,
+        data: Partial<Secretaria>
     ): Promise<Secretaria> {
         try {
-            const secretary = await Secretaria.findOneBy({ id: uuid });
+            const secretary = await Secretaria.findOneBy({ uuid });
             if (!secretary)
                 throw new DatabaseError("Secretaria not found", 404, "");
 
             Object.assign(secretary, data);
 
-            return await secretary.save();
+            await secretary.save();
+            await secretary.reload();
+
+            return secretary;
         } catch (error) {
             console.log(error);
             throw error;

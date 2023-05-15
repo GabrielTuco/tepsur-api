@@ -3,6 +3,9 @@ import { body } from "express-validator";
 import { validateFields } from "../../middlewares/validateFields";
 import { hasPermissionRole } from "../../middlewares/hasPermissionRole";
 import { TeacherController } from "../controllers/teacher.controller";
+import { ROLES } from "../../interfaces/enums";
+import { validateJWT } from "../../middlewares/validateJWT";
+import { checkAuthRole } from "../../middlewares/checkAuthRole";
 
 const router = Router();
 const teacherController = new TeacherController();
@@ -72,6 +75,8 @@ const teacherController = new TeacherController();
 router.post(
     "/",
     [
+        validateJWT,
+        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
         body("dni", "El campo debe contener un numero de dni valido").isLength({
             min: 8,
             max: 8,
@@ -80,9 +85,6 @@ router.post(
         body("apePaterno", "El campo es obligatorio").isString(),
         body("apeMaterno", "El campo es obligatorio").isString(),
         body("codSede", "El campo es obligatorio").isNumeric(),
-        body("userCodRol", "El campo es obligatorio").custom((value) =>
-            hasPermissionRole(value, "Administrador")
-        ),
         validateFields,
     ],
     teacherController.postRegister
@@ -108,7 +110,16 @@ router.post(
  *              description: Error de servidor
  *
  */
-router.get("/", [], teacherController.getList);
-router.get("/:id", [], teacherController.getOne);
+router.get(
+    "/",
+    [validateJWT, checkAuthRole([ROLES.ADMIN, ROLES.SECRE])],
+    teacherController.getList
+);
+
+router.get(
+    "/:id",
+    [validateJWT, checkAuthRole([ROLES.ADMIN, ROLES.SECRE])],
+    teacherController.getOne
+);
 
 export default router;

@@ -1,10 +1,10 @@
-import { Column, Entity, OneToMany } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
 import { EntityBase } from "../../entity";
 import { Grupo } from "./Grupo.entity";
 
 @Entity()
 export class Horario extends EntityBase {
-    @Column()
+    @Column({ unique: true })
     uuid: string;
 
     @Column()
@@ -14,10 +14,13 @@ export class Horario extends EntityBase {
     dias: string;
 
     @Column()
-    hora_inicio: Date;
+    hora_inicio: number;
 
     @Column()
-    hora_fin: Date;
+    hora_fin: number;
+
+    @Column({ default: true })
+    estado: boolean;
 
     @OneToMany(() => Grupo, (grupo) => grupo.horario)
     grupos: Grupo[];

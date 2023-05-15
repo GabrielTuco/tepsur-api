@@ -11,6 +11,7 @@ export class CareerController {
 
             return res.json(career);
         } catch (error) {
+            console.log(error);
             if (error instanceof DatabaseError) {
                 return res.status(error.codeStatus).json({
                     msg: error.message,
@@ -29,6 +30,7 @@ export class CareerController {
 
             return res.json(modules);
         } catch (error) {
+            console.log(error);
             if (error instanceof DatabaseError) {
                 return res.status(error.codeStatus).json({
                     msg: error.message,
@@ -48,6 +50,7 @@ export class CareerController {
 
             return res.json(career);
         } catch (error) {
+            console.log(error);
             if (error instanceof DatabaseError) {
                 return res.status(error.codeStatus).json({
                     msg: error.message,
@@ -67,6 +70,7 @@ export class CareerController {
 
             return res.json(career);
         } catch (error) {
+            console.log(error);
             if (error instanceof DatabaseError) {
                 return res.status(error.codeStatus).json({
                     msg: error.message,

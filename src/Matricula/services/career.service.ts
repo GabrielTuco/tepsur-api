@@ -1,3 +1,4 @@
+import { v4 as uuid } from "uuid";
 import { DatabaseError } from "../../errors/DatabaseError";
 import { Carrera, Modulo } from "../entity";
 import { CareerDTO } from "../interfaces/dtos";
@@ -6,16 +7,32 @@ import { CareerRepository } from "../interfaces/repositories";
 export class CareerService implements CareerRepository {
     public async register(data: CareerDTO): Promise<Carrera> {
         try {
-            const { numModulos, nombre, modulosUuids } = data;
-            const modulos = await Promise.all(
-                modulosUuids.map((m) => Modulo.findOneBy({ uuid: m }))
+            const { numModulos, nombre, modulos, modalidad } = data;
+
+            const modulosExists: Modulo[] = await Promise.all(
+                modulos.map(async (mod) => {
+                    const modulo = await Modulo.findOneBy({
+                        nombre: mod.nombre,
+                    });
+                    if (modulo) {
+                        return modulo;
+                    } else {
+                        const newModulo = new Modulo();
+                        newModulo.uuid = uuid();
+                        newModulo.nombre = mod.nombre;
+                        newModulo.duracion_semanas = mod.duracionSemanas;
+
+                        const savedModulo = await newModulo.save();
+                        return savedModulo;
+                    }
+                })
             );
-            const modulosExists = modulos.filter((m) => m !== null) as Modulo[];
 
             const newCareer = new Carrera();
-
+            newCareer.uuid = uuid();
             newCareer.num_modulos = numModulos;
             newCareer.nombre = nombre;
+            newCareer.modalidad = modalidad;
             newCareer.modulos = modulosExists;
 
             return await newCareer.save();

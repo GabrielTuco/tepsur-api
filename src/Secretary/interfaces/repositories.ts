@@ -7,7 +7,7 @@ export interface SecretaryRepository {
     createUser(data: CreateSecretaryUserDTO): Promise<Secretaria>;
     searchByUser(usuario: Usuario): Promise<Secretaria>;
     update(
-        uuid: number,
+        uuid: string,
         data: Partial<CreateSecretaryDTO>
     ): Promise<Secretaria>;
 }

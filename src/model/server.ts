@@ -18,6 +18,8 @@ import adminRoutes from "../routes/admin.routes";
 import sedeRoutes from "../Sede/routes/sede.routes";
 import moduleRoutes from "../Matricula/routes/module.routes";
 import careerRoutes from "../Matricula/routes/career.routes";
+import scheduleRoutes from "../Matricula/routes/schedule.routes";
+import groupRoutes from "../Matricula/routes/group.routes";
 
 interface Paths {
     auth: string;
@@ -29,6 +31,8 @@ interface Paths {
     sede: string;
     module: string;
     career: string;
+    schedule: string;
+    group: string;
 }
 
 class Server implements ServerBase {
@@ -45,6 +49,8 @@ class Server implements ServerBase {
             sede: "/api/sede",
             module: "/api/module",
             career: "/api/career",
+            schedule: "/api/schedule",
+            group: "/api/group",
         }
     ) {
         this.connectDB();
@@ -89,6 +95,8 @@ class Server implements ServerBase {
         this.app.use(this.paths.sede, sedeRoutes);
         this.app.use(this.paths.module, moduleRoutes);
         this.app.use(this.paths.career, careerRoutes);
+        this.app.use(this.paths.schedule, scheduleRoutes);
+        this.app.use(this.paths.group, groupRoutes);
     }
 
     listen() {

@@ -3,6 +3,9 @@ import { SecretaryController } from "../controllers/secretary.controller";
 import { body, param } from "express-validator";
 import { validateFields } from "../../middlewares/validateFields";
 import { hasPermissionRole } from "../../middlewares/hasPermissionRole";
+import { ROLES } from "../../interfaces/enums";
+import { validateJWT } from "../../middlewares/validateJWT";
+import { checkAuthRole } from "../../middlewares/checkAuthRole";
 
 const router = Router();
 const secretaryController = new SecretaryController();
@@ -37,16 +40,12 @@ const secretaryController = new SecretaryController();
  *              codSede:
  *                  type: number
  *                  description: El codigo de la sede en la que se registra la secretaria
- *              userCodRol:
- *                  type: number
- *                  description: El rol del usuario que realiza la peticion
  *          required:
  *              - dni
  *              - nombre
  *              - apePaterno
  *              - apeMaterno
  *              - codSede
- *              - userCodRol
  */
 
 /**
@@ -83,14 +82,13 @@ const secretaryController = new SecretaryController();
 router.post(
     "/",
     [
+        validateJWT,
+        checkAuthRole([ROLES.ADMIN]),
         body("dni", "Debe de contener 8 caracteres").isString(),
         body("nombres", "Este campo es obligatorio").isString(),
         body("apePaterno", "Este campo es obligatorio").isString(),
         body("apeMaterno", "Este campo es obligatorio").isString(),
         body("codSede", "Este campo es obligatorio").isNumeric(),
-        body("userCodRol", "ESte campo es obligatorio").custom((value) =>
-            hasPermissionRole(value, "Administrador")
-        ),
         validateFields,
     ],
     secretaryController.postSecretary
@@ -98,7 +96,13 @@ router.post(
 
 router.patch(
     "/:id",
-    [param("id").exists(), param("id").isNumeric(), validateFields],
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ADMIN]),
+        param("id").exists(),
+        param("id").isString(),
+        validateFields,
+    ],
     secretaryController.patchSecretary
 );
 

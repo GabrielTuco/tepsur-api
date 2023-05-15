@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import { SecretaryService } from "../services/secretary.service";
 import { encryptPassword } from "../../helpers/encryptPassword";
 import { DatabaseError } from "../../errors/DatabaseError";
+import { adaptedSecretary } from "../adapters/secretary.adapter";
 
 const secretaryService = new SecretaryService();
 
@@ -39,8 +40,8 @@ export class SecretaryController {
         const { id } = req.params;
         try {
             const updatedSecretary = await secretaryService.update(
-                parseInt(id),
-                req.body
+                id,
+                adaptedSecretary(req.body)
             );
             if (!updatedSecretary) {
                 return res.status(400).json({
