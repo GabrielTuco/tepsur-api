@@ -135,6 +135,9 @@ router.get("/renew", validateJWT, authController.revalidateToken);
  *                          codUser:
  *                              type: number
  *                              description: Codigo del usuario
+ *                          currentPassword:
+ *                              type: string
+ *                              description: El password actual
  *                          newPassword:
  *                              type: string
  *                              description: El nuevo password seguro
@@ -168,6 +171,7 @@ router.put(
     [
         validateJWT,
         body("codUser", "El campo es obligatorio").isNumeric(),
+        body("currentPassword", "El campo es obligatorio").exists(),
         body(
             "newPassword",
             "El password debe tener 8 caracteres como minimo"
