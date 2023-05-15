@@ -20,5 +20,5 @@ export interface RolSchema {
     id?: number;
     nombre: string;
     estado?: boolean;
-    permisos?: Array;
+    permisos?: [];
 }
