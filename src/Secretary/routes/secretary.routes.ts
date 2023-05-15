@@ -98,7 +98,7 @@ router.patch(
     "/:id",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN]),
+        checkAuthRole([ROLES.ADMIN,ROLES.SECRE]),
         param("id").exists(),
         param("id").isString(),
         validateFields,
