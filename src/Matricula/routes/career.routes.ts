@@ -8,6 +8,25 @@ import { checkAuthRole } from "../../middlewares/checkAuthRole";
 
 const router = Router();
 const careerController = new CareerController();
+/**
+ * @swagger
+ * components:
+ *  schemas:
+ *      Career:
+ *          properties:
+ *              id:
+ *                  type: number
+ *                  description : El id autogenerado de la secretaria
+ *          required:
+ *              - dni
+ */
+
+/**
+ * @swagger
+ * tags:
+ *  name: Career
+ *  description: Endpoints para las carreras
+ */
 
 router.get(
     "/find-by-uuid/:uuid",
@@ -41,6 +60,32 @@ router.get(
     careerController.getModulesOfCareer
 );
 
+/**
+ * @swagger
+ * /career:
+ *  post:
+ *      summary: Crea una nueva carrera
+ *      tags: [Career]
+ *      parameters:
+ *          - $ref: '#/components/schemas/Token'
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      $ref: '#/components/schemas/Career'
+ *      responses:
+ *          200:
+ *              description: La nueva carrera creada
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          $ref: '#/components/schemas/Career'
+ *          500:
+ *              description: Error de servidor
+ *
+ */
 router.post(
     "/",
     [
