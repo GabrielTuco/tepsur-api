@@ -13,6 +13,9 @@ export class Usuario extends EntityBase {
     @Column({ default: false })
     securePasswordUpdated: boolean;
 
+    @Column({nullable:true})
+    avatar: string;
+
     @ManyToOne(() => Rol, (rol) => rol.usuarios)
     rol: Rol;
 }
