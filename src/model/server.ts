@@ -6,6 +6,7 @@ import cors from "cors";
 import morgan from "morgan";
 import swaggerUi from "swagger-ui-express";
 import swaggerJSDoc from "swagger-jsdoc";
+import { v2 as cloudinary } from 'cloudinary'
 
 import { options } from "../swaggerOptions";
 import { AppDataSource } from "../db/dataSource";
@@ -36,6 +37,7 @@ interface Paths {
 }
 
 class Server implements ServerBase {
+    cloudinary:any;
     constructor(
         private app: Application = express(),
         private port: string | number = process.env.PORT || 3000,
@@ -52,7 +54,15 @@ class Server implements ServerBase {
             schedule: "/api/schedule",
             group: "/api/group",
         }
+        
     ) {
+        //Cloudinary config
+        this.cloudinary = cloudinary.config({
+            cloud_name: `${process.env.CLOUDINARY_NAME}`,
+            api_key: `${process.env.CLOUDINARY_API_KEY}`,
+            api_secret: process.env.CLOUDINARY_API_SECRET,
+        });
+
         this.connectDB();
         this.middlewares();
         this.routes();
