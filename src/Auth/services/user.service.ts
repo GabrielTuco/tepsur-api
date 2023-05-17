@@ -1,4 +1,5 @@
 import { Secretaria } from "../../Secretary/entity/Secretaria.entity";
+import { DatabaseError } from "../../errors/DatabaseError";
 import { Usuario } from "../entity/Usuario.entity";
 
 export class UserService {
@@ -28,19 +29,19 @@ export class UserService {
         }
     }
 
-
-    public async updateAvatar(uuid:number, avatarUrl: string){
+    public async updateAvatar(uuid: number, avatarUrl: string) {
         try {
-            const user = await Usuario.findOneBy({id:uuid});
-            if(!user) throw new DataBaseError("User not found in database",500,"");
-                
-            user.avatar = avatarUrl
+            const user = await Usuario.findOneBy({ id: uuid });
+            if (!user)
+                throw new DatabaseError("User not found in database", 500, "");
+
+            user.avatar = avatarUrl;
             await user.save();
             await user.reload();
 
             return user;
         } catch (error) {
-            throw error
+            throw error;
         }
     }
 }
