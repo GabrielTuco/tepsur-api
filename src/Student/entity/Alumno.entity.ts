@@ -12,7 +12,7 @@ import { GradoEstudios } from "../../Matricula/entity";
 
 @Entity()
 export class Alumno extends EntityBase {
-    @PrimaryColumn()
+    @Column()
     uuid: string;
 
     @Column({ length: 8, unique: true })
@@ -48,7 +48,7 @@ export class Alumno extends EntityBase {
     @Column({ nullable: true })
     correo: string;
 
-    @Column({ default: false })
+    @Column({ default: true })
     estado: boolean;
 
     @OneToOne(() => Usuario, { nullable: true })

@@ -1,5 +1,5 @@
-import { Carrera, Grupo, Horario, Modulo } from "../entity";
-import { CareerDTO, GroupDTO, ModuleDTO, ScheduleDTO } from "./dtos";
+import { Carrera, Grupo, Horario, Matricula, Modulo } from "../entity";
+import { CareerDTO, GroupDTO, MatriculaDTO, ModuleDTO, ScheduleDTO } from "./dtos";
 
 export interface ModuleRepository {
     register(data: ModuleDTO): Promise<Modulo>;
@@ -28,4 +28,10 @@ export interface ScheduleRepository {
     findByUuid(uuid: string): Promise<Horario>;
     update(uuid: string, data: Partial<Horario>): Promise<Horario>;
     delete(uuid: string): Promise<void>;
+}
+
+export interface MatriculaRepository {
+    register(data:MatriculaDTO):Promise<Matricula>;
+    findByStudent(uuid: number): Promise<Matricula>;
+    findByUuid(uuid:number): Promise<Matricula>;
 }

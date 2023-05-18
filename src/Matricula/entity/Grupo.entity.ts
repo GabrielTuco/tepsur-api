@@ -1,8 +1,9 @@
-import { Column, Entity, ManyToOne } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany } from "typeorm";
 import { EntityBase } from "../../entity/EntityBase";
 import { Carrera } from "./Carrera.entity";
 import { Horario } from "./Horario.entity";
 import { Docente } from "../../Teacher/entity/Docente.entity";
+import { Matricula } from "./Matricula.entity";
 
 @Entity()
 export class Grupo extends EntityBase {
@@ -26,4 +27,9 @@ export class Grupo extends EntityBase {
 
     @ManyToOne(() => Docente, (docente) => docente.grupos)
     docente: Docente;
+
+    @OneToMany(() => Matricula, (matricula) => matricula.carrera, {
+        nullable: true,
+    })
+    matriculas: Matricula[];
 }
