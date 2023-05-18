@@ -6,7 +6,7 @@ import cors from "cors";
 import morgan from "morgan";
 import swaggerUi from "swagger-ui-express";
 import swaggerJSDoc from "swagger-jsdoc";
-import { v2 as cloudinary } from 'cloudinary'
+import { v2 as cloudinary } from "cloudinary";
 
 import { options } from "../swaggerOptions";
 import { AppDataSource } from "../db/dataSource";
@@ -16,12 +16,13 @@ import roleRoutes from "../Auth/routes/role.routes";
 import authRoutes from "../Auth/routes/auth.routes";
 import teacherRoutes from "../Teacher/routes/teacher.routes";
 import adminRoutes from "../routes/admin.routes";
-import userRoutes from '../Auth/routes/user.routes'
+import userRoutes from "../Auth/routes/user.routes";
 import sedeRoutes from "../Sede/routes/sede.routes";
 import moduleRoutes from "../Matricula/routes/module.routes";
 import careerRoutes from "../Matricula/routes/career.routes";
 import scheduleRoutes from "../Matricula/routes/schedule.routes";
 import groupRoutes from "../Matricula/routes/group.routes";
+import fileUpload from "express-fileupload";
 
 interface Paths {
     auth: string;
@@ -39,7 +40,7 @@ interface Paths {
 }
 
 class Server implements ServerBase {
-    cloudinary:any;
+    cloudinary: any;
     constructor(
         private app: Application = express(),
         private port: string | number = process.env.PORT || 3000,
@@ -57,7 +58,6 @@ class Server implements ServerBase {
             schedule: "/api/schedule",
             group: "/api/group",
         }
-        
     ) {
         //Cloudinary config
         this.cloudinary = cloudinary.config({
@@ -90,6 +90,13 @@ class Server implements ServerBase {
         this.app.use(express.static("public"));
 
         this.app.use(morgan("dev"));
+
+        this.app.use(
+            fileUpload({
+                useTempFiles: true,
+                tempFileDir: "/tmp/",
+            })
+        );
     }
 
     routes() {
