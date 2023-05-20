@@ -91,7 +91,14 @@ export class MatriculaController {
                 req.params.dni
             );
 
-            return res.json(data);
+            return res.json({
+                tipoDocumento: data.tipoDocumento,
+                numeroDocumento: data.numeroDocumento,
+                nombre: data.nombre,
+                apellidoPaterno: data.apellidoPaterno,
+                apellidoMaterno: data.apellidoMaterno,
+                nombres: data.nombres,
+            });
         } catch (error) {
             console.log(error);
             return res.status(500).json({

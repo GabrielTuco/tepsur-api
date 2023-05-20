@@ -71,9 +71,9 @@ const matriculaController = new MatriculaController();
  *              numComprobante:
  *                  type: string
  *                  description: Numero de comprobante
- *              formaPago:
+ *              formaPagoUuid:
  *                  type: string
- *                  description: Tipo de forma de pago
+ *                  description: UUID del tipo de forma de pago
  *              monto:
  *                  type: number
  *                  description: Monto de pago
@@ -143,7 +143,7 @@ const matriculaController = new MatriculaController();
  *                  application/json:
  *                      schema:
  *                          type: object
- *                          $ref: '#/components/schemas/Alumno'
+ *                          $ref: '#/components/schemas/Matricula'
  *          500:
  *              description: Error de servidor
  *
@@ -192,6 +192,37 @@ router.post(
     matriculaController.postMatricula
 );
 
+/**
+ * @swagger
+ * /matricula/grado-estudio:
+ *  post:
+ *      summary: Registrar un nuevo tipo de grado de estudio
+ *      tags: [Matricula]
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          descripcion:
+ *                              type: string
+ *                              description: La descripcion del grado de estudio
+ *      responses:
+ *          200:
+ *              description: El graode estudio registrado
+ *              content:
+ *                  application/json:
+ *                       schema:
+ *                          type: object
+ *                          properties:
+ *                              descripcion:
+ *                                  type: string
+ *                                  description: La descripcion del grado de estudio
+ *          500:
+ *              description: Error de servidor
+ *
+ */
 router.post(
     "/grado-estudio",
     [
@@ -203,11 +234,40 @@ router.post(
     matriculaController.postGradoEstudio
 );
 
+/**
+ * @swagger
+ * /matricula/validate-dni-1/{dni}:
+ *  get:
+ *      summary: Validar el dni de un nuevo alumno
+ *      tags: [Matricula]
+ *      parameters:
+ *          - $ref: '#/components/parameters/token'
+ *          - in: path
+ *            name: dni
+ *            schema:
+ *              type: string
+ *            required: true
+ *            description: El dni del alumno a buscar
+ *      responses:
+ *          200:
+ *              description: Los datos del nuevo almuno
+ *              content:
+ *                  application/json:
+ *                       schema:
+ *                          type: object
+ *                          properties:
+ *                              descripcion:
+ *                                  type: string
+ *                                  description: La descripcion del grado de estudio
+ *          500:
+ *              description: Error de servidor
+ *
+ */
 router.get(
     "/validate-dni-1/:dni",
     [
-        //validateJWT,
-        //checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        validateJWT,
+        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
         param("dni", "Debe ser un DNI valido")
             .isString()
             .isLength({ min: 8, max: 8 }),
