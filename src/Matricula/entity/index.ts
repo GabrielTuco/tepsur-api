@@ -5,3 +5,4 @@ export * from "./Horario.entity";
 export * from "./Matricula.entity";
 export * from "./Modulo.entity";
 export * from "./PagoMatricula.entity";
+export * from "./MetodoPago.entity";
