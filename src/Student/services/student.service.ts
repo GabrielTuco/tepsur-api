@@ -48,7 +48,6 @@ export class StudentService implements StudentRepository {
             alumno.direccion = savedDireccion;
             alumno.dni = dni;
             alumno.edad = edad!;
-            alumno.estado_civil = estadoCivil!;
             alumno.grado_estudios = gradoEstudiosExists!;
             alumno.lugar_nacimiento = lugarNacimiento!;
             alumno.nombres = nombres;
@@ -111,6 +110,27 @@ export class StudentService implements StudentRepository {
             }
             return alumno;
         } catch (error) {
+            throw error;
+        }
+    }
+
+    public async searchByUser(usuario: Usuario) {
+        try {
+            const studentExists = await Alumno.createQueryBuilder("a")
+                .innerJoinAndSelect("a.usuario", "u")
+                .innerJoinAndSelect("u.rol", "r")
+                .where("u.id= :id", { id: usuario.id })
+                .getOne();
+
+            if (!studentExists)
+                throw new DatabaseError(
+                    "Student not found",
+                    500,
+                    "Interal server error"
+                );
+            return studentExists;
+        } catch (error) {
+            console.log(error);
             throw error;
         }
     }

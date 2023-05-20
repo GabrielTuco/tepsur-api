@@ -2,6 +2,7 @@ import { DatabaseError } from "../../errors/DatabaseError";
 import { Usuario } from "../entity/Usuario.entity";
 import fileUpload from "express-fileupload";
 import { v2 as cloudinary } from "cloudinary";
+import { uploadImage } from "../../helpers/uploadImage";
 
 export class UserService {
     public async findByUser(user: string) {
@@ -34,28 +35,18 @@ export class UserService {
         try {
             const user = await Usuario.findOneBy({ id: uuid });
 
-            if (user) {
-                if (user.avatar) {
-                    const nombreArr = user.avatar.split("/");
-                    const nombre = nombreArr[nombreArr.length - 1];
-                    const [public_id] = nombre.split(".");
-
-                    cloudinary.uploader.destroy(
-                        "tepsur/user-avatars/" + public_id
-                    ); //Eliminar la imagen si existe
-                }
-
-                const { secure_url } = await cloudinary.uploader.upload(
-                    image.tempFilePath,
-                    { folder: "tepsur/user-avatars" }
+            if (!user)
+                throw new DatabaseError(
+                    "User not found",
+                    500,
+                    "Internal server error"
                 );
 
-                user.avatar = secure_url;
-                await user.save();
-                await user.reload();
+            user.avatar = await uploadImage(user.avatar, image, "user-avatars");
+            await user.save();
+            await user.reload();
 
-                return user;
-            }
+            return user;
         } catch (error) {
             throw error;
         }

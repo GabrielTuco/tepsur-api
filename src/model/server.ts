@@ -7,8 +7,9 @@ import morgan from "morgan";
 import swaggerUi from "swagger-ui-express";
 import swaggerJSDoc from "swagger-jsdoc";
 import { v2 as cloudinary } from "cloudinary";
-
+import fileUpload from "express-fileupload";
 import { options } from "../swaggerOptions";
+
 import { AppDataSource } from "../db/dataSource";
 import { ServerBase } from "../interfaces/server";
 import secretaryRoutes from "../Secretary/routes/secretary.routes";
@@ -18,11 +19,14 @@ import teacherRoutes from "../Teacher/routes/teacher.routes";
 import adminRoutes from "../routes/admin.routes";
 import userRoutes from "../Auth/routes/user.routes";
 import sedeRoutes from "../Sede/routes/sede.routes";
-import moduleRoutes from "../Matricula/routes/module.routes";
-import careerRoutes from "../Matricula/routes/career.routes";
-import scheduleRoutes from "../Matricula/routes/schedule.routes";
-import groupRoutes from "../Matricula/routes/group.routes";
-import fileUpload from "express-fileupload";
+import {
+    careerRoutes,
+    groupRoutes,
+    matriculaRoutes,
+    moduleRoutes,
+    scheduleRoutes,
+    metodoPagoRoutes,
+} from "../Matricula/routes";
 
 interface Paths {
     auth: string;
@@ -37,6 +41,8 @@ interface Paths {
     career: string;
     schedule: string;
     group: string;
+    matricula: string;
+    metodoPago: string;
 }
 
 class Server implements ServerBase {
@@ -57,6 +63,8 @@ class Server implements ServerBase {
             career: "/api/career",
             schedule: "/api/schedule",
             group: "/api/group",
+            matricula: "/api/matricula",
+            metodoPago: "/api/metodo-pago",
         }
     ) {
         //Cloudinary config
@@ -118,6 +126,8 @@ class Server implements ServerBase {
         this.app.use(this.paths.career, careerRoutes);
         this.app.use(this.paths.schedule, scheduleRoutes);
         this.app.use(this.paths.group, groupRoutes);
+        this.app.use(this.paths.matricula, matriculaRoutes);
+        this.app.use(this.paths.metodoPago, metodoPagoRoutes);
     }
 
     listen() {

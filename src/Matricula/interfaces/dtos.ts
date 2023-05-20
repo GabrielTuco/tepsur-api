@@ -40,38 +40,42 @@ export type UpdateScheduleDTO = Partial<ScheduleDTO>;
 export interface MatriculaDTO {
     alumno: AlumnoData;
     carreraUuid: string;
+    moduloUuid: string;
     grupoUuid: string;
     secretariaUuid: string;
     sedeUuid: number;
     pagoMatricula: PagoMatriculaData;
     fechaInscripcion: Date;
+    fechaInicio: Date;
 }
 
-export interface AlumnoData{
+export interface AlumnoData {
     dni: string;
     nombres: string;
     apePaterno: string;
     apeMaterno: string;
     sexo: "m" | "f";
     edad: number;
-    estadoCivil: string;
     gradoEstudiosUuid: string;
     lugarNacimiento: string;
     celular: string;
     correo: string;
-    direccion: DireccionData
+    direccion: DireccionData;
 }
 
-export interface DireccionData{
+export interface DireccionData {
     direccionExacta: string;
     distrito: string;
     provincia: string;
     departamento: string;
 }
 
-export interface PagoMatriculaData{
+export interface PagoMatriculaData {
     numComprobante: string;
-    pendiente: boolean;
-    formaPago: string;
+    formaPagoUuid: string;
     monto: number;
+}
+
+export interface GradoEstudiosDTO {
+    descripcion: string;
 }

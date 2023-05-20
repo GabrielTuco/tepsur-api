@@ -1,5 +1,22 @@
-import { Carrera, Grupo, Horario, Matricula, Modulo } from "../entity";
-import { CareerDTO, GroupDTO, MatriculaDTO, ModuleDTO, ScheduleDTO } from "./dtos";
+import fileUpload from "express-fileupload";
+import { Alumno } from "../../Student/entity/Alumno.entity";
+import {
+    Carrera,
+    Grupo,
+    Horario,
+    Matricula,
+    MetodoPago,
+    Modulo,
+    PagoMatricula,
+} from "../entity";
+import {
+    AlumnoData,
+    CareerDTO,
+    GroupDTO,
+    MatriculaDTO,
+    ModuleDTO,
+    ScheduleDTO,
+} from "./dtos";
 
 export interface ModuleRepository {
     register(data: ModuleDTO): Promise<Modulo>;
@@ -31,7 +48,18 @@ export interface ScheduleRepository {
 }
 
 export interface MatriculaRepository {
-    register(data:MatriculaDTO):Promise<Matricula>;
+    register(data: MatriculaDTO): Promise<Matricula>;
+    uploadPaidDocument(
+        uuid: string,
+        image: fileUpload.UploadedFile
+    ): Promise<PagoMatricula>;
     findByStudent(uuid: number): Promise<Matricula>;
-    findByUuid(uuid:number): Promise<Matricula>;
+    findByUuid(uuid: number): Promise<Matricula>;
+    registerStudent(data: AlumnoData): Promise<Alumno>;
+}
+
+export interface MetodoPagoRepository {
+    register(description: string): Promise<MetodoPago>;
+    getAll(): Promise<MetodoPago[]>;
+    update(uuid: string, description: string): Promise<MetodoPago>;
 }

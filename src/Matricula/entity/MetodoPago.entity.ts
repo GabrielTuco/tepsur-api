@@ -1,11 +1,14 @@
-import { Column, Entity, PrimaryColumn } from "typeorm";
+import { BaseEntity, Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
+import { PagoMatricula } from "./PagoMatricula.entity";
 
 @Entity()
-export class MetodoPago {
-   @PrimaryColumn()
-   uuid: string
+export class MetodoPago extends BaseEntity {
+    @PrimaryColumn()
+    uuid: string;
 
-   @Column()
-   description: string
+    @Column()
+    description: string;
 
+    @OneToMany(() => PagoMatricula, (pagoMatricula) => pagoMatricula.forma_pago)
+    pagos_matricula: PagoMatricula[];
 }

@@ -33,9 +33,6 @@ export class Alumno extends EntityBase {
     @Column({ nullable: true })
     edad: number;
 
-    @Column({ nullable: true })
-    estado_civil: string;
-
     @ManyToOne(() => GradoEstudios, (gradoEstudios) => gradoEstudios.alumnos)
     grado_estudios: GradoEstudios;
 

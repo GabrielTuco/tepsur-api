@@ -7,11 +7,13 @@ import { FindUserTypesDictionary } from "../interfaces/auth";
 import { SecretaryService } from "../../Secretary/services/secretary.service";
 import { TeacherService } from "../../Teacher/services/teacher.service";
 import { AdministratorService } from "../../services/admin.service";
+import { StudentService } from "../../Student/services/student.service";
 
 const userService = new UserService();
 const secretaryService = new SecretaryService();
 const teacherService = new TeacherService();
 const administratorService = new AdministratorService();
+const alumnoService = new StudentService();
 
 declare module "express-serve-static-core" {
     interface Request {
@@ -38,7 +40,7 @@ export class AuthController {
                 Docente: teacherService.searchByUser,
                 Secretaria: secretaryService.searchByUser,
                 Administrador: administratorService.searchByUser,
-                Alumno: administratorService.searchByUser,
+                Alumno: alumnoService.searchByUser,
             };
 
             const role = userRegistered.rol.nombre;

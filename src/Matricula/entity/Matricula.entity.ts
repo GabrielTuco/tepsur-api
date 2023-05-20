@@ -1,11 +1,12 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from "typeorm";
 import { EntityBase } from "../../entity";
 import { Carrera } from "./Carrera.entity";
-import { Alumno, Alumno as Modulo } from "../../Student/entity/Alumno.entity";
+import { Alumno } from "../../Student/entity/Alumno.entity";
 import { Secretaria } from "../../Secretary/entity/Secretaria.entity";
 import { Sede } from "../../Sede/entity/Sede.entity";
 import { PagoMatricula } from "./PagoMatricula.entity";
 import { Grupo } from "./Grupo.entity";
+import { Modulo } from "./Modulo.entity";
 
 @Entity()
 export class Matricula extends EntityBase {
@@ -22,7 +23,7 @@ export class Matricula extends EntityBase {
     @ManyToOne(() => Grupo, (grupo) => grupo.matriculas)
     grupo: Grupo;
 
-    @OneToOne(() => Modulo,{nullable:true})
+    @OneToOne(() => Modulo, { nullable: true })
     @JoinColumn()
     modulo: Modulo;
 
@@ -38,4 +39,7 @@ export class Matricula extends EntityBase {
 
     @Column()
     fecha_inscripcion: Date;
+
+    @Column()
+    fecha_inicio: Date;
 }

@@ -7,5 +7,5 @@ export interface FindUserTypesDictionary {
     Secretaria: (u: Usuario) => Promise<Secretaria | null>;
     Docente: (u: Usuario) => Promise<Docente | null>;
     Administrador: (u: Usuario) => Promise<Administrador | null>;
-    Alumno: (u: Usuario) => Promise<Administrador | null>; //TODO: check
+    Alumno: (u: Usuario) => Promise<Alumno | null>; //TODO: check
 }

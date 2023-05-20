@@ -14,7 +14,7 @@ import { Matricula } from "../../Matricula/entity";
 
 @Entity()
 export class Secretaria extends EntityBase {
-    @PrimaryColumn()
+    @Column({ unique: true })
     uuid: string;
 
     @Column({ length: 8, unique: true })
