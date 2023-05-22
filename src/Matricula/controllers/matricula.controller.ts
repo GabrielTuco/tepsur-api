@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
-import { DatabaseError } from "../../errors/DatabaseError";
+import PDF from "pdfkit";
 import fileUpload from "express-fileupload";
+import { DatabaseError } from "../../errors/DatabaseError";
 import { GradoEstudiosService } from "../services/gradoEstudios.service";
 import { MatriculaService } from "../services/matricula.service";
 import { ValidateDniService } from "../services/validateDNI.service";
@@ -105,5 +106,30 @@ export class MatriculaController {
                 msg: "Internal server error",
             });
         }
+    }
+
+    public async getGradosEstudio(_req: Request, res: Response) {
+        try {
+            const gradosEstudio = await gradoEstudioService.getAll();
+            return res.json(gradosEstudio);
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: "Internal server error",
+            });
+        }
+    }
+
+    public async getGeneratedPDF(req: Request, res: Response) {
+        try {
+            const doc = new PDF({ bufferPages: true });
+            const fileName = "ArchivoPrueba.pdf";
+
+            const stream = res.writeHead(200, {
+                "Content-Type": "application/pdf",
+                "Content-Disposition": `attachment; filename=${fileName}`,
+            });
+            await matriculaService.generatePDF(req.params.id, doc, stream);
+        } catch (error) {}
     }
 }

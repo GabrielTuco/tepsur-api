@@ -20,6 +20,7 @@ import { Sede } from "../../Sede/entity/Sede.entity";
 import fileUpload from "express-fileupload";
 import { DatabaseError } from "../../errors/DatabaseError";
 import { uploadImage } from "../../helpers/uploadImage";
+import { Response } from "express";
 
 export class MatriculaService implements MatriculaRepository {
     public async register(data: MatriculaDTO): Promise<Matricula> {
@@ -141,6 +142,25 @@ export class MatriculaService implements MatriculaRepository {
             newAlumno.usuario = newUserAlumno;
 
             return await newAlumno.save();
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    public async generatePDF(
+        _uuid: string,
+        doc: PDFKit.PDFDocument,
+        stream: Response<any, Record<string, any>>
+    ): Promise<any> {
+        try {
+            //const data = await Matricula.findOneBy({ uuid });
+            //if (!data) throw new DatabaseError("Matricula not found", 500, "");
+
+            doc.on("data", (data) => stream.write(data));
+            doc.on("end", () => stream.end());
+
+            doc.text("Ficha matricula de prueba");
+            doc.end();
         } catch (error) {
             throw error;
         }

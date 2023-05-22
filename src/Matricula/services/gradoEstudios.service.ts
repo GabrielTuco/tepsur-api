@@ -14,4 +14,12 @@ export class GradoEstudiosService {
             throw error;
         }
     }
+    public async getAll(): Promise<GradoEstudios[]> {
+        try {
+            const data = await GradoEstudios.find();
+            return data;
+        } catch (error) {
+            throw error;
+        }
+    }
 }

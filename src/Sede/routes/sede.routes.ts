@@ -96,7 +96,7 @@ const sedeController = new SedeController();
  */
 router.get(
     "/",
-    [validateJWT, checkAuthRole([ROLES.ADMIN])],
+    [validateJWT, checkAuthRole([ROLES.ADMIN, ROLES.SECRE])],
     sedeController.getAll
 );
 

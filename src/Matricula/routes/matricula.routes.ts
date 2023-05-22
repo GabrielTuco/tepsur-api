@@ -275,4 +275,24 @@ router.get(
     matriculaController.getValidateDniBasic
 );
 
+router.get(
+    "/grado-estudio",
+    [
+        //validateJWT,
+        //checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+    ],
+    matriculaController.getGradosEstudio
+);
+
+router.get(
+    "/generate-pdf/:id",
+    [
+        //validateJWT,
+        //checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        param("id", "Debe ser un ID valido").isUUID("4"),
+        validateFields,
+    ],
+    matriculaController.getGeneratedPDF
+);
+
 export default router;

@@ -17,6 +17,7 @@ import {
     ModuleDTO,
     ScheduleDTO,
 } from "./dtos";
+import { Response } from "express";
 
 export interface ModuleRepository {
     register(data: ModuleDTO): Promise<Modulo>;
@@ -56,6 +57,11 @@ export interface MatriculaRepository {
     findByStudent(uuid: number): Promise<Matricula>;
     findByUuid(uuid: number): Promise<Matricula>;
     registerStudent(data: AlumnoData): Promise<Alumno>;
+    generatePDF(
+        uuid: string,
+        doc: PDFKit.PDFDocument,
+        stream: Response<any, Record<string, any>>
+    ): Promise<any>;
 }
 
 export interface MetodoPagoRepository {
