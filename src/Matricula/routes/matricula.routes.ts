@@ -275,6 +275,33 @@ router.get(
     matriculaController.getValidateDniBasic
 );
 
+/**
+ * @swagger
+ * /matricula/grado-estudio:
+ *  get:
+ *      summary: Listado de los grados de estudios validos
+ *      tags: [Matricula]
+ *      responses:
+ *          200:
+ *              description: Listado de los grados de estudios
+ *              content:
+ *                  application/json:
+ *                       schema:
+ *                          type: array
+ *                          items:
+ *                              type: object
+ *                              properties:
+ *                                  uuid:
+ *                                      type: string
+ *                                      format: uuid
+ *                                      description: El uuid unico
+ *                                  descripcion:
+ *                                      type: string
+ *                                      description: La descripcion del grado de estudio
+ *          500:
+ *              description: Error de servidor
+ *
+ */
 router.get(
     "/grado-estudio",
     [
