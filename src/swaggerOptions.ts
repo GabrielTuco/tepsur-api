@@ -12,6 +12,9 @@ export const options: SwaggerOptions = {
             {
                 url: "http://localhost:5000/api",
             },
+            {
+                url: "https://tepsur-api-production.up.railway.app/api",
+            },
         ],
     },
     apis: ["./src/**/*.routes.ts"],
