@@ -130,6 +130,11 @@ export class MatriculaController {
                 "Content-Disposition": `attachment; filename=${fileName}`,
             });
             await matriculaService.generatePDF(req.params.id, doc, stream);
-        } catch (error) {}
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: "Internal server error",
+            });
+        }
     }
 }

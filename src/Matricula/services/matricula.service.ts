@@ -159,6 +159,7 @@ export class MatriculaService implements MatriculaRepository {
             doc.on("data", (data) => stream.write(data));
             doc.on("end", () => stream.end());
 
+            doc.fontSize(30).text("Ficha matricula");
             doc.text("Ficha matricula de prueba");
             doc.end();
         } catch (error) {
