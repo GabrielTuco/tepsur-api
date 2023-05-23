@@ -5,6 +5,22 @@ import { DatabaseError } from "../../errors/DatabaseError";
 const careerService = new CareerService();
 
 export class CareerController {
+    public async getCareers(_req: Request, res: Response) {
+        try {
+            const carreras = await careerService.listAll();
+            return res.json(carreras);
+        } catch (error) {
+            if (error instanceof DatabaseError) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                });
+            }
+            return res.status(500).json({
+                msg: "Internal Server Error",
+            });
+        }
+    }
+
     public async postCareer(req: Request, res: Response) {
         try {
             const career = await careerService.register(req.body);
@@ -18,7 +34,7 @@ export class CareerController {
                 });
             }
             return res.status(500).json({
-                msg: "contact the administrator",
+                msg: "Internal Server Error",
             });
         }
     }
@@ -37,7 +53,7 @@ export class CareerController {
                 });
             }
             return res.status(500).json({
-                msg: "contact the administrator",
+                msg: "Internal Server Error",
             });
         }
     }
@@ -57,7 +73,7 @@ export class CareerController {
                 });
             }
             return res.status(500).json({
-                msg: "contact the administrator",
+                msg: "Internal Server Error",
             });
         }
     }
@@ -77,7 +93,7 @@ export class CareerController {
                 });
             }
             return res.status(500).json({
-                msg: "contact the administrator",
+                msg: "Internal Server Error",
             });
         }
     }

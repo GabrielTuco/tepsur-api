@@ -5,6 +5,14 @@ import { CareerDTO } from "../interfaces/dtos";
 import { CareerRepository } from "../interfaces/repositories";
 
 export class CareerService implements CareerRepository {
+    public async listAll(): Promise<Carrera[]> {
+        try {
+            const carreras = await Carrera.find();
+            return carreras;
+        } catch (error) {
+            throw error;
+        }
+    }
     public async register(data: CareerDTO): Promise<Carrera> {
         try {
             const { numModulos, nombre, modulos, modalidad } = data;

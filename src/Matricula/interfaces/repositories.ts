@@ -27,6 +27,7 @@ export interface ModuleRepository {
 
 export interface CareerRepository {
     register(data: CareerDTO): Promise<Carrera>;
+    listAll(): Promise<Carrera[]>;
     listModules(uuid: string): Promise<Modulo[]>;
     findByUuid(uuid: string): Promise<Carrera>;
     findByName(name: string): Promise<Carrera>;

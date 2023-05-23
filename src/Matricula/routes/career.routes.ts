@@ -29,6 +29,12 @@ const careerController = new CareerController();
  */
 
 router.get(
+    "/",
+    [validateJWT, checkAuthRole([ROLES.ADMIN, ROLES.SECRE])],
+    careerController.getCareers
+);
+
+router.get(
     "/find-by-uuid/:uuid",
     [
         validateJWT,
