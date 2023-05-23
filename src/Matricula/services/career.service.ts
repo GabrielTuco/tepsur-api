@@ -51,8 +51,7 @@ export class CareerService implements CareerRepository {
     public async listModules(uuid: string): Promise<Modulo[]> {
         try {
             const data = await Carrera.createQueryBuilder("c")
-                .select("modulos")
-                .innerJoinAndSelect("c.modulos", "m")
+                .leftJoinAndSelect("c.modulos", "modulo")
                 .where("c.uuid = :uuid", { uuid })
                 .getOne();
 
