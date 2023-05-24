@@ -23,6 +23,7 @@ import { uploadImage } from "../../helpers/uploadImage";
 import { Response } from "express";
 
 export class MatriculaService implements MatriculaRepository {
+
     public async register(data: MatriculaDTO): Promise<Matricula> {
         try {
             const {
@@ -165,5 +166,11 @@ export class MatriculaService implements MatriculaRepository {
         } catch (error) {
             throw error;
         }
+    }
+    public async update(_uuid: string, _data: Partial<MatriculaDTO>): Promise<Matricula> {
+        throw new Error("Method not implemented.");
+    }
+    public async delete(_uuid: string): Promise<Matricula> {
+        throw new Error("Method not implemented.");
     }
 }

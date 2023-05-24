@@ -63,6 +63,8 @@ export interface MatriculaRepository {
         doc: PDFKit.PDFDocument,
         stream: Response<any, Record<string, any>>
     ): Promise<any>;
+    update(uuid: string, data:Partial<MatriculaDTO>):Promise<Matricula>;
+    delete(uuid:string):Promise<Matricula>
 }
 
 export interface MetodoPagoRepository {
