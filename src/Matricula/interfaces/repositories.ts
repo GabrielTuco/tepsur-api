@@ -31,6 +31,9 @@ export interface CareerRepository {
     listModules(uuid: string): Promise<Modulo[]>;
     findByUuid(uuid: string): Promise<Carrera>;
     findByName(name: string): Promise<Carrera>;
+    update(uuid: string, data: Partial<Carrera>): Promise<Carrera>;
+    addModule(uuid: string, module: Partial<Modulo>): Promise<Carrera>;
+    removeModule(uuid: string, moduleUuid: string): Promise<Carrera>;
 }
 
 export interface GroupRepository {
@@ -63,8 +66,8 @@ export interface MatriculaRepository {
         doc: PDFKit.PDFDocument,
         stream: Response<any, Record<string, any>>
     ): Promise<any>;
-    update(uuid: string, data:Partial<MatriculaDTO>):Promise<Matricula>;
-    delete(uuid:string):Promise<Matricula>
+    update(uuid: string, data: Partial<MatriculaDTO>): Promise<Matricula>;
+    delete(uuid: string): Promise<Matricula>;
 }
 
 export interface MetodoPagoRepository {

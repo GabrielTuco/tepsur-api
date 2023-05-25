@@ -88,4 +88,88 @@ export class CareerService implements CareerRepository {
             throw error;
         }
     }
+
+    public async update(
+        uuid: string,
+        data: Partial<Carrera>
+    ): Promise<Carrera> {
+        try {
+            const career = await Carrera.findOneBy({ uuid });
+            if (!career) throw new DatabaseError("Career not found", 404, "");
+
+            await Carrera.update({ uuid }, data);
+            return career;
+        } catch (error) {
+            throw error;
+        }
+    }
+    public async addModule(
+        careerUuid: string,
+        moduleData: Partial<Modulo>
+    ): Promise<Carrera> {
+        try {
+            const career = await Carrera.findOneBy({ uuid: careerUuid });
+            if (!career) throw new DatabaseError("Career not found", 500, "");
+
+            const module = career.modulos.find(
+                (m) => m.nombre === moduleData.nombre
+            );
+            if (module)
+                throw new DatabaseError(
+                    "El modulo ya esta registrado en la carrera",
+                    500,
+                    ""
+                );
+
+            const moduloExists = await Modulo.findOneBy({
+                nombre: moduleData.nombre,
+            });
+
+            if (moduloExists) {
+                career.modulos.push(moduloExists);
+            } else {
+                const newModuleToCareer = new Modulo();
+                newModuleToCareer.uuid = uuid();
+                newModuleToCareer.nombre = moduleData.nombre!;
+                newModuleToCareer.duracion_semanas =
+                    moduleData.duracion_semanas!;
+                await newModuleToCareer.save();
+                career.modulos.push(newModuleToCareer);
+            }
+            await career.save();
+            await career.reload();
+
+            return career;
+        } catch (error) {
+            throw error;
+        }
+    }
+    public async removeModule(
+        careerUuid: string,
+        moduleUuid: string
+    ): Promise<Carrera> {
+        try {
+            const career = await Carrera.findOneBy({ uuid: careerUuid });
+            if (!career) throw new DatabaseError("Career not found", 500, "");
+
+            const module = career.modulos.find((m) => m.uuid === moduleUuid);
+            if (!module)
+                throw new DatabaseError(
+                    "El modulo no esta registrado en la carrera",
+                    500,
+                    ""
+                );
+
+            career.modulos = career.modulos.filter(
+                (m) => m.uuid !== moduleUuid
+            );
+
+            await career.save();
+            await career.reload();
+
+            return career;
+        } catch (error) {
+            throw error;
+        }
+    }
 }

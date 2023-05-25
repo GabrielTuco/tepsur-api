@@ -60,10 +60,10 @@ export interface AlumnoData {
     lugarNacimiento: string;
     celular: string;
     correo: string;
-    direccion: DireccionData;
+    direccion: DireccionDto;
 }
 
-export interface DireccionData {
+export interface DireccionDto {
     direccionExacta: string;
     distrito: string;
     provincia: string;

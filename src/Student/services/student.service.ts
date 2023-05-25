@@ -20,7 +20,6 @@ export class StudentService implements StudentRepository {
                 direccion,
                 dni,
                 edad,
-                estadoCivil,
                 gradoEstudiosUuid,
                 lugarNacimiento,
                 nombres,
@@ -28,7 +27,7 @@ export class StudentService implements StudentRepository {
             } = data;
 
             const newDireccion = new Direccion();
-            newDireccion.direccion_exacta = direccion.direccion_exacta!;
+            newDireccion.direccion_exacta = direccion.direccionExacta!;
             newDireccion.departamento = direccion.departamento!;
             newDireccion.distrito = direccion.distrito!;
             newDireccion.provincia = direccion.provincia!;
@@ -134,7 +133,21 @@ export class StudentService implements StudentRepository {
             throw error;
         }
     }
-    public async updateInfo(_data: Partial<StudentDTO>): Promise<Alumno> {
-        throw new Error("Method not implemented.");
+    public async updateInfo(
+        uuid: string,
+        data: Partial<StudentDTO>
+    ): Promise<Alumno> {
+        try {
+            const alumno = await Alumno.findOneBy({ uuid });
+            if (!alumno) throw new DatabaseError("Alumno not found", 500, "");
+
+            Object.assign(alumno, data);
+            await alumno.save();
+            await alumno.reload();
+
+            return alumno;
+        } catch (error) {
+            throw error;
+        }
     }
 }

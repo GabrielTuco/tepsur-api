@@ -19,6 +19,7 @@ import teacherRoutes from "../Teacher/routes/teacher.routes";
 import adminRoutes from "../routes/admin.routes";
 import userRoutes from "../Auth/routes/user.routes";
 import sedeRoutes from "../Sede/routes/sede.routes";
+import studentRoutes from "../Student/routes/student.routes";
 import {
     careerRoutes,
     groupRoutes,
@@ -34,6 +35,7 @@ interface Paths {
     role: string;
     secretary: string;
     teacher: string;
+    student: string;
     admin: string;
     user: string;
     sede: string;
@@ -56,6 +58,7 @@ class Server implements ServerBase {
             secretary: "/api/secretary",
             role: "/api/role",
             teacher: "/api/teacher",
+            student: "/api/student",
             admin: "/api/admin",
             user: "/api/user",
             sede: "/api/sede",
@@ -128,6 +131,7 @@ class Server implements ServerBase {
         this.app.use(this.paths.group, groupRoutes);
         this.app.use(this.paths.matricula, matriculaRoutes);
         this.app.use(this.paths.metodoPago, metodoPagoRoutes);
+        this.app.use(this.paths.student, studentRoutes);
     }
 
     listen() {

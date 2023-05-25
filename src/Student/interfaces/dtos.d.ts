@@ -1,4 +1,5 @@
 import { Direccion } from "../../entity";
+import { DireccionDto } from "../../Matricula/interfaces/dtos";
 
 export interface StudentDTO {
     dni: string;
@@ -7,10 +8,9 @@ export interface StudentDTO {
     apeMaterno: string;
     sexo: "m" | "f";
     edad?: number;
-    estadoCivil?: string;
     gradoEstudiosUuid?: string;
     lugarNacimiento?: string;
     celular?: string;
     correo?: string;
-    direccion: Partial<Direccion>;
+    direccion: DireccionDto;
 }

@@ -7,5 +7,5 @@ export interface StudentRepository {
     createUser(uuid: string): Promise<Usuario>;
     searchByUuid(uuid: string): Promise<Alumno>;
     searchByDni(dni: string): Promise<Alumno>;
-    updateInfo(data: Partial<StudentDTO>): Promise<Alumno>;
+    updateInfo(uuid: string, data: Partial<StudentDTO>): Promise<Alumno>;
 }
