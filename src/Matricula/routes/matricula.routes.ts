@@ -322,4 +322,14 @@ router.get(
     matriculaController.getGeneratedPDF
 );
 
+router.patch(
+    "/update-pago/:id",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        param("id", "Debe ser un ID valido").isUUID("4"),
+        validateFields,
+    ],
+    matriculaController.patchPagoMatricula
+);
 export default router;

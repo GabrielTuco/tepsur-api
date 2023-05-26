@@ -120,6 +120,25 @@ export class MatriculaController {
         }
     }
 
+    public async patchPagoMatricula(req: Request, res: Response) {
+        try {
+            const { id } = req.params;
+            const pagoMatricula = await matriculaService.updatePagoMatricula(
+                id,
+                req.body
+            );
+            return res.json({
+                matriculaUuid: id,
+                pagoMatricula: pagoMatricula,
+            });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: "Internal server error",
+            });
+        }
+    }
+
     public async getGeneratedPDF(req: Request, res: Response) {
         try {
             const doc = new PDF({ bufferPages: true });

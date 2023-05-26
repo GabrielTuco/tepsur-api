@@ -3,4 +3,5 @@ export enum ROLES {
     SECRE = "Secretaria",
     DOCENTE = "Docente",
     ALUMNO = "Alumno",
+    ROOT = "root",
 }

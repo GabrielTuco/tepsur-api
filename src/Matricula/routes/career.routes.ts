@@ -67,7 +67,7 @@ const careerController = new CareerController();
  *         - $ref: '#/components/parameters/token'
  *      responses:
  *          200:
- *              description: La secretaria con su nuevo usuario creado
+ *              description: El listado de carreras
  *              content:
  *                  application/json:
  *                      schema:
@@ -203,7 +203,7 @@ router.get(
     [
         validateJWT,
         checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
-        param("uuid").exists(),
+        param("uuid").isUUID("4"),
         validateFields,
     ],
     careerController.getModulesOfCareer
@@ -243,10 +243,154 @@ router.post(
         body("nombre").isString(),
         body("numModulos").isNumeric(),
         body("modulos").isArray(),
+        body("modulos.*.nombre").isString(),
+        body("modulos.*.duracionSemanas").isString(),
         body("modalidad").isString(),
         validateFields,
     ],
     careerController.postCareer
+);
+
+/**
+ * @swagger
+ * /career/{id}:
+ *  patch:
+ *      summary: Modificar una carrera
+ *      tags: [Career]
+ *      parameters:
+ *          - $ref: '#/components/parameters/token'
+ *          - in: path
+ *            name: id
+ *            schema:
+ *                 type: string
+ *                 format: uuid
+ *            required: true
+ *            description: El uuid de la carrera
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      $ref: '#/components/schemas/Career'
+ *      responses:
+ *          200:
+ *              description: La carrera actualizada
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          $ref: '#/components/schemas/CareerResponse'
+ *          500:
+ *              description: Error de servidor
+ *
+ */
+router.patch(
+    "/:id",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ADMIN]),
+        param("id").isUUID("4"),
+        validateFields,
+    ],
+    careerController.updateCareer
+);
+
+/**
+ * @swagger
+ * /career/add-module/{id}:
+ *  patch:
+ *      summary: Agregar un modulo a una carrera
+ *      tags: [Career]
+ *      parameters:
+ *          - $ref: '#/components/parameters/token'
+ *          - in: path
+ *            name: id
+ *            schema:
+ *                 type: string
+ *                 format: uuid
+ *            required: true
+ *            description: El uuid de la carrera
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          nombre:
+ *                              type: string
+ *                          duracion_semanas:
+ *                              type: string
+ *      responses:
+ *          200:
+ *              description: La carrera actualizada
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          $ref: '#/components/schemas/CareerResponse'
+ *          500:
+ *              description: Error de servidor
+ *
+ */
+router.patch(
+    "/add-module/:id",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ADMIN]),
+        param("id").isUUID("4"),
+        validateFields,
+    ],
+    careerController.patchAddModule
+);
+
+/**
+ * @swagger
+ * /career/remove-module/{id}:
+ *  patch:
+ *      summary: Eliminar un modulo a una carrera
+ *      tags: [Career]
+ *      parameters:
+ *          - $ref: '#/components/parameters/token'
+ *          - in: path
+ *            name: id
+ *            schema:
+ *                 type: string
+ *                 format: uuid
+ *            required: true
+ *            description: El uuid de la carrera
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                              moduloUuid:
+ *                                  type: string
+ *                                  format: uuid
+ *      responses:
+ *          200:
+ *              description: La carrera actualizada
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          $ref: '#/components/schemas/CareerResponse'
+ *          500:
+ *              description: Error de servidor
+ *
+ */
+router.patch(
+    "/remove-module/:id",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ADMIN]),
+        param("id").isUUID("4"),
+        body("moduloUuid").isUUID("4"),
+        validateFields,
+    ],
+    careerController.patchRemoveModule
 );
 
 export default router;

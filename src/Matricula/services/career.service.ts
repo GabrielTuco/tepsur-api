@@ -7,7 +7,11 @@ import { CareerRepository } from "../interfaces/repositories";
 export class CareerService implements CareerRepository {
     public async listAll(): Promise<Carrera[]> {
         try {
-            const carreras = await Carrera.find();
+            const carreras = await Carrera.find({
+                relations: {
+                    modulos: true,
+                },
+            });
             return carreras;
         } catch (error) {
             throw error;
@@ -88,7 +92,6 @@ export class CareerService implements CareerRepository {
             throw error;
         }
     }
-
     public async update(
         uuid: string,
         data: Partial<Carrera>
@@ -98,6 +101,7 @@ export class CareerService implements CareerRepository {
             if (!career) throw new DatabaseError("Career not found", 404, "");
 
             await Carrera.update({ uuid }, data);
+            await career.reload();
             return career;
         } catch (error) {
             throw error;
@@ -108,7 +112,10 @@ export class CareerService implements CareerRepository {
         moduleData: Partial<Modulo>
     ): Promise<Carrera> {
         try {
-            const career = await Carrera.findOneBy({ uuid: careerUuid });
+            const career = await Carrera.findOne({
+                relations: { modulos: true },
+                where: { uuid: careerUuid },
+            });
             if (!career) throw new DatabaseError("Career not found", 500, "");
 
             const module = career.modulos.find(
@@ -149,7 +156,10 @@ export class CareerService implements CareerRepository {
         moduleUuid: string
     ): Promise<Carrera> {
         try {
-            const career = await Carrera.findOneBy({ uuid: careerUuid });
+            const career = await Carrera.findOne({
+                relations: { modulos: true },
+                where: { uuid: careerUuid },
+            });
             if (!career) throw new DatabaseError("Career not found", 500, "");
 
             const module = career.modulos.find((m) => m.uuid === moduleUuid);

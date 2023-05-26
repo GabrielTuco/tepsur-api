@@ -9,7 +9,11 @@ import {
     Modulo,
     PagoMatricula,
 } from "../entity";
-import { MatriculaDTO, AlumnoData } from "../interfaces/dtos";
+import {
+    MatriculaDTO,
+    AlumnoData,
+    PagoMatriculaData,
+} from "../interfaces/dtos";
 import { MatriculaRepository } from "../interfaces/repositories";
 import { Direccion } from "../../entity";
 import { adaptedDireccion } from "../adapters/direccion.adapter";
@@ -23,7 +27,6 @@ import { uploadImage } from "../../helpers/uploadImage";
 import { Response } from "express";
 
 export class MatriculaService implements MatriculaRepository {
-
     public async register(data: MatriculaDTO): Promise<Matricula> {
         try {
             const {
@@ -59,16 +62,10 @@ export class MatriculaService implements MatriculaRepository {
             newMatricula.fecha_inscripcion = fechaInscripcion;
             newMatricula.fecha_inicio = fechaInicio;
             if (pagoMatricula) {
-                const newPagoMatricula = new PagoMatricula();
-                const metodoPago = await MetodoPago.findOneBy({
-                    uuid: pagoMatricula.formaPagoUuid,
-                });
-                newPagoMatricula.uuid = uuid();
-                newPagoMatricula.num_comprobante = pagoMatricula.numComprobante;
-                newPagoMatricula.forma_pago = metodoPago!;
-                newPagoMatricula.monto = pagoMatricula.monto;
-                await newPagoMatricula.save();
-                newMatricula.pagoMatricula = newPagoMatricula;
+                newMatricula.pagoMatricula = await this.updatePagoMatricula(
+                    newMatricula.uuid,
+                    pagoMatricula
+                );
             }
 
             return await newMatricula.save();
@@ -167,7 +164,42 @@ export class MatriculaService implements MatriculaRepository {
             throw error;
         }
     }
-    public async update(_uuid: string, _data: Partial<MatriculaDTO>): Promise<Matricula> {
+
+    public async updatePagoMatricula(
+        matriculaUuid: string,
+        data: PagoMatriculaData
+    ): Promise<PagoMatricula> {
+        try {
+            const matricula = await Matricula.findOneBy({
+                uuid: matriculaUuid,
+            });
+            if (!matricula)
+                throw new DatabaseError(
+                    "User not found",
+                    500,
+                    "Internal server error"
+                );
+
+            const newPagoMatricula = new PagoMatricula();
+            const metodoPago = await MetodoPago.findOneBy({
+                uuid: data.formaPagoUuid,
+            });
+            newPagoMatricula.uuid = uuid();
+            newPagoMatricula.num_comprobante = data.numComprobante;
+            newPagoMatricula.forma_pago = metodoPago!;
+            newPagoMatricula.monto = data.monto;
+            await newPagoMatricula.save();
+
+            return newPagoMatricula;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    public async update(
+        _uuid: string,
+        _data: Partial<MatriculaDTO>
+    ): Promise<Matricula> {
         throw new Error("Method not implemented.");
     }
     public async delete(_uuid: string): Promise<Matricula> {

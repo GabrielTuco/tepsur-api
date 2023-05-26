@@ -97,4 +97,62 @@ export class CareerController {
             });
         }
     }
+
+    public async updateCareer(req: Request, res: Response) {
+        try {
+            const { uuid } = req.params;
+            const career = await careerService.update(uuid, req.body);
+
+            return res.json(career);
+        } catch (error) {
+            console.log(error);
+            if (error instanceof DatabaseError) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                });
+            }
+            return res.status(500).json({
+                msg: "Internal Server Error",
+            });
+        }
+    }
+
+    public async patchAddModule(req: Request, res: Response) {
+        try {
+            const { uuid } = req.params;
+            const career = await careerService.addModule(uuid, req.body);
+
+            return res.json(career);
+        } catch (error) {
+            console.log(error);
+            if (error instanceof DatabaseError) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                });
+            }
+            return res.status(500).json({
+                msg: "Internal Server Error",
+            });
+        }
+    }
+
+    public async patchRemoveModule(req: Request, res: Response) {
+        try {
+            const { uuid } = req.params;
+            const { moduloUuid } = req.body;
+            console.log(req.body);
+            const career = await careerService.removeModule(uuid, moduloUuid);
+            return res.json(career);
+        } catch (error) {
+            console.log(error);
+            if (error instanceof DatabaseError) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                });
+            }
+            return res.status(500).json({
+                msg: "Internal Server Error",
+            });
+        }
+    }
 }

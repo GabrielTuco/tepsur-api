@@ -8,6 +8,7 @@ import { SecretaryService } from "../../Secretary/services/secretary.service";
 import { TeacherService } from "../../Teacher/services/teacher.service";
 import { AdministratorService } from "../../services/admin.service";
 import { StudentService } from "../../Student/services/student.service";
+import { ROLES } from "../../interfaces/enums";
 
 const userService = new UserService();
 const secretaryService = new SecretaryService();
@@ -33,6 +34,27 @@ export class AuthController {
             if (!userRegistered) {
                 return res.status(400).json({
                     msg: "El usuario no existe",
+                });
+            }
+
+            //Validacion de usuario ROOT
+            if (userRegistered.rol.nombre === ROLES.ROOT) {
+                if (userRegistered.password !== password) {
+                    return res.status(400).json({
+                        msg: "Password incorrecto",
+                    });
+                }
+                return res.json({
+                    userRegistered: {
+                        id: userRegistered.id,
+                        usuario: userRegistered.usuario,
+                        avatar: userRegistered.avatar,
+                        rol: userRegistered.rol,
+                    },
+                    token: await generateJWT(
+                        userRegistered.id,
+                        userRegistered.usuario
+                    ),
                 });
             }
 

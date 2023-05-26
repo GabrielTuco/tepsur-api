@@ -3,12 +3,11 @@ import { ScheduleController } from "../controllers/schedule.controller";
 import { validateJWT } from "../../middlewares/validateJWT";
 import { checkAuthRole } from "../../middlewares/checkAuthRole";
 import { ROLES } from "../../interfaces/enums";
-import { body } from "express-validator";
+import { body, param } from "express-validator";
 import { validateFields } from "../../middlewares/validateFields";
 
 const router = Router();
 const scheduleController = new ScheduleController();
-
 
 /**
  * @swagger
@@ -95,7 +94,6 @@ router.post(
     ],
     scheduleController.postSchedule
 );
-
 
 /**
  * @swagger
@@ -193,7 +191,12 @@ router.get(
  */
 router.patch(
     "/:id",
-    [validateJWT, checkAuthRole([ROLES.ADMIN])],
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ADMIN]),
+        param("id").isUUID("4"),
+        validateFields,
+    ],
     scheduleController.patchSchedule
 );
 
@@ -229,7 +232,12 @@ router.patch(
  */
 router.delete(
     "/:id",
-    [validateJWT, checkAuthRole([ROLES.ADMIN])],
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ADMIN]),
+        param("id").isUUID("4"),
+        validateFields,
+    ],
     scheduleController.deleteSchedule
 );
 

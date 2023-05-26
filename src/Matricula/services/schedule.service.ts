@@ -48,9 +48,8 @@ export class ScheduleService implements ScheduleRepository {
             const horario = await Horario.findOneBy({ uuid });
             if (!horario) throw new DatabaseError("Horario not found", 404, "");
 
-            Object.assign(horario, data);
+            await Horario.update(uuid, data);
 
-            await horario.save();
             await horario.reload();
 
             return horario;

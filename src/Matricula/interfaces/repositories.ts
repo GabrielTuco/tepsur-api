@@ -15,6 +15,7 @@ import {
     GroupDTO,
     MatriculaDTO,
     ModuleDTO,
+    PagoMatriculaData,
     ScheduleDTO,
 } from "./dtos";
 import { Response } from "express";
@@ -66,6 +67,10 @@ export interface MatriculaRepository {
         doc: PDFKit.PDFDocument,
         stream: Response<any, Record<string, any>>
     ): Promise<any>;
+    updatePagoMatricula(
+        uuid: string,
+        data: PagoMatriculaData
+    ): Promise<PagoMatricula>;
     update(uuid: string, data: Partial<MatriculaDTO>): Promise<Matricula>;
     delete(uuid: string): Promise<Matricula>;
 }
