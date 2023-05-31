@@ -80,3 +80,9 @@ export interface MetodoPagoRepository {
     getAll(): Promise<MetodoPago[]>;
     update(uuid: string, description: string): Promise<MetodoPago>;
 }
+
+export interface UbigeoRepository {
+    listDepartaments(): Promise<string[]>;
+    listProvinces(id: string): Promise<string[]>;
+    listDistricts(depId: string, provId: string): Promise<string[]>;
+}
