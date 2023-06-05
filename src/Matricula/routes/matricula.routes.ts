@@ -364,7 +364,7 @@ router.get(
  *            schema:
  *              type: number
  *            required: false
- *            description: Mes de filtrado (si no se desea filtrar por mes enviar el numero 0)
+ *            description: Mes de filtrado
  *      responses:
  *          200:
  *              description: Listado de matriculas
