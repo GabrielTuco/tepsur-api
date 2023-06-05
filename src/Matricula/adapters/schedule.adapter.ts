@@ -3,7 +3,6 @@ import { UpdateScheduleDTO } from "../interfaces/dtos";
 
 export const adaptedSchedule = (data: UpdateScheduleDTO): Partial<Horario> => {
     return {
-        turno: data.turno,
         hora_inicio: data.horaInicio,
         hora_fin: data.horaFin,
         dias: data.dias,
