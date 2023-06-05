@@ -64,7 +64,7 @@ export class ScheduleController {
     public async patchSchedule(req: Request, res: Response) {
         try {
             const { id } = req.params;
-            const horario = scheduleService.update(
+            const horario = await scheduleService.update(
                 id,
                 adaptedSchedule(req.body)
             );
@@ -87,6 +87,8 @@ export class ScheduleController {
         try {
             const { id } = req.params;
             await scheduleService.delete(id);
+
+            return res.json({ msg: "Ok" });
         } catch (error) {
             if (error instanceof DatabaseError) {
                 return res.status(error.codeStatus).json({

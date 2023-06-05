@@ -1,4 +1,8 @@
+import { Response } from "express";
+import { QueryRunner } from "typeorm";
 import { v4 as uuid } from "uuid";
+import PDF from "pdfkit-table";
+import fileUpload from "express-fileupload";
 import { Alumno } from "../../Student/entity/Alumno.entity";
 import {
     Carrera,
@@ -21,13 +25,17 @@ import { Rol, Usuario } from "../../Auth/entity";
 import { encryptPassword } from "../../helpers/encryptPassword";
 import { Secretaria } from "../../Secretary/entity/Secretaria.entity";
 import { Sede } from "../../Sede/entity/Sede.entity";
-import fileUpload from "express-fileupload";
 import { DatabaseError } from "../../errors/DatabaseError";
 import { uploadImage } from "../../helpers/uploadImage";
-import { Response } from "express";
+import { generateFichaMatricula } from "../helpers/generateFichaMatricula";
+import { AppDataSource } from "../../db/dataSource";
 
 export class MatriculaService implements MatriculaRepository {
     public async register(data: MatriculaDTO): Promise<Matricula> {
+        const queryRunner = AppDataSource.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+
         try {
             const {
                 alumno,
@@ -41,7 +49,7 @@ export class MatriculaService implements MatriculaRepository {
                 fechaInicio,
             } = data;
 
-            const newAlumno = await this.registerStudent(alumno);
+            const newAlumno = await this.registerStudent(alumno, queryRunner);
 
             const newMatricula = new Matricula();
             const carrera = await Carrera.findOneBy({ uuid: carreraUuid });
@@ -61,18 +69,58 @@ export class MatriculaService implements MatriculaRepository {
             newMatricula.sede = sede!;
             newMatricula.fecha_inscripcion = fechaInscripcion;
             newMatricula.fecha_inicio = fechaInicio;
+
             if (pagoMatricula) {
-                newMatricula.pagoMatricula = await this.updatePagoMatricula(
-                    newMatricula.uuid,
-                    pagoMatricula
-                );
+                const newPagoMatricula = new PagoMatricula();
+                const metodoPago = await MetodoPago.findOneBy({
+                    uuid: pagoMatricula.formaPagoUuid,
+                });
+                newPagoMatricula.uuid = uuid();
+                newPagoMatricula.num_comprobante = pagoMatricula.numComprobante;
+                newPagoMatricula.forma_pago = metodoPago!;
+                newPagoMatricula.monto = pagoMatricula.monto;
+                await queryRunner.manager.save(newPagoMatricula);
+
+                newMatricula.pagoMatricula = newPagoMatricula;
             }
 
-            return await newMatricula.save();
+            await queryRunner.manager.save(newMatricula);
+
+            await queryRunner.commitTransaction();
+            return newMatricula;
+        } catch (error) {
+            await queryRunner.rollbackTransaction();
+            throw error;
+        } finally {
+            await queryRunner.release();
+        }
+    }
+
+    public async getAll(year: number, month: number): Promise<Matricula[]> {
+        try {
+            const matriculas = await Matricula.createQueryBuilder("m")
+                .innerJoinAndSelect("m.carrera", "c")
+                .innerJoinAndSelect("m.modulo", "mo")
+                .innerJoinAndSelect("m.alumno", "a")
+                .innerJoinAndSelect("m.grupo", "g")
+                .innerJoinAndSelect("m.sede", "s")
+                .leftJoinAndSelect("m.pagoMatricula", "p")
+                .where(
+                    `EXTRACT(YEAR from m.fecha_inscripcion)=:year ${
+                        month
+                            ? "and EXTRACT(MONTH from m.fecha_inscripcion)=:month "
+                            : ""
+                    }`,
+                    { year, month }
+                )
+                .getMany();
+
+            return matriculas;
         } catch (error) {
             throw error;
         }
     }
+
     async uploadPaidDocument(
         uuid: string,
         image: fileUpload.UploadedFile
@@ -98,20 +146,21 @@ export class MatriculaService implements MatriculaRepository {
         }
     }
 
-    findByStudent(_uuid: number): Promise<Matricula> {
+    async findByStudent(_uuid: number): Promise<Matricula> {
         throw new Error("Method not implemented.");
     }
-    findByUuid(_uuid: number): Promise<Matricula> {
+    async findByUuid(_uuid: number): Promise<Matricula> {
         throw new Error("Method not implemented.");
     }
-    async registerStudent(alumno: AlumnoData) {
+    async registerStudent(alumno: AlumnoData, queryRunner: QueryRunner) {
         try {
             const newDireccionAlumno = new Direccion();
             Object.assign(
                 newDireccionAlumno,
                 adaptedDireccion(alumno.direccion)
             );
-            await newDireccionAlumno.save();
+            //await newDireccionAlumno.save();
+            await queryRunner.manager.save(newDireccionAlumno);
 
             const gradoEstudios = await GradoEstudios.findOneBy({
                 uuid: alumno.gradoEstudiosUuid,
@@ -122,7 +171,9 @@ export class MatriculaService implements MatriculaRepository {
             newUserAlumno.usuario = alumno.dni;
             newUserAlumno.password = encryptPassword(alumno.dni);
             newUserAlumno.rol = rol!;
-            await newUserAlumno.save();
+
+            // await newUserAlumno.save();
+            await queryRunner.manager.save(newUserAlumno);
 
             const newAlumno = new Alumno();
             newAlumno.uuid = uuid();
@@ -139,27 +190,37 @@ export class MatriculaService implements MatriculaRepository {
             newAlumno.grado_estudios = gradoEstudios!;
             newAlumno.usuario = newUserAlumno;
 
-            return await newAlumno.save();
+            await queryRunner.manager.save(newAlumno);
+            return newAlumno;
         } catch (error) {
             throw error;
         }
     }
 
     public async generatePDF(
-        _uuid: string,
-        doc: PDFKit.PDFDocument,
+        uuid: string,
+        doc: PDF,
         stream: Response<any, Record<string, any>>
     ): Promise<any> {
         try {
-            //const data = await Matricula.findOneBy({ uuid });
-            //if (!data) throw new DatabaseError("Matricula not found", 500, "");
+            const data = await Matricula.createQueryBuilder("m")
+                .innerJoinAndSelect("m.carrera", "c")
+                .innerJoinAndSelect("m.modulo", "mo")
+                .innerJoinAndSelect("m.alumno", "a")
+                .innerJoinAndSelect("a.direccion", "d")
+                .innerJoinAndSelect("a.grado_estudios", "ge")
+                .innerJoinAndSelect("m.grupo", "g")
+                .innerJoinAndSelect("g.horario", "h")
+                .innerJoinAndSelect("m.sede", "s")
+                .leftJoinAndSelect("m.pagoMatricula", "p")
+                .where(`m.uuid= :uuid`, { uuid })
+                .getOne();
+            if (!data) throw new DatabaseError("Matricula not found", 500, "");
 
             doc.on("data", (data) => stream.write(data));
             doc.on("end", () => stream.end());
 
-            doc.fontSize(30).text("Ficha matricula");
-            doc.text("Ficha matricula de prueba");
-            doc.end();
+            await generateFichaMatricula(data, doc);
         } catch (error) {
             throw error;
         }
@@ -175,7 +236,7 @@ export class MatriculaService implements MatriculaRepository {
             });
             if (!matricula)
                 throw new DatabaseError(
-                    "User not found",
+                    "Matricula not found",
                     500,
                     "Internal server error"
                 );

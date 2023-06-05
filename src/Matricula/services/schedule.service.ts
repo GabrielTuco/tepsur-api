@@ -10,7 +10,6 @@ export class ScheduleService implements ScheduleRepository {
             const newHorario = new Horario();
 
             newHorario.uuid = uuid();
-            newHorario.turno = data.turno;
             newHorario.dias = data.dias;
             newHorario.hora_inicio = data.horaInicio;
             newHorario.hora_fin = data.horaFin;
@@ -45,10 +44,11 @@ export class ScheduleService implements ScheduleRepository {
         data: Partial<Horario>
     ): Promise<Horario> {
         try {
+            console.log(uuid);
             const horario = await Horario.findOneBy({ uuid });
             if (!horario) throw new DatabaseError("Horario not found", 404, "");
 
-            await Horario.update(uuid, data);
+            await Horario.update({ uuid }, data);
 
             await horario.reload();
 

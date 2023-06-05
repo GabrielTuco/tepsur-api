@@ -54,6 +54,8 @@ const teacherController = new TeacherController();
  *  post:
  *      summary: Crea un nuevo docente con su respectivo usuario por defecto
  *      tags: [Teacher]
+ *      parameters:
+ *         - $ref: '#/components/parameters/token'
  *      requestBody:
  *          required: true
  *          content:

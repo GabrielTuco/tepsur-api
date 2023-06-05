@@ -7,17 +7,14 @@ export class Horario extends EntityBase {
     @Column({ unique: true })
     uuid: string;
 
-    @Column()
-    turno: string;
+    @Column("text", { array: true })
+    dias: string[];
 
     @Column()
-    dias: string;
+    hora_inicio: string; // hh:mm en formato de 24 horas
 
     @Column()
-    hora_inicio: number;
-
-    @Column()
-    hora_fin: number;
+    hora_fin: string; // hh:mm en formato de 24 horas
 
     @Column({ default: true })
     estado: boolean;

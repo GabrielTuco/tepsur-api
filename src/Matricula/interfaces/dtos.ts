@@ -18,21 +18,16 @@ export interface GroupDTO {
     docenteUuid: string;
 }
 
-enum ScheduleDays {
-    "L-V" = "L-V",
-    "S-D" = "S-D",
-}
-
 enum Turno {
     "Mañana" = "Mañana",
     "Tarde" = "Tarde",
 }
 
 export interface ScheduleDTO {
-    turno: Turno;
-    dias: ScheduleDays;
-    horaInicio: number;
-    horaFin: number;
+    // turno: Turno;
+    dias: string[];
+    horaInicio: string;
+    horaFin: string;
 }
 
 export type UpdateScheduleDTO = Partial<ScheduleDTO>;

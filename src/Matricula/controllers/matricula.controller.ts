@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import PDF from "pdfkit";
+import PDF from "pdfkit-table";
 import fileUpload from "express-fileupload";
 import { DatabaseError } from "../../errors/DatabaseError";
 import { GradoEstudiosService } from "../services/gradoEstudios.service";
@@ -12,6 +12,29 @@ const matriculaService = new MatriculaService();
 const validateDniService = new ValidateDniService();
 const ubigeoService = new UbigeoService();
 export class MatriculaController {
+    public async getList(req: Request, res: Response) {
+        try {
+            const { year, month } = req.query;
+            const matriculas = await matriculaService.getAll(
+                Number(year),
+                Number(month)
+            );
+
+            return res.json(matriculas);
+        } catch (error) {
+            console.log(error);
+            if (error instanceof DatabaseError) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                    name: error.name,
+                });
+            }
+            return res.status(500).json({
+                msg: "Internal server error",
+            });
+        }
+    }
+
     public async postMatricula(req: Request, res: Response) {
         try {
             const matricula = await matriculaService.register(req.body);
@@ -156,6 +179,7 @@ export class MatriculaController {
         }
     }
 
+    //----------------------------Utitilies------------------------------------
     public async getDepartments(_req: Request, res: Response) {
         try {
             const departaments = await ubigeoService.listDepartaments();

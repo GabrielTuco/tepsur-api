@@ -19,6 +19,7 @@ import {
     ScheduleDTO,
 } from "./dtos";
 import { Response } from "express";
+import { QueryRunner } from "typeorm";
 
 export interface ModuleRepository {
     register(data: ModuleDTO): Promise<Modulo>;
@@ -59,9 +60,13 @@ export interface MatriculaRepository {
         uuid: string,
         image: fileUpload.UploadedFile
     ): Promise<PagoMatricula>;
+    getAll(year: number, month: number): Promise<Matricula[]>;
     findByStudent(uuid: number): Promise<Matricula>;
     findByUuid(uuid: number): Promise<Matricula>;
-    registerStudent(data: AlumnoData): Promise<Alumno>;
+    registerStudent(
+        data: AlumnoData,
+        queryRunner: QueryRunner
+    ): Promise<Alumno>;
     generatePDF(
         uuid: string,
         doc: PDFKit.PDFDocument,

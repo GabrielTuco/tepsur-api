@@ -63,7 +63,7 @@ const authController = new AuthController();
  *              application/json:
  *                  schema:
  *                      type: object
- *                      items:
+ *                      properties:
  *                          usuario:
  *                              type: string
  *                              description: Nombre de usuario

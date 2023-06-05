@@ -15,19 +15,19 @@ const scheduleController = new ScheduleController();
  *  schemas:
  *      Schedule:
  *          properties:
- *              turno:
- *                  type: string
- *                  description: El turno al que pertenece el horario
  *              dias:
  *                  type: string
  *                  description: Los dias que esta asignado el horario
  *              horaInicio:
- *                  type: number
- *                  description: Hora de inicio del horario
+ *                  type: string
+ *                  description: Hora de inicio del horario (hh:mm) en formato de 24 horas
  *              horaFin:
- *                  type: number
- *                  description: Hora de finalizacion del horario
- *
+ *                  type: string
+ *                  description: Hora de finalizacion del horario (hh:mm) en formato de 24 horas
+ *          example:
+ *              dias: ["L","M","J"]
+ *              horaInicio: "08:00"
+ *              horaFin: "11:00"
  *      ScheduleResponse:
  *          properties:
  *              id:
@@ -36,17 +36,14 @@ const scheduleController = new ScheduleController();
  *              uuid:
  *                  type: string
  *                  format: uuid
- *              turno:
- *                  type: string
- *                  description: El turno al que pertenece el horario
  *              dias:
  *                  type: string
  *                  description: Los dias que esta asignado el horario
  *              hora_inicio:
- *                  type: number
+ *                  type: string
  *                  description: Hora de inicio del horario
  *              hora_fin:
- *                  type: number
+ *                  type: string
  *                  description: Hora de finalizacion del horario
  */
 
@@ -88,8 +85,8 @@ router.post(
     [
         validateJWT,
         checkAuthRole([ROLES.ADMIN]),
-        body(["turno", "dias"], "Este campo es obligatorio").isString(),
-        body(["horaInicio", "horaFin"], "Debe ser un numero").isNumeric(),
+        body(["dias"], "Este campo es obligatorio").isArray(),
+        body(["horaInicio", "horaFin"], "Debe ser un numero").isString(),
         validateFields,
     ],
     scheduleController.postSchedule
@@ -103,12 +100,6 @@ router.post(
  *      tags: [Schedule]
  *      parameters:
  *         - $ref: '#/components/parameters/token'
- *      requestBody:
- *          required: true
- *          content:
- *              application/json:
- *                  schema:
- *                      $ref: '#/components/schemas/Schedule'
  *      responses:
  *          200:
  *              description: Listado de horarios
@@ -177,6 +168,11 @@ router.get(
  *              format: uuid
  *           required: true
  *           description: El id del usuario
+ *      requestBody:
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      $ref: '#/components/schemas/Schedule'
  *      responses:
  *          200:
  *              description: El horario actualizado

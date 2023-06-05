@@ -182,10 +182,10 @@ router.post(
         body("grupoUuid", "El valor debe ser un UUID valido").isUUID("4"),
         body("secretariaUuid", "El valor debe ser un UUID valido").isUUID("4"),
         body("sedeUuid").isNumeric(),
-        body("pagoMatricula").isObject(),
-        body("pagoMatricula.numComprobante").isString(),
-        body("pagoMatricula.formaPago").isString(),
-        body("pagoMatricula.monto").isNumeric(),
+        body("pagoMatricula").optional().isObject(),
+        body("pagoMatricula.numComprobante").optional().isString(),
+        body("pagoMatricula.formaPagoUuid").optional().isUUID("4"),
+        body("pagoMatricula.monto").optional().isNumeric(),
         body("fechaInscripcion").isString(),
         validateFields,
     ],
@@ -226,8 +226,8 @@ router.post(
 router.post(
     "/grado-estudio",
     [
-        //validateJWT,
-        //checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        validateJWT,
+        checkAuthRole([ROLES.ADMIN]),
         body("descripcion").exists(),
         validateFields,
     ],
@@ -304,14 +304,36 @@ router.get(
  */
 router.get(
     "/grado-estudio",
-    [
-        //validateJWT,
-        //checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
-    ],
+    [validateJWT],
     matriculaController.getGradosEstudio
 );
 
-//TODO: documentar
+/**
+ * @swagger
+ * /matricula/generate-pdf/{id}:
+ *  get:
+ *      summary: PDF de ficha de matricula
+ *      tags: [Matricula]
+ *      parameters:
+ *          - in: path
+ *            name: id
+ *            schema:
+ *              type: string
+ *              format: uuid
+ *            required: true
+ *            description: Uuid de la matricula
+ *      responses:
+ *          200:
+ *              description: PDF de ficha de matricula
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+
+ *          500:
+ *              description: Error de servidor
+ *
+ */
 router.get(
     "/generate-pdf/:id",
     [
@@ -321,6 +343,52 @@ router.get(
         validateFields,
     ],
     matriculaController.getGeneratedPDF
+);
+
+/**
+ * @swagger
+ * /matricula:
+ *  get:
+ *      summary: Listado de matriculas por año o mes
+ *      tags: [Matricula]
+ *      parameters:
+ *          - $ref: '#/components/parameters/token'
+ *          - in: query
+ *            name: year
+ *            schema:
+ *              type: number
+ *            required: true
+ *            description: Año de filtrado
+ *          - in: query
+ *            name: month
+ *            schema:
+ *              type: number
+ *            required: false
+ *            description: Mes de filtrado (si no se desea filtrar por mes enviar el numero 0)
+ *      responses:
+ *          200:
+ *              description: Listado de matriculas
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: array
+ *                          items:
+ *                                type: object
+ *                                $ref: '#/components/schemas/Matricula'
+ *          500:
+ *              description: Error de servidor
+ *
+ */
+router.get(
+    "/",
+    [
+        //validateJWT,
+        //checkAuthRole([ROLES.ADMIN,ROLES.SECRE]),
+        //param("year").isNumeric(),
+        //param("month").optional().isNumeric(),
+        validateFields,
+    ],
+    matriculaController.getList
 );
 
 /**
