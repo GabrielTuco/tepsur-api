@@ -78,6 +78,7 @@ export interface MatriculaRepository {
     ): Promise<PagoMatricula>;
     update(uuid: string, data: Partial<MatriculaDTO>): Promise<Matricula>;
     delete(uuid: string): Promise<Matricula>;
+    listModules(): Promise<Modulo[]>;
 }
 
 export interface MetodoPagoRepository {

@@ -266,4 +266,14 @@ export class MatriculaService implements MatriculaRepository {
     public async delete(_uuid: string): Promise<Matricula> {
         throw new Error("Method not implemented.");
     }
+
+    public async listModules(): Promise<Modulo[]> {
+        try {
+            const modules = await Modulo.find();
+
+            return modules;
+        } catch (error) {
+            throw error;
+        }
+    }
 }
