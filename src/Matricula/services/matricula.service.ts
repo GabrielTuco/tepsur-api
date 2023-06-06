@@ -121,6 +121,7 @@ export class MatriculaService implements MatriculaRepository {
         }
     }
 
+    //Subida del documento de pago de matricula
     async uploadPaidDocument(
         uuid: string,
         image: fileUpload.UploadedFile
@@ -141,6 +142,38 @@ export class MatriculaService implements MatriculaRepository {
             await pagoMatricula.save();
             await pagoMatricula.reload();
             return pagoMatricula;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    //Registro de pago de matricula
+    public async updatePagoMatricula(
+        matriculaUuid: string,
+        data: PagoMatriculaData
+    ): Promise<PagoMatricula> {
+        try {
+            const matricula = await Matricula.findOneBy({
+                uuid: matriculaUuid,
+            });
+            if (!matricula)
+                throw new DatabaseError(
+                    "Matricula not found",
+                    500,
+                    "Internal server error"
+                );
+
+            const newPagoMatricula = new PagoMatricula();
+            const metodoPago = await MetodoPago.findOneBy({
+                uuid: data.formaPagoUuid,
+            });
+            newPagoMatricula.uuid = uuid();
+            newPagoMatricula.num_comprobante = data.numComprobante;
+            newPagoMatricula.forma_pago = metodoPago!;
+            newPagoMatricula.monto = data.monto;
+            await newPagoMatricula.save();
+
+            return newPagoMatricula;
         } catch (error) {
             throw error;
         }
@@ -221,37 +254,6 @@ export class MatriculaService implements MatriculaRepository {
             doc.on("end", () => stream.end());
 
             await generateFichaMatricula(data, doc);
-        } catch (error) {
-            throw error;
-        }
-    }
-
-    public async updatePagoMatricula(
-        matriculaUuid: string,
-        data: PagoMatriculaData
-    ): Promise<PagoMatricula> {
-        try {
-            const matricula = await Matricula.findOneBy({
-                uuid: matriculaUuid,
-            });
-            if (!matricula)
-                throw new DatabaseError(
-                    "Matricula not found",
-                    500,
-                    "Internal server error"
-                );
-
-            const newPagoMatricula = new PagoMatricula();
-            const metodoPago = await MetodoPago.findOneBy({
-                uuid: data.formaPagoUuid,
-            });
-            newPagoMatricula.uuid = uuid();
-            newPagoMatricula.num_comprobante = data.numComprobante;
-            newPagoMatricula.forma_pago = metodoPago!;
-            newPagoMatricula.monto = data.monto;
-            await newPagoMatricula.save();
-
-            return newPagoMatricula;
         } catch (error) {
             throw error;
         }

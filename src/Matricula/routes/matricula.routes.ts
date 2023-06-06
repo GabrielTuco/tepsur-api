@@ -151,8 +151,8 @@ const matriculaController = new MatriculaController();
 router.post(
     "/",
     [
-        //validateJWT,
-        //checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        validateJWT,
+        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
         body("alumno").isObject(),
         body("alumno.dni").isString(),
         body("alumno.nombres").isString(),
@@ -191,6 +191,94 @@ router.post(
     ],
     matriculaController.postMatricula
 );
+
+
+/**
+ * @swagger
+ * /matricula/upload-payment-document/{uuid}:
+ *  post:
+ *      summary: Subir el documento de pago de una matricula
+ *      tags: [Matricula]
+ *      parameters:
+ *          - $ref: '#/components/parameters/token'
+ *          - in: params
+ *            name: uuid
+ *            schema:
+ *              type: string
+ *              format: uuid
+ *            required: true
+ *            description: Uuid de la matricula
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              multipart/form-data:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          image:
+ *                              type: string
+ *                              format: binary
+ *      responses:
+ *          200:
+ *              description: El pago de matricula actualizado con la foto del comprobante
+ *              content:
+ *                  application/json:
+ *                       schema:
+ *                          type: object
+ *          500:
+ *              description: Error de servidor
+ *
+ */
+router.patch("/upload-payment-document",[
+    validateJWT,
+],matriculaController.patchUploadPaidDocument)
+
+
+/**
+ * @swagger
+ * /matricula/update-pago/{uuid}:
+ *  post:
+ *      summary: Registrar los datos del pago de una matricula
+ *      tags: [Matricula]
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          numComprobante:
+ *                              type: string
+ *                          formaPagoUuid:
+ *                              type: string
+ *                              format: uuid
+ *                          monto:
+ *                              type: number
+ *      responses:
+ *          200:
+ *              description: El pago de matricula registrado
+ *              content:
+ *                  application/json:
+ *                       schema:
+ *                          type: object
+ *          500:
+ *              description: Error de servidor
+ *
+ */
+router.patch(
+    "/update-pago/:id",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        param("id", "Debe ser un ID valido").isUUID("4"),
+        body("numComprobante").isString(),
+        body("formaPagoUuid").isUUID('4'),
+        body("monto").isNumeric(),
+        validateFields,
+    ],
+    matriculaController.patchPagoMatricula
+);
+
 
 /**
  * @swagger
@@ -516,15 +604,36 @@ router.get(
     matriculaController.getDistricts
 );
 
-//TODO: documentar
-router.patch(
-    "/update-pago/:id",
-    [
-        validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
-        param("id", "Debe ser un ID valido").isUUID("4"),
-        validateFields,
-    ],
-    matriculaController.patchPagoMatricula
-);
+
+/**
+ * @swagger
+ * /matricula/modules:
+ *  get:
+ *      summary: Listado de modulos
+ *      tags: [Matricula]
+ *      parameters:
+ *          - $ref: '#/components/parameters/token'
+ *      responses:
+ *          200:
+ *              description: El listado de modulos
+ *              content:
+ *                  application/json:
+ *                       schema:
+ *                          type: array
+ *                          items:
+ *                               type: object
+ *                               properties:
+ *                                  uuid:
+ *                                      type: string
+ *                                      format: uuid
+ *                                  descripcion:
+ *                                      type: string
+ *                                      description: El nombre del modulo
+ *          500:
+ *              description: Error de servidor
+ *
+ */
+router.get("modules",[
+    //validateJWT
+],matriculaController.getModules)
 export default router;

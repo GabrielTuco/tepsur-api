@@ -179,6 +179,18 @@ export class MatriculaController {
         }
     }
 
+    public async getModules(_req: Request, res:Response){
+        try {
+            const modules = await matriculaService.listModules()
+            return res.json(modules)
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: "Internal server error",
+            });
+        }
+    }
+
     //----------------------------Utitilies------------------------------------
     public async getDepartments(_req: Request, res: Response) {
         try {

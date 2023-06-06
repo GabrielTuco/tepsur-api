@@ -28,6 +28,7 @@ import {
     scheduleRoutes,
     metodoPagoRoutes,
 } from "../Matricula/routes";
+import { swaggerCustomCss } from "../swagger-custom-styles";
 
 interface Paths {
     auth: string;
@@ -116,7 +117,7 @@ class Server implements ServerBase {
         });
         //Documentation
         const specs = swaggerJSDoc(options);
-        this.app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(specs));
+        this.app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(specs,swaggerCustomCss));
 
         this.app.use(this.paths.auth, authRoutes);
         this.app.use(this.paths.secretary, secretaryRoutes);
