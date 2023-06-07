@@ -3,6 +3,7 @@ import { EntityBase } from "../../entity/EntityBase";
 import { Modulo } from "./Modulo.entity";
 import { Grupo } from "./Grupo.entity";
 import { Matricula } from "./Matricula.entity";
+import { Horario } from "./Horario.entity";
 
 @Entity()
 export class Carrera extends EntityBase {
@@ -29,4 +30,8 @@ export class Carrera extends EntityBase {
         nullable: true,
     })
     matriculas: Matricula[];
+
+    @ManyToMany(() => Horario)
+    @JoinTable()
+    horarios: Horario[]
 }

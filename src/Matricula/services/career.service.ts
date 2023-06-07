@@ -1,6 +1,6 @@
 import { v4 as uuid } from "uuid";
 import { DatabaseError } from "../../errors/DatabaseError";
-import { Carrera, Modulo } from "../entity";
+import { Carrera, Horario, Modulo } from "../entity";
 import { CareerDTO } from "../interfaces/dtos";
 import { CareerRepository } from "../interfaces/repositories";
 
@@ -19,7 +19,7 @@ export class CareerService implements CareerRepository {
     }
     public async register(data: CareerDTO): Promise<Carrera> {
         try {
-            const { numModulos, nombre, modulos, modalidad } = data;
+            const { numModulos, nombre, modulos,horariosExistentes,horariosNuevos, modalidad } = data;
 
             const modulosExists: Modulo[] = await Promise.all(
                 modulos.map(async (mod) => {
@@ -39,6 +39,28 @@ export class CareerService implements CareerRepository {
                     }
                 })
             );
+            let horariosExists:(Horario | undefined)[] = []
+            horariosExists = await Promise.all(
+                horariosExistentes.map(async (h) => {
+                    const horario = await Horario.findOneBy({uuid:h})
+                    if (horario) return horario;
+                })
+            );
+
+            let horarios:Horario[] = horariosExists.filter(h=>h!==undefined) as Horario[]
+            const nuevosHorarios = await Promise.all(horariosNuevos.map(async(h)=>{
+                const newHorario = new Horario()
+                newHorario.uuid = uuid()
+                newHorario.hora_inicio = h.horaInicio
+                newHorario.hora_fin = h.horaFin
+                newHorario.dias = h.dias
+
+                await newHorario.save()
+                return newHorario
+            }))
+
+            horarios = [...horarios, ...nuevosHorarios]
+
 
             const newCareer = new Carrera();
             newCareer.uuid = uuid();
@@ -46,6 +68,7 @@ export class CareerService implements CareerRepository {
             newCareer.nombre = nombre;
             newCareer.modalidad = modalidad;
             newCareer.modulos = modulosExists;
+            newCareer.horarios = horarios;
 
             return await newCareer.save();
         } catch (error) {

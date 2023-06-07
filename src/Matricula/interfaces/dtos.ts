@@ -3,10 +3,18 @@ export interface ModuleDTO {
     duracionSemanas: string;
 }
 
+export interface HorarioDTO{
+    horaInicio: string;
+    horaFin: string;
+    dias: string[];
+}
+
 export interface CareerDTO {
     numModulos: number;
     nombre: string;
     modulos: ModuleDTO[];
+    horariosExistentes: string[]; //uuids
+    horariosNuevos: HorarioDTO[];
     modalidad: string;
 }
 
