@@ -8,6 +8,7 @@ import {
     Carrera,
     GradoEstudios,
     Grupo,
+    Horario,
     Matricula,
     MetodoPago,
     Modulo,
@@ -41,7 +42,7 @@ export class MatriculaService implements MatriculaRepository {
                 alumno,
                 carreraUuid,
                 moduloUuid,
-                grupoUuid,
+                horarioUuid,
                 pagoMatricula,
                 secretariaUuid,
                 sedeUuid,
@@ -54,11 +55,35 @@ export class MatriculaService implements MatriculaRepository {
             const newMatricula = new Matricula();
             const carrera = await Carrera.findOneBy({ uuid: carreraUuid });
             const modulo = await Modulo.findOneBy({ uuid: moduloUuid });
-            const grupo = await Grupo.findOneBy({ uuid: grupoUuid });
             const secretaria = await Secretaria.findOneBy({
                 uuid: secretariaUuid,
             });
             const sede = await Sede.findOneBy({ id: sedeUuid });
+            const horario = await Horario.findOneBy({ uuid: horarioUuid });
+
+            const grupos = await Grupo.createQueryBuilder("g")
+                .innerJoinAndSelect("g.horario", "h")
+                .where("h.uuid=:id", { id: horarioUuid })
+                .getMany();
+
+            const gruposDisponibles: string[] = [];
+            grupos.map(async (g) => {
+                const alumnosMatriculados = await Matricula.createQueryBuilder(
+                    "m"
+                )
+                    .innerJoin("m.grupo", "g")
+                    .where("g.uuid=:id", { id: g.uuid })
+                    .getCount();
+
+                if (alumnosMatriculados < g.cupos_maximos) {
+                    gruposDisponibles.push(g.uuid);
+                }
+            });
+
+            const arrPos = Math.floor(Math.random() * gruposDisponibles.length);
+            const grupo = await Grupo.findOneBy({
+                uuid: gruposDisponibles[arrPos],
+            });
 
             newMatricula.uuid = uuid();
             newMatricula.carrera = carrera!;

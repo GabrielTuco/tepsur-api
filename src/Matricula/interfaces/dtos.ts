@@ -36,7 +36,7 @@ export interface MatriculaDTO {
     alumno: AlumnoData;
     carreraUuid: string;
     moduloUuid: string;
-    grupoUuid: string;
+    horarioUuid: string;
     secretariaUuid: string;
     sedeUuid: number;
     pagoMatricula: PagoMatriculaData;

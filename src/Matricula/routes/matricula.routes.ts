@@ -192,7 +192,6 @@ router.post(
     matriculaController.postMatricula
 );
 
-
 /**
  * @swagger
  * /matricula/upload-payment-document/{uuid}:
@@ -229,10 +228,11 @@ router.post(
  *              description: Error de servidor
  *
  */
-router.patch("/upload-payment-document",[
-    validateJWT,
-],matriculaController.patchUploadPaidDocument)
-
+router.patch(
+    "/upload-payment-document",
+    [validateJWT],
+    matriculaController.patchUploadPaidDocument
+);
 
 /**
  * @swagger
@@ -272,13 +272,12 @@ router.patch(
         checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
         param("id", "Debe ser un ID valido").isUUID("4"),
         body("numComprobante").isString(),
-        body("formaPagoUuid").isUUID('4'),
+        body("formaPagoUuid").isUUID("4"),
         body("monto").isNumeric(),
         validateFields,
     ],
     matriculaController.patchPagoMatricula
 );
-
 
 /**
  * @swagger
@@ -604,7 +603,6 @@ router.get(
     matriculaController.getDistricts
 );
 
-
 /**
  * @swagger
  * /matricula/modules:
@@ -633,7 +631,5 @@ router.get(
  *              description: Error de servidor
  *
  */
-router.get("modules",[
-    //validateJWT
-],matriculaController.getModules)
+router.get("/modules", [validateJWT], matriculaController.getModules);
 export default router;

@@ -19,8 +19,8 @@ export class Grupo extends EntityBase {
     @Column({ default: "ABIERTO" }) //EN_CURSO CERRADO
     estado: string;
 
-    //@Column()
-    //cupos_maximos: number
+    @Column({ nullable: true, default: 50 })
+    cupos_maximos: number;
 
     @ManyToOne(() => Horario, (horario) => horario.grupos)
     horario: Horario;
