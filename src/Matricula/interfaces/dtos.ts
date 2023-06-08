@@ -3,7 +3,7 @@ export interface ModuleDTO {
     duracionSemanas: string;
 }
 
-export interface HorarioDTO{
+export interface HorarioDTO {
     horaInicio: string;
     horaFin: string;
     dias: string[];
@@ -16,6 +16,7 @@ export interface CareerDTO {
     horariosExistentes: string[]; //uuids
     horariosNuevos: HorarioDTO[];
     modalidad: string;
+    duracionMeses: number;
 }
 
 export interface GroupDTO {
@@ -46,7 +47,7 @@ export interface MatriculaDTO {
     moduloUuid: string;
     horarioUuid: string;
     secretariaUuid: string;
-    sedeUuid: number;
+    sedeUuid: string;
     pagoMatricula: PagoMatriculaData;
     fechaInscripcion: Date;
     fechaInicio: Date;
@@ -59,7 +60,7 @@ export interface AlumnoData {
     apeMaterno: string;
     sexo: "m" | "f";
     edad: number;
-    gradoEstudiosUuid: string;
+    gradoEstudiosUuid: number;
     lugarNacimiento: string;
     celular: string;
     correo: string;
@@ -75,7 +76,7 @@ export interface DireccionDto {
 
 export interface PagoMatriculaData {
     numComprobante: string;
-    formaPagoUuid: string;
+    formaPagoUuid: number;
     monto: number;
 }
 

@@ -5,6 +5,7 @@ import {
     ManyToOne,
     OneToMany,
     OneToOne,
+    PrimaryColumn,
 } from "typeorm";
 import { EntityBase } from "../../entity/EntityBase";
 import { Usuario } from "../../Auth/entity/Usuario.entity";
@@ -13,9 +14,6 @@ import { Grupo } from "../../Matricula/entity";
 
 @Entity()
 export class Docente extends EntityBase {
-    @Column({ unique: true })
-    uuid: string;
-
     @Column({ length: 8, unique: true })
     dni: string;
 

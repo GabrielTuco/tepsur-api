@@ -84,7 +84,7 @@ export interface MatriculaRepository {
 export interface MetodoPagoRepository {
     register(description: string): Promise<MetodoPago>;
     getAll(): Promise<MetodoPago[]>;
-    update(uuid: string, description: string): Promise<MetodoPago>;
+    update(uuid: number, description: string): Promise<MetodoPago>;
 }
 
 export interface UbigeoRepository {

@@ -3,6 +3,8 @@ import { QueryRunner } from "typeorm";
 import { v4 as uuid } from "uuid";
 import PDF from "pdfkit-table";
 import fileUpload from "express-fileupload";
+import moment from "moment";
+
 import { Alumno } from "../../Student/entity/Alumno.entity";
 import {
     Carrera,
@@ -30,7 +32,9 @@ import { DatabaseError } from "../../errors/DatabaseError";
 import { uploadImage } from "../../helpers/uploadImage";
 import { generateFichaMatricula } from "../helpers/generateFichaMatricula";
 import { AppDataSource } from "../../db/dataSource";
+import { PensionService } from "../../Pension/services/pension.service";
 
+const pensionService = new PensionService();
 export class MatriculaService implements MatriculaRepository {
     public async register(data: MatriculaDTO): Promise<Matricula> {
         const queryRunner = AppDataSource.createQueryRunner();
@@ -58,7 +62,7 @@ export class MatriculaService implements MatriculaRepository {
             const secretaria = await Secretaria.findOneBy({
                 uuid: secretariaUuid,
             });
-            const sede = await Sede.findOneBy({ id: sedeUuid });
+            const sede = await Sede.findOneBy({ uuid: sedeUuid });
             const horario = await Horario.findOneBy({ uuid: horarioUuid });
 
             const grupos = await Grupo.createQueryBuilder("g")
@@ -111,6 +115,8 @@ export class MatriculaService implements MatriculaRepository {
 
             await queryRunner.manager.save(newMatricula);
 
+            await this.registerPensiones(newMatricula);
+
             await queryRunner.commitTransaction();
             return newMatricula;
         } catch (error) {
@@ -118,6 +124,41 @@ export class MatriculaService implements MatriculaRepository {
             throw error;
         } finally {
             await queryRunner.release();
+        }
+    }
+
+    public async registerPensiones(matricula: Matricula): Promise<void> {
+        try {
+            const fechaInicio = matricula.fecha_inicio;
+            const mesInicio = matricula.fecha_inicio.getMonth() + 1;
+            const duracionCarrera = matricula.carrera.duracion_meses;
+            const fechaFin = moment().add(duracionCarrera, "M").toDate();
+            const meses: number[] = [];
+            for (let i = 0; i < duracionCarrera; i++) {
+                if (mesInicio + i > 12)
+                    meses.push(
+                        mesInicio +
+                            i -
+                            12 *
+                                (fechaFin.getFullYear() -
+                                    fechaInicio.getFullYear())
+                    );
+                else meses.push(mesInicio + i);
+            }
+
+            const pensiones = await Promise.all(
+                meses.map(async (m) => {
+                    const pension = await pensionService.register({
+                        matricula,
+                        mes: m,
+                        monto: 150,
+                        fechaLimite: new Date(),
+                    });
+                    return pension;
+                })
+            );
+        } catch (error) {
+            throw error;
         }
     }
 

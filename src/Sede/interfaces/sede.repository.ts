@@ -2,7 +2,7 @@ import { Sede } from "../entity/Sede.entity";
 
 export interface SedeRepository {
     listAll(): Promise<Sede[]>;
-    findById(id: number): Promise<Sede | null>;
+    findById(uuid: string): Promise<Sede | null>;
     register(sede: SedeDTO): Promise<Sede>;
 }
 

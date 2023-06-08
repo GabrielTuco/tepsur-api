@@ -18,11 +18,11 @@ export class UserService {
             return null;
         }
     }
-    public async findById(id: number) {
+    public async findById(uuid: string) {
         try {
             const userExists = await Usuario.createQueryBuilder("u")
                 .innerJoinAndSelect("u.rol", "r")
-                .where("u.id=:id", { id })
+                .where("u.uuid=:uuid", { uuid })
                 .getOne();
             return userExists;
         } catch (error) {
@@ -31,9 +31,9 @@ export class UserService {
         }
     }
 
-    public async updateAvatar(uuid: number, image: fileUpload.UploadedFile) {
+    public async updateAvatar(uuid: string, image: fileUpload.UploadedFile) {
         try {
-            const user = await Usuario.findOneBy({ id: uuid });
+            const user = await Usuario.findOneBy({ uuid });
 
             if (!user)
                 throw new DatabaseError(

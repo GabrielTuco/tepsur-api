@@ -18,7 +18,7 @@ export class AdministratorController {
             }
             const administratorUserCreated =
                 await administratorService.createUser({
-                    codAdmin: administratorCreated.id,
+                    adminUuid: administratorCreated.uuid,
                     codRol: 1,
                     usuario: administratorCreated.dni,
                     password: encryptPassword(administratorCreated.dni),

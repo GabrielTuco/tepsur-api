@@ -27,9 +27,9 @@ export class RoleService {
         }
     }
 
-    async updateRole(id: number, nombre: string) {
+    async updateRole(uuid: number, nombre: string) {
         try {
-            const role = await Rol.findOneBy({ id });
+            const role = await Rol.findOneBy({ uuid });
             if (role) {
                 role.nombre = nombre;
                 await role.save();
@@ -42,9 +42,9 @@ export class RoleService {
         }
     }
 
-    async deleteRole(id: number) {
+    async deleteRole(uuid: number) {
         try {
-            const role = await Rol.findOneBy({ id });
+            const role = await Rol.findOneBy({ uuid });
             if (role) {
                 role.estado = false;
                 await role.save();

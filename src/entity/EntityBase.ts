@@ -2,17 +2,18 @@ import {
     BaseEntity,
     CreateDateColumn,
     Entity,
-    PrimaryGeneratedColumn,
+    PrimaryColumn,
+    UpdateDateColumn,
 } from "typeorm";
 
 @Entity()
 export class EntityBase extends BaseEntity {
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryColumn()
+    uuid: string;
 
     @CreateDateColumn({ select: false })
     createdAt: Date;
 
-    @CreateDateColumn({ select: false })
+    @UpdateDateColumn({ select: false })
     updatedAt: Date;
 }

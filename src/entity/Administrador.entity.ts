@@ -11,9 +11,6 @@ import { Usuario } from "../Auth/entity/Usuario.entity";
 
 @Entity()
 export class Administrador extends EntityBase {
-    @PrimaryColumn()
-    uuid: string;
-
     @Column({ length: 8, unique: true })
     dni: string;
 
@@ -29,7 +26,7 @@ export class Administrador extends EntityBase {
     @Column({ nullable: true, length: 9 })
     celular: string;
 
-    @Column({ nullable: true })
+    @Column({ nullable: true, unique: true })
     correo: string;
 
     @Column({ default: false })

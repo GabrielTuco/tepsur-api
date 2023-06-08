@@ -1,4 +1,3 @@
-import { v4 as uuid } from "uuid";
 import { MetodoPago } from "../entity";
 import { DatabaseError } from "../../errors/DatabaseError";
 import { MetodoPagoRepository } from "../interfaces/repositories";
@@ -7,7 +6,6 @@ export class MetodoPagoService implements MetodoPagoRepository {
     public async register(description: string) {
         try {
             const newMetodoPago = new MetodoPago();
-            newMetodoPago.uuid = uuid();
             newMetodoPago.description = description;
             return await newMetodoPago.save();
         } catch (error) {
@@ -24,7 +22,7 @@ export class MetodoPagoService implements MetodoPagoRepository {
         }
     }
 
-    public async update(uuid: string, description: string) {
+    public async update(uuid: number, description: string) {
         try {
             const metodoPagoExists = await MetodoPago.findOneBy({ uuid });
             if (!metodoPagoExists)

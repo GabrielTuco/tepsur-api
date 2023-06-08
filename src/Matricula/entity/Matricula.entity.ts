@@ -1,4 +1,11 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from "typeorm";
+import {
+    Column,
+    Entity,
+    JoinColumn,
+    ManyToOne,
+    OneToMany,
+    OneToOne,
+} from "typeorm";
 import { EntityBase } from "../../entity";
 import { Carrera } from "./Carrera.entity";
 import { Alumno } from "../../Student/entity/Alumno.entity";
@@ -7,12 +14,10 @@ import { Sede } from "../../Sede/entity/Sede.entity";
 import { PagoMatricula } from "./PagoMatricula.entity";
 import { Grupo } from "./Grupo.entity";
 import { Modulo } from "./Modulo.entity";
+import { Pension } from "../../Pension/entity/Pension.entity";
 
 @Entity()
 export class Matricula extends EntityBase {
-    @Column()
-    uuid: string;
-
     @ManyToOne(() => Carrera, (carrera) => carrera.matriculas)
     carrera: Carrera;
 
@@ -36,6 +41,9 @@ export class Matricula extends EntityBase {
     @OneToOne(() => PagoMatricula, { nullable: true })
     @JoinColumn()
     pagoMatricula: PagoMatricula;
+
+    @OneToMany(() => Pension, (pension) => pension.matricula)
+    pensiones: Pension[];
 
     @Column()
     fecha_inscripcion: Date;

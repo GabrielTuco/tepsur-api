@@ -3,7 +3,7 @@ import { EntityBase } from "./EntityBase";
 
 @Entity()
 export class Direccion extends EntityBase {
-    @Column()
+    @Column({ unique: true })
     direccion_exacta: string;
 
     @Column()

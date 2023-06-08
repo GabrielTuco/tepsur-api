@@ -26,7 +26,7 @@ export class SedeController {
     public async getOneById(req: Request, res: Response) {
         try {
             const { id } = req.params;
-            const sede = await sedeService.findById(parseInt(id));
+            const sede = await sedeService.findById(id);
 
             return res.json(sede);
         } catch (error) {

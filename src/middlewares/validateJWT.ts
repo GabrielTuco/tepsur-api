@@ -9,7 +9,7 @@ interface JwtPayload {
 
 declare module "express-serve-static-core" {
     interface Request {
-        id: number;
+        id: string;
         user: string;
     }
 }
@@ -43,7 +43,7 @@ export const validateJWT = async (
             });
         }
 
-        req.id = usuario.id;
+        req.id = usuario.uuid;
         req.user = usuario.usuario;
 
         next();

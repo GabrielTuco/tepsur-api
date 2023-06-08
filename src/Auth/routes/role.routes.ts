@@ -1,5 +1,8 @@
 import { Router } from "express";
 import { RoleController } from "../controllers/role.controller";
+import { validateJWT } from "../../middlewares/validateJWT";
+import { checkAuthRole } from "../../middlewares/checkAuthRole";
+import { ROLES } from "../../interfaces/enums";
 
 const router = Router();
 const roleController = new RoleController();
@@ -10,7 +13,7 @@ const roleController = new RoleController();
  *  schemas:
  *      Role:
  *          properties:
- *              id:
+ *              uuid:
  *                  type: number
  *                  description : El id autogenerado del rol
  *              nombre:
@@ -32,7 +35,7 @@ const roleController = new RoleController();
  *  parameters:
  *      codRol:
  *          in: path
- *          name: id
+ *          name: uuid
  *          required: true
  *          schema:
  *              type: number
@@ -89,11 +92,17 @@ router.get("/", [], roleController.getRoles);
  *              description: Error de servidor
  *
  */
-router.post("/", [], roleController.postRole);
+router.post(
+    "/",
+    [
+        /*validateJWT, checkAuthRole([ROLES.ROOT])*/
+    ],
+    roleController.postRole
+);
 
 /**
  * @swagger
- * /role/{id}:
+ * /role/{uuid}:
  *  put:
  *      summary: Actualizar un rol
  *      tags: [Roles]

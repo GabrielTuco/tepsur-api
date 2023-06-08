@@ -13,9 +13,10 @@ const userController = new UserController();
  *  schemas:
  *      UserResponse:
  *          properties:
- *              id:
- *                  type: number
- *                  description : El id del usuario
+ *              uuid:
+ *                  type: string
+ *                  format: uuid
+ *                  description : El uuid del usuario
  *              usuario:
  *                  type: string
  *                  description: El nombre de usuario
@@ -44,9 +45,10 @@ const userController = new UserController();
  *      parameters:
  *          - $ref: '#/components/parameters/token'
  *          - in: path
- *            name: id
+ *            name: uuid
  *            schema:
- *              type: number
+ *              type: string
+ *              format: uuid
  *            required: true
  *            description: El id del usuario
  *      requestBody:

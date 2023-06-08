@@ -91,10 +91,10 @@ const matriculaController = new MatriculaController();
  *                  type: string
  *                  format: uuid
  *                  description:  Uuid del modulo de la carrera
- *              grupoUuid:
+ *              horarioUuid:
  *                  type: string
  *                  format: uuid
- *                  description:  Uuid del grupo
+ *                  description:  Uuid del horario
  *              secretariaUuid:
  *                  type: string
  *                  format: uuid
@@ -151,8 +151,8 @@ const matriculaController = new MatriculaController();
 router.post(
     "/",
     [
-        validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        //validateJWT,
+        //checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
         body("alumno").isObject(),
         body("alumno.dni").isString(),
         body("alumno.nombres").isString(),
@@ -179,7 +179,8 @@ router.post(
         body("alumno.direccion.departamento").isString(),
         body("carreraUuid", "El valor debe ser un UUID valido").isUUID("4"),
         body("moduloUuid", "El valor debe ser un UUID valido").isUUID("4"),
-        body("grupoUuid", "El valor debe ser un UUID valido").isUUID("4"),
+        //TODO: agregar middleware para ver si el horario pertenece a la carrera
+        body("horarioUuid", "El valor debe ser un UUID valido").isUUID("4"),
         body("secretariaUuid", "El valor debe ser un UUID valido").isUUID("4"),
         body("sedeUuid").isNumeric(),
         body("pagoMatricula").optional().isObject(),

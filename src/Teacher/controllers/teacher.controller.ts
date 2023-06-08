@@ -13,7 +13,7 @@ export class TeacherController {
                 apePaterno,
                 dni,
                 nombres,
-                sede: codSede,
+                sedeUuid: codSede,
             });
             if (!newTeacher) {
                 return res.status(400).json({
@@ -24,7 +24,7 @@ export class TeacherController {
                 newTeacher.dni,
                 encryptPassword(newTeacher.dni),
                 3,
-                newTeacher.id
+                newTeacher.uuid
             );
 
             return res.json(newTeacherUser);

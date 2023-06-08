@@ -15,9 +15,10 @@ const teacherController = new TeacherController();
  *  schemas:
  *      Teacher:
  *          properties:
- *              id:
- *                  type: number
- *                  description: El id autogenerado del profesor
+ *              uuid:
+ *                  type: string
+ *                  format: uuid
+ *                  description: El uuid  del profesor
  *              dni:
  *                  type: string
  *                  description: Dni del docente

@@ -1,5 +1,5 @@
 export interface CreateSecretaryDTO {
-    codSede: number;
+    sedeUuid: string;
     dni: string;
     nombres: string;
     apePaterno: string;
@@ -12,7 +12,7 @@ export interface CreateSecretaryUserDTO {
     usuario: string;
     password: string;
     codRol: number;
-    codSecretary: number;
+    secretaryUuid: string;
 }
 
 export type UpdateSecretaryDTO = Partial<CreateSecretaryDTO>;

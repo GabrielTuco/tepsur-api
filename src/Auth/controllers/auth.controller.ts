@@ -18,7 +18,7 @@ const alumnoService = new StudentService();
 
 declare module "express-serve-static-core" {
     interface Request {
-        id: number;
+        id: string;
         user: string;
     }
 }
@@ -46,13 +46,13 @@ export class AuthController {
                 }
                 return res.json({
                     userRegistered: {
-                        id: userRegistered.id,
+                        id: userRegistered.uuid,
                         usuario: userRegistered.usuario,
                         avatar: userRegistered.avatar,
                         rol: userRegistered.rol,
                     },
                     token: await generateJWT(
-                        userRegistered.id,
+                        userRegistered.uuid,
                         userRegistered.usuario
                     ),
                 });
@@ -89,7 +89,7 @@ export class AuthController {
             res.json({
                 userRegistered: userTypeRegistered,
                 token: await generateJWT(
-                    userRegistered.id,
+                    userRegistered.uuid,
                     userRegistered.usuario
                 ),
             });

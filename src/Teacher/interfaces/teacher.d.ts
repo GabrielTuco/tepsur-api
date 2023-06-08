@@ -3,5 +3,5 @@ export interface TeacherSchema {
     apePaterno: string;
     dni: string;
     nombres: string;
-    sede: number;
+    sedeUuid: string;
 }

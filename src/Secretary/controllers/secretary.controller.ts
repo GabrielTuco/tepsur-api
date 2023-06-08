@@ -22,7 +22,7 @@ export class SecretaryController {
                 usuario: newSecretary.dni,
                 password: encryptPassword(newSecretary.dni),
                 codRol: 2,
-                codSecretary: newSecretary!.id,
+                secretaryUuid: newSecretary!.uuid,
             });
 
             return res.json({

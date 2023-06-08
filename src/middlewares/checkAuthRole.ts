@@ -7,7 +7,7 @@ const userService = new UserService();
 
 declare module "express-serve-static-core" {
     interface Request {
-        id: number;
+        id: string;
         user: string;
     }
 }
@@ -19,7 +19,7 @@ export const checkAuthRole =
             if (!usuario)
                 return res.status(404).json({ message: "User not valid" });
 
-            const codRole = usuario.rol.id;
+            const codRole = usuario.rol.uuid;
 
             const rolesArr = await Promise.all(
                 roles.map(async (role) => await Rol.findOneBy({ nombre: role }))
@@ -27,7 +27,7 @@ export const checkAuthRole =
 
             const roleExists = rolesArr
                 .filter((role) => role !== null)
-                .map((role) => role?.id) as number[];
+                .map((role) => role?.uuid) as number[];
 
             if (!roleExists.includes(codRole)) {
                 return res.status(401).json({

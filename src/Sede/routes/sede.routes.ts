@@ -14,9 +14,10 @@ const sedeController = new SedeController();
  *  schemas:
  *      Sede:
  *          properties:
- *              id:
- *                  type: number
- *                  description: El id autegenerado de la sede
+ *              uuid:
+ *                  type: string
+ *                  format: uuid
+ *                  description: El uuid  de la sede
  *              nombre:
  *                  type: string
  *                  description: El nombre de la sede
@@ -29,9 +30,10 @@ const sedeController = new SedeController();
  *
  *      Direccion:
  *          properties:
- *              id:
- *                  type: number
- *                  description : El id autogenerado de la direccion
+ *              uuid:
+ *                  type: string
+ *                  format: uuid
+ *                  description : El uuid  de la direccion
  *              direccionExacta:
  *                  type: string
  *                  description: Direccion exacta de la sede (Calle, Avenida, Numero, ETC)
@@ -55,8 +57,9 @@ const sedeController = new SedeController();
  *          name: id
  *          required: true
  *          schema:
- *              type: number
- *              description: El id de la sede
+ *              type: string
+ *              format: uuid
+ *              description: El uuid de la sede
  */
 
 /**
@@ -142,6 +145,8 @@ router.get(
  *  post:
  *      summary: Crea una nueva sede o local
  *      tags: [Sede]
+ *      parameters:
+ *         - $ref: '#/components/parameters/token'
  *      requestBody:
  *          required: true
  *          content:

@@ -133,8 +133,8 @@ router.get("/renew", validateJWT, authController.revalidateToken);
  *                      type: object
  *                      properties:
  *                          codUser:
- *                              type: number
- *                              description: Codigo del usuario
+ *                              type: string
+ *                              description: Uuid del usuario
  *                          currentPassword:
  *                              type: string
  *                              description: El password actual
@@ -143,15 +143,16 @@ router.get("/renew", validateJWT, authController.revalidateToken);
  *                              description: El nuevo password seguro
  *      responses:
  *          200:
- *              description: El nuevo token de autenticacion renovado
+ *              description: El usuario con su password actualizado
  *              content:
  *                  application/json:
  *                      schema:
  *                          type: object
  *                          properties:
  *                              id:
- *                                  type: number
- *                                  description: El id del usuario
+ *                                  type: string
+ *                                  format: uuid
+ *                                  description: El uuid del usuario
  *                              usuario:
  *                                  type: string
  *                                  description: El nombre de usuario
@@ -170,7 +171,7 @@ router.put(
     "/updatePassword",
     [
         validateJWT,
-        body("codUser", "El campo es obligatorio").isNumeric(),
+        body("codUser", "El campo es obligatorio").isUUID("4"),
         body("currentPassword", "El campo es obligatorio").exists(),
         body(
             "newPassword",

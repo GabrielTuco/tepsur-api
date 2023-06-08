@@ -8,7 +8,7 @@ export interface StudentDTO {
     apeMaterno: string;
     sexo: "m" | "f";
     edad?: number;
-    gradoEstudiosUuid?: string;
+    gradoEstudiosUuid?: number;
     lugarNacimiento?: string;
     celular?: string;
     correo?: string;

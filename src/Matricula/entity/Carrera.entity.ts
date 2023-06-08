@@ -7,9 +7,6 @@ import { Horario } from "./Horario.entity";
 
 @Entity()
 export class Carrera extends EntityBase {
-    @Column({ unique: true })
-    uuid: string;
-
     @Column()
     num_modulos: number;
 
@@ -18,6 +15,9 @@ export class Carrera extends EntityBase {
 
     @Column()
     modalidad: string;
+
+    @Column()
+    duracion_meses: number;
 
     @OneToMany(() => Grupo, (grupo) => grupo.carrera, { nullable: true })
     grupos: Grupo[];
@@ -33,5 +33,5 @@ export class Carrera extends EntityBase {
 
     @ManyToMany(() => Horario)
     @JoinTable()
-    horarios: Horario[]
+    horarios: Horario[];
 }

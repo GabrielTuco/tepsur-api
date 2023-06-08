@@ -32,19 +32,20 @@ export class AdministratorService {
     }
 
     public async createUser({
-        codAdmin,
+        adminUuid,
         codRol,
         password,
         usuario,
-    }: UserEntity & { codAdmin: number }) {
+    }: UserEntity & { adminUuid: string }) {
         try {
             const administrator = await Administrador.findOneBy({
-                id: codAdmin,
+                uuid: adminUuid,
             });
             if (administrator) {
                 const newUser = new Usuario();
-                const role = await Rol.findOneBy({ id: codRol });
+                const role = await Rol.findOneBy({ uuid: codRol });
 
+                newUser.uuid = uuid();
                 newUser.usuario = usuario;
                 newUser.password = password;
                 newUser.rol = role!;
@@ -64,7 +65,7 @@ export class AdministratorService {
             const adminExists = await Administrador.createQueryBuilder("a")
                 .innerJoinAndSelect("a.usuario", "u")
                 .innerJoinAndSelect("u.rol", "r")
-                .where("u.id= :id", { id: usuario.id })
+                .where("u.uuid= :id", { id: usuario.uuid })
                 .getOne();
             return adminExists || null;
         } catch (error) {

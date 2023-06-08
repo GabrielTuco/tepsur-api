@@ -19,7 +19,19 @@ export class CareerService implements CareerRepository {
     }
     public async register(data: CareerDTO): Promise<Carrera> {
         try {
-            const { numModulos, nombre, modulos,horariosExistentes,horariosNuevos, modalidad } = data;
+            const {
+                numModulos,
+                nombre,
+                modulos,
+                horariosExistentes,
+                horariosNuevos,
+                modalidad,
+                duracionMeses,
+            } = data;
+
+            let horariosExists: (Horario | undefined)[] = [];
+            let horarios: Horario[] = [];
+            let nuevosHorarios: Horario[] = [];
 
             const modulosExists: Modulo[] = await Promise.all(
                 modulos.map(async (mod) => {
@@ -39,34 +51,43 @@ export class CareerService implements CareerRepository {
                     }
                 })
             );
-            let horariosExists:(Horario | undefined)[] = []
-            horariosExists = await Promise.all(
-                horariosExistentes.map(async (h) => {
-                    const horario = await Horario.findOneBy({uuid:h})
-                    if (horario) return horario;
-                })
-            );
 
-            let horarios:Horario[] = horariosExists.filter(h=>h!==undefined) as Horario[]
-            const nuevosHorarios = await Promise.all(horariosNuevos.map(async(h)=>{
-                const newHorario = new Horario()
-                newHorario.uuid = uuid()
-                newHorario.hora_inicio = h.horaInicio
-                newHorario.hora_fin = h.horaFin
-                newHorario.dias = h.dias
+            if (horariosExistentes) {
+                horariosExists = await Promise.all(
+                    horariosExistentes.map(async (h) => {
+                        const horario = await Horario.findOneBy({ uuid: h });
+                        if (horario) return horario;
+                    })
+                );
 
-                await newHorario.save()
-                return newHorario
-            }))
+                horarios = horariosExists.filter(
+                    (h) => h !== undefined
+                ) as Horario[];
+            }
 
-            horarios = [...horarios, ...nuevosHorarios]
+            if (horariosNuevos) {
+                nuevosHorarios = await Promise.all(
+                    horariosNuevos.map(async (h) => {
+                        const newHorario = new Horario();
+                        newHorario.uuid = uuid();
+                        newHorario.hora_inicio = h.horaInicio;
+                        newHorario.hora_fin = h.horaFin;
+                        newHorario.dias = h.dias;
 
+                        await newHorario.save();
+                        return newHorario;
+                    })
+                );
+            }
+
+            horarios = [...horarios, ...nuevosHorarios];
 
             const newCareer = new Carrera();
             newCareer.uuid = uuid();
             newCareer.num_modulos = numModulos;
             newCareer.nombre = nombre;
             newCareer.modalidad = modalidad;
+            newCareer.duracion_meses = duracionMeses;
             newCareer.modulos = modulosExists;
             newCareer.horarios = horarios;
 
@@ -93,6 +114,19 @@ export class CareerService implements CareerRepository {
             throw error;
         }
     }
+
+    public async listHorarios(uuid: string): Promise<Horario[]> {
+        try {
+            const horarios = await Carrera.createQueryBuilder("c")
+                .innerJoinAndSelect("c.horarios", "h")
+                .where("c.uuid=:uuid", { uuid })
+                .getOne();
+            return horarios?.horarios!;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     public async findByUuid(uuid: string): Promise<Carrera> {
         try {
             const data = await Carrera.findOneBy({ uuid });

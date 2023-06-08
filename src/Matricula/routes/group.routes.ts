@@ -2,7 +2,6 @@ import { Router } from "express";
 import { GroupController } from "../controllers/group.controller";
 import { body, param } from "express-validator";
 import { validateFields } from "../../middlewares/validateFields";
-import { hasPermissionRole } from "../../middlewares/hasPermissionRole";
 import { ROLES } from "../../interfaces/enums";
 import { validateJWT } from "../../middlewares/validateJWT";
 import { checkAuthRole } from "../../middlewares/checkAuthRole";
@@ -17,9 +16,10 @@ const groupController = new GroupController();
  *  schemas:
  *      Group:
  *          properties:
- *              id:
- *                  type: number
- *                  description: El id autogenerado del grupo
+ *              uuid:
+ *                  type: string
+ *                  format: uuid
+ *                  description: El uuid del grupo
  *              nombre:
  *                  type: string
  *                  description: Nombre del grupo
@@ -73,10 +73,9 @@ const groupController = new GroupController();
  *              fecha_inicio: 2023-05-15 07:54:18.276
  *              horario:
  *                  uuid: 03ed1634-ce6f-4125-b158-7ded8565d70b
- *                  turno: Mañana
- *                  dias: L-V
- *                  hora_inicio: 8
- *                  hora_fin: 12
+ *                  dias: ["Lun","Mar"]
+ *                  hora_inicio: "8:00"
+ *                  hora_fin: "11:00"
  *              carrera:
  *                  uuid: 03ed1634-ce6f-4125-b158-7ded8565d70b
  *                  num_modulos: 2
@@ -130,9 +129,9 @@ router.post(
         checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
         body("nombre").exists(),
         body("fechaInicio").exists(),
-        body("horarioUuid").isString(),
-        body("carreraUuid").isString(),
-        body("docenteUuid").isString(),
+        body("horarioUuid").isUUID("4"),
+        body("carreraUuid").isUUID("4"),
+        body("docenteUuid").isUUID("4"),
         validateFields,
     ],
     groupController.postGroup
@@ -204,7 +203,7 @@ router.get(
     [
         validateJWT,
         checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
-        param("id").isString(),
+        param("id").isUUID("4"),
         validateFields,
     ],
     groupController.getByUuid

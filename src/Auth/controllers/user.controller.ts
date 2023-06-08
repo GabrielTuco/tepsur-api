@@ -22,7 +22,7 @@ export class UserController {
             }
 
             const user = await userService.updateAvatar(
-                Number(id),
+                id,
                 req.files.image as fileUpload.UploadedFile
             );
 

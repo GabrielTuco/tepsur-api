@@ -1,3 +1,4 @@
+import { v4 as uuid } from "uuid";
 import { DatabaseError } from "../../errors/DatabaseError";
 import { Modulo } from "../entity";
 import { ModuleDTO } from "../interfaces/dtos";
@@ -7,6 +8,7 @@ export class ModuleService implements ModuleRepository {
     public async register(data: ModuleDTO): Promise<Modulo> {
         try {
             const modulo = new Modulo();
+            modulo.uuid = uuid();
             modulo.nombre = data.nombre;
             modulo.duracion_semanas = data.duracionSemanas;
 

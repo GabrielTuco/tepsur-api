@@ -20,11 +20,11 @@ export class TeacherService {
         apePaterno,
         dni,
         nombres,
-        sede,
+        sedeUuid,
     }: TeacherSchema) {
         try {
             const newTeacher = new Docente();
-            const sedeExists = await Sede.findOneBy({ id: sede });
+            const sedeExists = await Sede.findOneBy({ uuid: sedeUuid });
 
             if (sedeExists) {
                 newTeacher.uuid = uuid();
@@ -46,12 +46,12 @@ export class TeacherService {
         usuario: string,
         password: string,
         codRol: number,
-        codTeacher: number
+        teacherUuid: string
     ) {
         try {
-            const teacher = await Docente.findOneBy({ id: codTeacher });
+            const teacher = await Docente.findOneBy({ uuid: teacherUuid });
             if (teacher) {
-                const rol = await Rol.findOneBy({ id: codRol });
+                const rol = await Rol.findOneBy({ uuid: codRol });
                 if (rol) {
                     const newUsuario = new Usuario();
                     newUsuario.usuario = usuario;
@@ -79,7 +79,7 @@ export class TeacherService {
                 .innerJoinAndSelect("d.usuario", "u")
                 .innerJoinAndSelect("u.rol", "r")
                 .innerJoinAndSelect("d.sede", "s")
-                .where("u.id= :id", { id: usuario.id })
+                .where("u.uuid= :id", { id: usuario.uuid })
                 .getOne();
             return teacherExists || null;
         } catch (error) {

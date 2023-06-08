@@ -118,7 +118,7 @@ export class StudentService implements StudentRepository {
             const studentExists = await Alumno.createQueryBuilder("a")
                 .innerJoinAndSelect("a.usuario", "u")
                 .innerJoinAndSelect("u.rol", "r")
-                .where("u.id= :id", { id: usuario.id })
+                .where("u.uuid= :id", { id: usuario.uuid })
                 .getOne();
 
             if (!studentExists)

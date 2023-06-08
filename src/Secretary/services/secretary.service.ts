@@ -12,7 +12,7 @@ import { DatabaseError } from "../../errors/DatabaseError";
 
 export class SecretaryService implements SecretaryRepository {
     public async register({
-        codSede,
+        sedeUuid,
         dni,
         nombres,
         apeMaterno,
@@ -21,7 +21,7 @@ export class SecretaryService implements SecretaryRepository {
         correo,
     }: CreateSecretaryDTO) {
         try {
-            const sede = await Sede.findOneBy({ id: codSede });
+            const sede = await Sede.findOneBy({ uuid: sedeUuid });
             if (!sede) throw new DatabaseError("Sede not found", 404, "");
 
             const newSecretary = new Secretaria();
@@ -44,15 +44,18 @@ export class SecretaryService implements SecretaryRepository {
         usuario,
         password,
         codRol,
-        codSecretary,
+        secretaryUuid,
     }: CreateSecretaryUserDTO) {
         try {
-            const secretary = await Secretaria.findOneBy({ id: codSecretary });
+            const secretary = await Secretaria.findOneBy({
+                uuid: secretaryUuid,
+            });
             if (!secretary)
                 throw new DatabaseError("Secretaria not found", 404, "");
 
-            const rol = await Rol.findOneBy({ id: codRol });
+            const rol = await Rol.findOneBy({ uuid: codRol });
             const newUsuario = new Usuario();
+            newUsuario.uuid = uuid();
             newUsuario.usuario = usuario;
             newUsuario.password = password;
             newUsuario.rol = rol!;
@@ -73,7 +76,7 @@ export class SecretaryService implements SecretaryRepository {
                 .innerJoinAndSelect("u.rol", "r")
                 .innerJoinAndSelect("s.sede", "se")
                 .innerJoinAndSelect("se.direccion", "d")
-                .where("u.id= :id", { id: usuario.id })
+                .where("u.uuid= :id", { id: usuario.uuid })
                 .getOne();
             if (!secretaryExists)
                 throw new DatabaseError("Secretary not found", 404, "");

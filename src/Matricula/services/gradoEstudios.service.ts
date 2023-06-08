@@ -6,7 +6,6 @@ export class GradoEstudiosService {
     public async register(data: GradoEstudiosDTO): Promise<GradoEstudios> {
         try {
             const newGradoEstudios = new GradoEstudios();
-            newGradoEstudios.uuid = uuid();
             newGradoEstudios.descripcion = data.descripcion;
 
             return await newGradoEstudios.save();

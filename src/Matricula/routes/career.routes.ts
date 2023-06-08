@@ -21,6 +21,30 @@ const careerController = new CareerController();
  *                  type: string
  *              modalidad:
  *                  type: string
+ *              duracionMeses:
+ *                  type: number
+ *                  description: La duracion de la carrera en meses
+ *              horariosExistentes:
+ *                  type: array
+ *                  items:
+ *                      type: string
+ *                      format: uuid
+ *              horariosNuevos:
+ *                  type: array
+ *                  items:
+ *                      type: object
+ *                      properties:
+ *                          horaInicio:
+ *                              type: string
+ *                              example: '08:00'
+ *                          horaFin:
+ *                              type: string
+ *                              example: '11:00'
+ *                          dias:
+ *                              type: array
+ *                              items:
+ *                                  type: string
+ *                              example: ['Lun','Mar','Vie']
  *              modulos:
  *                  type: array
  *                  items:
@@ -28,17 +52,16 @@ const careerController = new CareerController();
  *                      properties:
  *                          nombre:
  *                              type: string
- *                          duracion_semanas:
+ *                          duracionSemanas:
  *                              type: string
+ *                              example: '4 semanas'
  *
  *      CareerResponse:
  *          properties:
- *              id:
- *                  type: number
- *                  description : El id autogenerado de la secretaria
  *              uuid:
  *                  type: string
  *                  format: uuid
+ *                  description: El uuid de la carrera
  *              num_modulos:
  *                  type: number
  *                  description: Numero de modulos
@@ -117,7 +140,7 @@ router.get(
     [
         validateJWT,
         checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
-        param("uuid").exists(),
+        param("uuid").isUUID("4"),
         validateFields,
     ],
     careerController.getCareerByUuid
@@ -154,7 +177,7 @@ router.get(
     [
         validateJWT,
         checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
-        param("name").exists(),
+        param("name").isString(),
         validateFields,
     ],
     careerController.getCareerByName
@@ -245,7 +268,15 @@ router.post(
         body("modulos").isArray(),
         body("modulos.*.nombre").isString(),
         body("modulos.*.duracionSemanas").isString(),
+        body("horariosExistentes").optional().isArray(),
+        body("horariosExistentes.*").optional().isUUID("4"),
+        body("horariosNuevos").optional().isArray(),
+        body("horariosNuevos.*.horaInicio").optional().isString(),
+        body("horariosNuevos.*.horaFin").optional().isString(),
+        body("horariosNuevos.*.dias").optional().isArray(),
+        body("horariosNuevos.*.dias.*").optional().isString(),
         body("modalidad").isString(),
+        body("duracionMeses").isNumeric(),
         validateFields,
     ],
     careerController.postCareer

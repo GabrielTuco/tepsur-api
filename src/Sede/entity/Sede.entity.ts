@@ -7,7 +7,7 @@ import { Matricula } from "../../Matricula/entity";
 
 @Entity()
 export class Sede extends EntityBase {
-    @Column()
+    @Column({ unique: true })
     nombre: string;
 
     @OneToOne(() => Direccion)

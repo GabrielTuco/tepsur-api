@@ -14,9 +14,6 @@ import { Matricula } from "../../Matricula/entity";
 
 @Entity()
 export class Secretaria extends EntityBase {
-    @Column({ unique: true })
-    uuid: string;
-
     @Column({ length: 8, unique: true })
     dni: string;
 
@@ -32,7 +29,7 @@ export class Secretaria extends EntityBase {
     @Column({ nullable: true, length: 9 })
     celular: string;
 
-    @Column({ nullable: true })
+    @Column({ nullable: true, unique: true })
     correo: string;
 
     @OneToOne(() => Usuario, { nullable: true })

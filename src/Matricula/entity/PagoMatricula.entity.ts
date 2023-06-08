@@ -5,9 +5,6 @@ import { MetodoPago } from "./MetodoPago.entity";
 @Entity()
 export class PagoMatricula extends EntityBase {
     @Column()
-    uuid: string;
-
-    @Column()
     num_comprobante: string;
 
     @ManyToOne(() => MetodoPago, (metodoPago) => metodoPago.pagos_matricula)

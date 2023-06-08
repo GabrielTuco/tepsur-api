@@ -1,10 +1,23 @@
-import { Column, Entity, JoinTable, ManyToMany, OneToMany } from "typeorm";
+import {
+    BaseEntity,
+    Column,
+    CreateDateColumn,
+    Entity,
+    JoinTable,
+    ManyToMany,
+    OneToMany,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn,
+} from "typeorm";
 import { EntityBase } from "../../entity/EntityBase";
 import { Usuario } from "./Usuario.entity";
 import { Permiso } from "./Permiso.entity";
 
 @Entity()
-export class Rol extends EntityBase {
+export class Rol extends BaseEntity {
+    @PrimaryGeneratedColumn()
+    uuid: number;
+
     @Column()
     nombre: string;
 
@@ -17,4 +30,10 @@ export class Rol extends EntityBase {
     @ManyToMany(() => Permiso)
     @JoinTable()
     permisos: Permiso[];
+
+    @CreateDateColumn({ select: false })
+    createdAt: Date;
+
+    @UpdateDateColumn({ select: false })
+    updatedAt: Date;
 }

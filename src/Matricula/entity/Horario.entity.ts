@@ -4,11 +4,8 @@ import { Grupo } from "./Grupo.entity";
 
 @Entity()
 export class Horario extends EntityBase {
-    @Column({ unique: true })
-    uuid: string;
-
     @Column("text", { array: true })
-    dias: string[];
+    dias: string[]; //['Lun','Mar','Mie']
 
     @Column()
     hora_inicio: string; // hh:mm en formato de 24 horas

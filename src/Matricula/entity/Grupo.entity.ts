@@ -7,9 +7,6 @@ import { Matricula } from "./Matricula.entity";
 
 @Entity()
 export class Grupo extends EntityBase {
-    @Column({ unique: true })
-    uuid: string;
-
     @Column()
     nombre: string;
 

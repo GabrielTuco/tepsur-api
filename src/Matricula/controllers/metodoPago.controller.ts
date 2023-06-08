@@ -32,7 +32,7 @@ export class MetodoPagoController {
     public async putMetodoPago(req: Request, res: Response) {
         try {
             const metodoPagoUpdated = await metodoPagoService.update(
-                req.params.id,
+                Number(req.params.id),
                 req.body.description
             );
             return res.json(metodoPagoUpdated);

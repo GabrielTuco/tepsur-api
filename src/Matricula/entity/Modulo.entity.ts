@@ -3,9 +3,6 @@ import { EntityBase } from "../../entity";
 
 @Entity()
 export class Modulo extends EntityBase {
-    @PrimaryColumn()
-    uuid: string;
-
     @Column({ unique: true })
     nombre: string;
 

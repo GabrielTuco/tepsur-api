@@ -16,9 +16,10 @@ const secretaryController = new SecretaryController();
  *  schemas:
  *      Secretary:
  *          properties:
- *              id:
- *                  type: number
- *                  description : El id autogenerado de la secretaria
+ *              uuid:
+ *                  type: string
+ *                  format: uuid
+ *                  description : El id de la secretaria
  *              dni:
  *                  type: string
  *                  description: Dni de la secretaria
@@ -38,8 +39,9 @@ const secretaryController = new SecretaryController();
  *                  type: string
  *                  description: Correo
  *              codSede:
- *                  type: number
- *                  description: El codigo de la sede en la que se registra la secretaria
+ *                  type: string
+ *                  format: uuid
+ *                  description: El uuid de la sede en la que se registra la secretaria
  *          required:
  *              - dni
  *              - nombre
@@ -61,6 +63,8 @@ const secretaryController = new SecretaryController();
  *  post:
  *      summary: Crea una nueva secretaria con su respectivo usuario por defecto
  *      tags: [Secretary]
+ *      parameters:
+ *         - $ref: '#/components/parameters/token'
  *      requestBody:
  *          required: true
  *          content:
@@ -84,11 +88,14 @@ router.post(
     [
         validateJWT,
         checkAuthRole([ROLES.ADMIN]),
-        body("dni", "Debe de contener 8 caracteres").isString(),
+        body("dni", "Debe de contener 8 caracteres").isLength({
+            min: 8,
+            max: 8,
+        }),
         body("nombres", "Este campo es obligatorio").isString(),
         body("apePaterno", "Este campo es obligatorio").isString(),
         body("apeMaterno", "Este campo es obligatorio").isString(),
-        body("codSede", "Este campo es obligatorio").isNumeric(),
+        body("codSede", "Este campo es obligatorio").isUUID("4"),
         validateFields,
     ],
     secretaryController.postSecretary
@@ -98,7 +105,7 @@ router.patch(
     "/:id",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN,ROLES.SECRE]),
+        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
         param("id").exists(),
         param("id").isString(),
         validateFields,

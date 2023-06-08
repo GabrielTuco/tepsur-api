@@ -21,6 +21,8 @@ import {
 } from "../Matricula/entity";
 import { Horario } from "../Matricula/entity/Horario.entity";
 import { MetodoPago } from "../Matricula/entity/MetodoPago.entity";
+import { Pension } from "../Pension/entity/Pension.entity";
+import { PagoPension } from "../Pension/entity/PagoPension.entity";
 
 //Yargs config
 const argv = yargs(process.argv.slice(2))
@@ -71,7 +73,9 @@ export const AppDataSource = new DataSource({
         GradoEstudios,
         Matricula,
         PagoMatricula,
-        MetodoPago
+        MetodoPago,
+        Pension,
+        PagoPension,
     ],
     migrations: [],
     subscribers: [],

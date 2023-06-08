@@ -14,6 +14,7 @@ export class GroupService implements GroupRepository {
                 uuid: data.carreraUuid,
             });
 
+            //?Este horario debe pertenecer a la carrera
             const horarioExists = await Horario.findOneBy({
                 uuid: data.horarioUuid,
             });
