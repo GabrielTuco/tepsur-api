@@ -11,7 +11,7 @@ export const hasPermissionRole = async (
 
     const roleExists = roles
         .filter((role) => role !== null)
-        .map((role) => role?.id) as number[];
+        .map((role) => role?.uuid) as number[];
 
     if (!roleExists.includes(codRole)) {
         throw new Error("No tienes privilegios para realizar esta operacion");
