@@ -254,6 +254,7 @@ export class MatriculaService implements MatriculaRepository {
     async registerStudent(alumno: AlumnoData, queryRunner: QueryRunner) {
         try {
             const newDireccionAlumno = new Direccion();
+            newDireccionAlumno.uuid = uuid();
             Object.assign(
                 newDireccionAlumno,
                 adaptedDireccion(alumno.direccion)
