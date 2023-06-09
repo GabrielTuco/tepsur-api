@@ -63,37 +63,37 @@ export class MatriculaService implements MatriculaRepository {
                 uuid: secretariaUuid,
             });
             const sede = await Sede.findOneBy({ uuid: sedeUuid });
-            const horario = await Horario.findOneBy({ uuid: horarioUuid });
+            //const horario = await Horario.findOneBy({ uuid: horarioUuid });
 
-            const grupos = await Grupo.createQueryBuilder("g")
-                .innerJoinAndSelect("g.horario", "h")
-                .where("h.uuid=:id", { id: horarioUuid })
-                .getMany();
+            // const grupos = await Grupo.createQueryBuilder("g")
+            //     .innerJoinAndSelect("g.horario", "h")
+            //     .where("h.uuid=:id", { id: horarioUuid })
+            //     .getMany();
 
-            const gruposDisponibles: string[] = [];
-            grupos.map(async (g) => {
-                const alumnosMatriculados = await Matricula.createQueryBuilder(
-                    "m"
-                )
-                    .innerJoin("m.grupo", "g")
-                    .where("g.uuid=:id", { id: g.uuid })
-                    .getCount();
+            // const gruposDisponibles: string[] = [];
+            // grupos.map(async (g) => {
+            //     const alumnosMatriculados = await Matricula.createQueryBuilder(
+            //         "m"
+            //     )
+            //         .innerJoin("m.grupo", "g")
+            //         .where("g.uuid=:id", { id: g.uuid })
+            //         .getCount();
 
-                if (alumnosMatriculados < g.cupos_maximos) {
-                    gruposDisponibles.push(g.uuid);
-                }
-            });
+            //     if (alumnosMatriculados < g.cupos_maximos) {
+            //         gruposDisponibles.push(g.uuid);
+            //     }
+            // });
 
-            const arrPos = Math.floor(Math.random() * gruposDisponibles.length);
-            const grupo = await Grupo.findOneBy({
-                uuid: gruposDisponibles[arrPos],
-            });
+            // const arrPos = Math.floor(Math.random() * gruposDisponibles.length);
+            // const grupo = await Grupo.findOneBy({
+            //     uuid: gruposDisponibles[arrPos],
+            // });
 
             newMatricula.uuid = uuid();
             newMatricula.carrera = carrera!;
             newMatricula.modulo = modulo!;
             newMatricula.alumno = newAlumno;
-            newMatricula.grupo = grupo!;
+            //newMatricula.grupo = grupo!;
             newMatricula.secretaria = secretaria!;
             newMatricula.sede = sede!;
             newMatricula.fecha_inscripcion = fechaInscripcion;
