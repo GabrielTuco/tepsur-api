@@ -166,7 +166,7 @@ router.post(
         body(
             "alumno.gradoEstudiosUuid",
             "El valor debe ser un UUID valido"
-        ).isUUID("4"),
+        ).isNumeric(),
         body("alumno.lugarNacimiento").isString(),
         body("alumno.celular", "No es un numero de celular valido")
             .isString()
@@ -182,10 +182,10 @@ router.post(
         //TODO: agregar middleware para ver si el horario pertenece a la carrera
         body("horarioUuid", "El valor debe ser un UUID valido").isUUID("4"),
         body("secretariaUuid", "El valor debe ser un UUID valido").isUUID("4"),
-        body("sedeUuid").isNumeric(),
+        body("sedeUuid").isUUID("4"),
         body("pagoMatricula").optional().isObject(),
         body("pagoMatricula.numComprobante").optional().isString(),
-        body("pagoMatricula.formaPagoUuid").optional().isUUID("4"),
+        body("pagoMatricula.formaPagoUuid").optional().isNumeric(),
         body("pagoMatricula.monto").optional().isNumeric(),
         body("fechaInscripcion").isString(),
         validateFields,
