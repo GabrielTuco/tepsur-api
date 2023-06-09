@@ -39,12 +39,16 @@ const groupController = new GroupController();
  *                  type: string
  *                  format: uuid
  *                  description: El uuid unico del docente
+ *              cuposMaximos:
+ *                  type: number
+ *                  description: Numero maximo de cupos para el grupo
  *          required:
  *              - nombre
  *              - fechaInicio
  *              - horarioUuid
  *              - carreraUuid
  *              - docenteUuid
+ *              - cuposMaximos
  *      GroupResponse:
  *          properties:
  *              uuid:

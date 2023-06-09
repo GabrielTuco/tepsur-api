@@ -117,11 +117,18 @@ export class CareerService implements CareerRepository {
 
     public async listHorarios(uuid: string): Promise<Horario[]> {
         try {
-            const horarios = await Carrera.createQueryBuilder("c")
+            const carrera = await Carrera.createQueryBuilder("c")
                 .innerJoinAndSelect("c.horarios", "h")
                 .where("c.uuid=:uuid", { uuid })
                 .getOne();
-            return horarios?.horarios!;
+            if (!carrera)
+                throw new DatabaseError(
+                    "Carrera not found",
+                    500,
+                    "Database found error"
+                );
+
+            return carrera.horarios;
         } catch (error) {
             throw error;
         }

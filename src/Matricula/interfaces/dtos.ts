@@ -25,6 +25,7 @@ export interface GroupDTO {
     horarioUuid: string;
     carreraUuid: string;
     docenteUuid: string;
+    cuposMaximos: number;
 }
 
 enum Turno {

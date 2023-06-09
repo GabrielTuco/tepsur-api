@@ -29,6 +29,7 @@ export class GroupService implements GroupRepository {
             grupo.horario = horarioExists!;
             grupo.carrera = carreraExists!;
             grupo.docente = docenteExists!;
+            grupo.cupos_maximos = data.cuposMaximos;
 
             return await grupo.save();
         } catch (error) {

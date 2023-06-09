@@ -71,6 +71,16 @@ const careerController = new CareerController();
  *              modalidad:
  *                  type: string
  *                  description: Modalida de la carrera
+ *              modulos:
+ *                  type: array
+ *                  items:
+ *                      type: object
+ *                      properties:
+ *                          nombre:
+ *                              type: string
+ *                          duracionSemanas:
+ *                              type: string
+ *                              example: '4 semanas'
  */
 
 /**
@@ -230,6 +240,45 @@ router.get(
         validateFields,
     ],
     careerController.getModulesOfCareer
+);
+
+/**
+ * @swagger
+ * /career/schedules/{uuid}:
+ *  get:
+ *      summary: Obtener los horarios de una carrera
+ *      tags: [Career]
+ *      parameters:
+ *          - $ref: '#/components/parameters/token'
+ *          - in: path
+ *            name: uuid
+ *            schema:
+ *                  type: string
+ *                  format: uuid
+ *            required: true
+ *            description: El uuid de la carrera
+ *      responses:
+ *          200:
+ *              description: La informacion de los modulos de la carrera
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: array
+ *                          items:
+ *                              type: object
+ *          500:
+ *              description: Error de servidor
+ *
+ */
+router.get(
+    "/schedules/:uuid",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        param("uuid").isUUID("4"),
+        validateFields,
+    ],
+    careerController.getSchedulesOfCareer
 );
 
 /**

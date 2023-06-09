@@ -58,6 +58,25 @@ export class CareerController {
         }
     }
 
+    public async getSchedulesOfCareer(req: Request, res: Response) {
+        try {
+            const { uuid } = req.params;
+            const schedules = await careerService.listHorarios(uuid);
+
+            return res.json(schedules);
+        } catch (error) {
+            console.log(error);
+            if (error instanceof DatabaseError) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                });
+            }
+            return res.status(500).json({
+                msg: "Internal Server Error",
+            });
+        }
+    }
+
     public async getCareerByUuid(req: Request, res: Response) {
         try {
             const { uuid } = req.params;

@@ -54,6 +54,7 @@ export class TeacherService {
                 const rol = await Rol.findOneBy({ uuid: codRol });
                 if (rol) {
                     const newUsuario = new Usuario();
+                    newUsuario.uuid = uuid();
                     newUsuario.usuario = usuario;
                     newUsuario.password = password;
                     newUsuario.rol = rol;

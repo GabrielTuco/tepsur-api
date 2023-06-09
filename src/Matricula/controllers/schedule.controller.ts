@@ -101,4 +101,26 @@ export class ScheduleController {
             });
         }
     }
+
+    public async deleteScheduleFromCareer(req: Request, res: Response) {
+        try {
+            const { carreraUuid, horarioUuid } = req.query;
+            const carrera = await scheduleService.removeFromCareer(
+                String(carreraUuid),
+                String(horarioUuid)
+            );
+
+            return res.json(carrera);
+        } catch (error) {
+            if (error instanceof DatabaseError) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                    name: error.name,
+                });
+            }
+            return res.status(500).json({
+                msg: "contact the administrator",
+            });
+        }
+    }
 }

@@ -3,7 +3,7 @@ import { ScheduleController } from "../controllers/schedule.controller";
 import { validateJWT } from "../../middlewares/validateJWT";
 import { checkAuthRole } from "../../middlewares/checkAuthRole";
 import { ROLES } from "../../interfaces/enums";
-import { body, param } from "express-validator";
+import { body, param, query } from "express-validator";
 import { validateFields } from "../../middlewares/validateFields";
 
 const router = Router();
@@ -235,6 +235,51 @@ router.delete(
         validateFields,
     ],
     scheduleController.deleteSchedule
+);
+
+/**
+ * @swagger
+ * /schedule:
+ *  delete:
+ *      summary: Elimina un horario de una carrera (desvincular)
+ *      tags: [Schedule]
+ *      parameters:
+ *         - $ref: '#/components/parameters/token'
+ *         - in: query
+ *           name: carreraUuid
+ *           schema:
+ *              type: string
+ *              format: uuid
+ *           required: true
+ *           description: El id de la carrera
+ *         - in: query
+ *           name: horarioUuid
+ *           schema:
+ *              type: string
+ *              format: uuid
+ *           required: true
+ *           description: El id del horario
+ *      responses:
+ *          200:
+ *              description: Mensaje de confirmacion de eliminacion
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          $ref: '#/components/schemas/Career'
+ *          500:
+ *              description: Error de servidor
+ *
+ */
+router.delete(
+    "/",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ADMIN]),
+        query("carreraUuid").isUUID("4"),
+        query("horarioUuid").isUUID("4"),
+        validateFields,
+    ],
+    scheduleController.deleteScheduleFromCareer
 );
 
 export default router;

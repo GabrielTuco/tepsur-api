@@ -87,7 +87,7 @@ router.post(
         body("nombres", "El campo es obligatorio").isString(),
         body("apePaterno", "El campo es obligatorio").isString(),
         body("apeMaterno", "El campo es obligatorio").isString(),
-        body("codSede", "El campo es obligatorio").isNumeric(),
+        body("codSede", "El campo es obligatorio").isUUID("4"),
         validateFields,
     ],
     teacherController.postRegister

@@ -1,11 +1,4 @@
-import {
-    Column,
-    Entity,
-    JoinColumn,
-    ManyToOne,
-    OneToOne,
-    PrimaryColumn,
-} from "typeorm";
+import { Column, Entity, JoinColumn, OneToOne } from "typeorm";
 import { EntityBase } from "./EntityBase";
 import { Usuario } from "../Auth/entity/Usuario.entity";
 
@@ -28,9 +21,6 @@ export class Administrador extends EntityBase {
 
     @Column({ nullable: true, unique: true })
     correo: string;
-
-    @Column({ default: false })
-    securePasswordUpdated: boolean;
 
     @OneToOne(() => Usuario, { nullable: true })
     @JoinColumn()
