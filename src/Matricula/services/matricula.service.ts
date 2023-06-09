@@ -268,6 +268,8 @@ export class MatriculaService implements MatriculaRepository {
 
             const rol = await Rol.findOneBy({ nombre: "Alumno" });
             const newUserAlumno = new Usuario();
+
+            newUserAlumno.uuid = uuid();
             newUserAlumno.usuario = alumno.dni;
             newUserAlumno.password = encryptPassword(alumno.dni);
             newUserAlumno.rol = rol!;
