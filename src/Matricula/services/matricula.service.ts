@@ -115,7 +115,7 @@ export class MatriculaService implements MatriculaRepository {
 
             await queryRunner.manager.save(newMatricula);
 
-            await this.registerPensiones(newMatricula);
+            //await this.registerPensiones(newMatricula);
 
             await queryRunner.commitTransaction();
             return newMatricula;
