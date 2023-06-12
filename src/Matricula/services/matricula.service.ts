@@ -162,13 +162,18 @@ export class MatriculaService implements MatriculaRepository {
         }
     }
 
-    public async getAll(year: number, month: number): Promise<Matricula[]> {
+    public async getAll(
+        year: string | undefined,
+        month: string | undefined
+    ): Promise<Matricula[]> {
+        console.log({ year, month });
+
         try {
             const matriculas = await Matricula.createQueryBuilder("m")
                 .innerJoinAndSelect("m.carrera", "c")
                 .innerJoinAndSelect("m.modulo", "mo")
                 .innerJoinAndSelect("m.alumno", "a")
-                .innerJoinAndSelect("m.grupo", "g")
+                .leftJoinAndSelect("m.grupo", "g")
                 .innerJoinAndSelect("m.sede", "s")
                 .leftJoinAndSelect("m.pagoMatricula", "p")
                 .where(

@@ -16,8 +16,8 @@ export class MatriculaController {
         try {
             const { year, month } = req.query;
             const matriculas = await matriculaService.getAll(
-                Number(year),
-                Number(month)
+                year?.toString(),
+                month?.toString()
             );
 
             return res.json(matriculas);
@@ -179,10 +179,10 @@ export class MatriculaController {
         }
     }
 
-    public async getModules(_req: Request, res:Response){
+    public async getModules(_req: Request, res: Response) {
         try {
-            const modules = await matriculaService.listModules()
-            return res.json(modules)
+            const modules = await matriculaService.listModules();
+            return res.json(modules);
         } catch (error) {
             console.log(error);
             return res.status(500).json({

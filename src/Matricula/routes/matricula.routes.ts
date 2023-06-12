@@ -369,6 +369,8 @@ router.get(
  *  get:
  *      summary: Listado de los grados de estudios validos
  *      tags: [Matricula]
+ *      parameters:
+ *          - $ref: '#/components/parameters/token'
  *      responses:
  *          200:
  *              description: Listado de los grados de estudios

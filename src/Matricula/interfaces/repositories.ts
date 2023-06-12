@@ -64,7 +64,10 @@ export interface MatriculaRepository {
         uuid: string,
         image: fileUpload.UploadedFile
     ): Promise<PagoMatricula>;
-    getAll(year: number, month: number): Promise<Matricula[]>;
+    getAll(
+        year: string | undefined,
+        month: string | undefined
+    ): Promise<Matricula[]>;
     findByStudent(uuid: number): Promise<Matricula>;
     findByUuid(uuid: number): Promise<Matricula>;
     registerStudent(

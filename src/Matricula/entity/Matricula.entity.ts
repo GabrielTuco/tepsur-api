@@ -28,8 +28,7 @@ export class Matricula extends EntityBase {
     @ManyToOne(() => Grupo, (grupo) => grupo.matriculas)
     grupo: Grupo;
 
-    @OneToOne(() => Modulo, { nullable: true })
-    @JoinColumn()
+    @ManyToOne(() => Modulo, (modulo) => modulo.matriculas)
     modulo: Modulo;
 
     @ManyToOne(() => Secretaria, (secretaria) => secretaria.matriculas)
