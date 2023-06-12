@@ -195,14 +195,14 @@ router.post(
 
 /**
  * @swagger
- * /matricula/upload-payment-document/{uuid}:
+ * /matricula/upload-payment-document/{id}:
  *  post:
  *      summary: Subir el documento de pago de una matricula
  *      tags: [Matricula]
  *      parameters:
  *          - $ref: '#/components/parameters/token'
- *          - in: params
- *            name: uuid
+ *          - in: path
+ *            name: id
  *            schema:
  *              type: string
  *              format: uuid
@@ -229,9 +229,13 @@ router.post(
  *              description: Error de servidor
  *
  */
-router.patch(
-    "/upload-payment-document",
-    [validateJWT],
+router.post(
+    "/upload-payment-document/:id",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        param("id").isUUID("4"),
+    ],
     matriculaController.patchUploadPaidDocument
 );
 

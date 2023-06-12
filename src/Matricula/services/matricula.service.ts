@@ -63,37 +63,37 @@ export class MatriculaService implements MatriculaRepository {
                 uuid: secretariaUuid,
             });
             const sede = await Sede.findOneBy({ uuid: sedeUuid });
-            //const horario = await Horario.findOneBy({ uuid: horarioUuid });
+            const horario = await Horario.findOneBy({ uuid: horarioUuid });
 
-            // const grupos = await Grupo.createQueryBuilder("g")
-            //     .innerJoinAndSelect("g.horario", "h")
-            //     .where("h.uuid=:id", { id: horarioUuid })
-            //     .getMany();
+            const grupos = await Grupo.createQueryBuilder("g")
+                .innerJoinAndSelect("g.horario", "h")
+                .where("h.uuid=:id", { id: horarioUuid })
+                .getMany();
 
-            // const gruposDisponibles: string[] = [];
-            // grupos.map(async (g) => {
-            //     const alumnosMatriculados = await Matricula.createQueryBuilder(
-            //         "m"
-            //     )
-            //         .innerJoin("m.grupo", "g")
-            //         .where("g.uuid=:id", { id: g.uuid })
-            //         .getCount();
+            const gruposDisponibles: string[] = [];
+            grupos.map(async (g) => {
+                const alumnosMatriculados = await Matricula.createQueryBuilder(
+                    "m"
+                )
+                    .innerJoin("m.grupo", "g")
+                    .where("g.uuid=:id", { id: g.uuid })
+                    .getCount();
 
-            //     if (alumnosMatriculados < g.cupos_maximos) {
-            //         gruposDisponibles.push(g.uuid);
-            //     }
-            // });
+                if (alumnosMatriculados < g.cupos_maximos) {
+                    gruposDisponibles.push(g.uuid);
+                }
+            });
 
-            // const arrPos = Math.floor(Math.random() * gruposDisponibles.length);
-            // const grupo = await Grupo.findOneBy({
-            //     uuid: gruposDisponibles[arrPos],
-            // });
+            const arrPos = Math.floor(Math.random() * gruposDisponibles.length);
+            const grupo = await Grupo.findOneBy({
+                uuid: gruposDisponibles[arrPos],
+            });
 
             newMatricula.uuid = uuid();
             newMatricula.carrera = carrera!;
             newMatricula.modulo = modulo!;
             newMatricula.alumno = newAlumno;
-            //newMatricula.grupo = grupo!;
+            newMatricula.grupo = grupo!;
             newMatricula.secretaria = secretaria!;
             newMatricula.sede = sede!;
             newMatricula.fecha_inscripcion = fechaInscripcion;
@@ -196,23 +196,28 @@ export class MatriculaService implements MatriculaRepository {
     async uploadPaidDocument(
         uuid: string,
         image: fileUpload.UploadedFile
-    ): Promise<PagoMatricula> {
+    ): Promise<Matricula> {
         try {
-            const pagoMatricula = await PagoMatricula.findOneBy({ uuid });
-            if (!pagoMatricula)
+            const matricula = await Matricula.createQueryBuilder("m")
+                .innerJoinAndSelect("m.pagoMatricula", "p")
+                .where("m.uuid=:uuid", { uuid })
+                .getOne();
+            if (!matricula)
                 throw new DatabaseError(
-                    "User not found",
+                    "Matricula not found",
                     500,
-                    "Internal server error"
+                    "Database error"
                 );
+            const { pagoMatricula } = matricula;
+
             pagoMatricula.foto_comprobante = await uploadImage(
                 pagoMatricula.foto_comprobante,
                 image,
                 "pagos-matricula"
             );
-            await pagoMatricula.save();
-            await pagoMatricula.reload();
-            return pagoMatricula;
+            await matricula.save();
+            await matricula.reload();
+            return matricula;
         } catch (error) {
             throw error;
         }

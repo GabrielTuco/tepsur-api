@@ -63,7 +63,7 @@ export interface MatriculaRepository {
     uploadPaidDocument(
         uuid: string,
         image: fileUpload.UploadedFile
-    ): Promise<PagoMatricula>;
+    ): Promise<Matricula>;
     getAll(
         year: string | undefined,
         month: string | undefined
