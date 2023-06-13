@@ -52,7 +52,8 @@ export class GroupService implements GroupRepository {
             if (!grupo) throw new DatabaseError("Grupo no encontrado", 404, "");
 
             const students = await Matricula.createQueryBuilder("m")
-                .innerJoinAndSelect("m.grupo", "g")
+                .innerJoinAndSelect("m.alumno", "a")
+                .innerJoin("m.grupo", "g")
                 .where("g.uuid= :uuid", { uuid })
                 .getMany();
 

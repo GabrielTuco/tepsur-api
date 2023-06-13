@@ -12,11 +12,12 @@ export const generateFichaMatricula = async (data: Matricula, doc: PDF) => {
             modulo,
             fecha_inicio,
             fecha_inscripcion,
+            pagoMatricula,
         } = data;
         const { departamento, provincia, distrito } = alumno.direccion;
 
         doc.image("./public/imgs/logo_tepsur.png", {
-            fit: [460, 80],
+            fit: [460, 40],
             align: "center",
             valign: "center",
         });
@@ -101,6 +102,19 @@ export const generateFichaMatricula = async (data: Matricula, doc: PDF) => {
             ],
         };
 
+        const tableDatosPagoMatricula = {
+            title: "Pago de matricula",
+            headers: ["Numero comprobante", "Forma de pago", "Monto"],
+            padding: 5,
+            rows: [
+                [
+                    pagoMatricula.num_comprobante,
+                    pagoMatricula.forma_pago.description,
+                    `S/. ${pagoMatricula.monto}`,
+                ],
+            ],
+        };
+
         doc.fontSize(14).text(
             `Fecha: ${fecha_inscripcion.toLocaleDateString()}`,
             { lineGap: 10 }
@@ -152,6 +166,15 @@ export const generateFichaMatricula = async (data: Matricula, doc: PDF) => {
         });
 
         await doc.table(tableDatosAcademicos, {
+            minRowHeight: 20,
+            prepareHeader: () => doc.font("Helvetica-Bold").fontSize(11),
+            prepareRow: () => {
+                doc.font("Helvetica").fontSize(11);
+                return doc;
+            },
+        });
+
+        await doc.table(tableDatosPagoMatricula, {
             minRowHeight: 20,
             prepareHeader: () => doc.font("Helvetica-Bold").fontSize(11),
             prepareRow: () => {

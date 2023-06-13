@@ -115,9 +115,10 @@ export class MatriculaService implements MatriculaRepository {
 
             await queryRunner.manager.save(newMatricula);
 
-            //await this.registerPensiones(newMatricula);
-
             await queryRunner.commitTransaction();
+
+            await this.registerPensiones(newMatricula);
+
             return newMatricula;
         } catch (error) {
             await queryRunner.rollbackTransaction();
@@ -129,34 +130,29 @@ export class MatriculaService implements MatriculaRepository {
 
     public async registerPensiones(matricula: Matricula): Promise<void> {
         try {
-            const fechaInicio = matricula.fecha_inicio;
-            const mesInicio = matricula.fecha_inicio.getMonth() + 1;
+            const fechaInicio = new Date(matricula.fecha_inicio);
+            const mesInicio = fechaInicio.getMonth() + 1;
             const duracionCarrera = matricula.carrera.duracion_meses;
             const fechaFin = moment().add(duracionCarrera, "M").toDate();
             const meses: number[] = [];
+
+            const yearDifference =
+                fechaFin.getFullYear() - fechaInicio.getFullYear();
             for (let i = 0; i < duracionCarrera; i++) {
                 if (mesInicio + i > 12)
-                    meses.push(
-                        mesInicio +
-                            i -
-                            12 *
-                                (fechaFin.getFullYear() -
-                                    fechaInicio.getFullYear())
-                    );
+                    meses.push(mesInicio + i - 12 * yearDifference);
                 else meses.push(mesInicio + i);
             }
 
-            const pensiones = await Promise.all(
-                meses.map(async (m) => {
-                    const pension = await pensionService.register({
-                        matricula,
-                        mes: m,
-                        monto: 150,
-                        fechaLimite: new Date(),
-                    });
-                    return pension;
-                })
-            );
+            meses.map(async (m) => {
+                const pension = await pensionService.register({
+                    matricula,
+                    mes: m,
+                    monto: 150,
+                    fechaLimite: new Date(),
+                });
+                return pension;
+            });
         } catch (error) {
             throw error;
         }
@@ -166,8 +162,6 @@ export class MatriculaService implements MatriculaRepository {
         year: string | undefined,
         month: string | undefined
     ): Promise<Matricula[]> {
-        console.log({ year, month });
-
         try {
             const matriculas = await Matricula.createQueryBuilder("m")
                 .innerJoinAndSelect("m.carrera", "c")
@@ -213,15 +207,24 @@ export class MatriculaService implements MatriculaRepository {
                     500,
                     "Database error"
                 );
-            const { pagoMatricula } = matricula;
+
+            const pagoMatricula = await PagoMatricula.findOneBy({
+                uuid: matricula.pagoMatricula.uuid,
+            });
+            if (!pagoMatricula)
+                throw new DatabaseError(
+                    "Pago Matricula not found",
+                    500,
+                    "Database error"
+                );
 
             pagoMatricula.foto_comprobante = await uploadImage(
                 pagoMatricula.foto_comprobante,
                 image,
                 "pagos-matricula"
             );
-            await matricula.save();
-            await matricula.reload();
+            await pagoMatricula.save();
+            await pagoMatricula.reload();
             return matricula;
         } catch (error) {
             throw error;
@@ -330,6 +333,7 @@ export class MatriculaService implements MatriculaRepository {
                 .innerJoinAndSelect("g.horario", "h")
                 .innerJoinAndSelect("m.sede", "s")
                 .leftJoinAndSelect("m.pagoMatricula", "p")
+                .innerJoinAndSelect("p.forma_pago", "f")
                 .where(`m.uuid= :uuid`, { uuid })
                 .getOne();
             if (!data) throw new DatabaseError("Matricula not found", 500, "");
