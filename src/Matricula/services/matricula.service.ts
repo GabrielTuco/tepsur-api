@@ -174,7 +174,7 @@ export class MatriculaService implements MatriculaRepository {
                 .innerJoinAndSelect("m.sede", "s")
                 .innerJoinAndSelect("g.horario", "h")
                 .leftJoinAndSelect("m.pagoMatricula", "p")
-                .innerJoinAndSelect("p.forma_pago", "fp")
+                .leftJoinAndSelect("p.forma_pago", "fp")
                 .where(
                     `EXTRACT(YEAR from m.fecha_inscripcion)=:year ${
                         month
