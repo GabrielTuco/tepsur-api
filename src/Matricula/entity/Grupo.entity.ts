@@ -28,7 +28,7 @@ export class Grupo extends EntityBase {
     @ManyToOne(() => Docente, (docente) => docente.grupos)
     docente: Docente;
 
-    @OneToMany(() => Matricula, (matricula) => matricula.carrera, {
+    @OneToMany(() => Matricula, (matricula) => matricula.grupo, {
         nullable: true,
     })
     matriculas: Matricula[];
