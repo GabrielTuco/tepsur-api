@@ -39,7 +39,15 @@ export class GroupService implements GroupRepository {
 
     public async listGroups(): Promise<Grupo[]> {
         try {
-            const grupos = await Grupo.find();
+            const grupos = await Grupo.createQueryBuilder("g")
+                .innerJoinAndSelect("g.docente","d")
+                .innerJoinAndSelect("g.horario","h")
+                .innerJoinAndSelect("g.carrera","c")
+                .leftJoinAndSelect("g.matriculas","m")
+                //.leftJoinAndSelect("m.alumno","a")
+                //.leftJoinAndSelect("m.secretaria","s")
+                .getMany();
+            const grupos2= await Grupo.find();
 
             return grupos;
         } catch (error) {
@@ -63,7 +71,16 @@ export class GroupService implements GroupRepository {
     }
     public async findByUuid(uuid: string): Promise<Grupo> {
         try {
-            const group = await Grupo.findOneBy({ uuid });
+            const group = await Grupo.createQueryBuilder("g")
+            .innerJoinAndSelect("g.docente","d")
+            .innerJoinAndSelect("g.horario","h")
+            .innerJoinAndSelect("g.carrera","c")
+            .leftJoinAndSelect("g.matriculas","m")
+            //.leftJoinAndSelect("m.alumno","a")
+            //.leftJoinAndSelect("m.secretaria","s");
+            .where("g.uuid=:uuid",{uuid})
+            .getOne();
+
             if (!group) throw new DatabaseError("Grupo no encontrado", 404, "");
 
             return group;

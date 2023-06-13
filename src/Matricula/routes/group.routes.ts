@@ -164,7 +164,27 @@ router.post(
  */
 router.get("/", [], groupController.getAll);
 
-//TODO: Documentar ruta
+/**
+ * @swagger
+ * /group/students/{id}:
+ *  get:
+ *      summary: Listado de alumnos de un grupo
+ *      tags: [Group]
+ *      parameters:
+ *         - $ref: '#/components/parameters/token'
+ *      responses:
+ *          200:
+ *              description: El listado de alumnos
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: array
+ *                          items:
+ *                              $ref: '#/components/schemas/GroupResponse'
+ *          500:
+ *              description: Error de servidor
+ *
+ */
 router.get(
     "/students/:id",
     [
