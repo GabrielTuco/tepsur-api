@@ -87,14 +87,12 @@ const matriculaController = new MatriculaController();
  *                  type: string
  *                  format: uuid
  *                  description:  Uuid de la carrera
- *              moduloUuid:
- *                  type: string
- *                  format: uuid
- *                  description:  Uuid del modulo de la carrera
- *              horarioUuid:
- *                  type: string
- *                  format: uuid
- *                  description:  Uuid del horario
+ *              modulos:
+ *                  type: array
+ *                  items:
+ *                      type: string
+ *                      format: uuid
+ *                      description:  Uuid de los modulos de la carrera
  *              secretariaUuid:
  *                  type: string
  *                  format: uuid
@@ -107,6 +105,10 @@ const matriculaController = new MatriculaController();
  *                  type: object
  *                  $ref: '#/components/schemas/PagoMatricula'
  *                  description: Informacion del pago de la matricula
+ *              tipoMatricula:
+ *                  type: string
+ *                  description: El tipo de matricula que se registra
+ *                  example: "nuevo"
  *              fechaInscripcion:
  *                  type: string
  *                  format: datetime
@@ -178,9 +180,12 @@ router.post(
         body("alumno.direccion.provincia").isString(),
         body("alumno.direccion.departamento").isString(),
         body("carreraUuid", "El valor debe ser un UUID valido").isUUID("4"),
-        body("moduloUuid", "El valor debe ser un UUID valido").isUUID("4"),
+        body("modulos", "Debe ser un array de UUIDS").optional().isArray(),
+        body("modulos.*", "El valor debe ser un UUID valido")
+            .optional()
+            .isUUID("4"),
         //TODO: agregar middleware para ver si el horario pertenece a la carrera
-        body("horarioUuid", "El valor debe ser un UUID valido").isUUID("4"),
+        //body("horarioUuid", "El valor debe ser un UUID valido").optional().isUUID("4"),
         body("secretariaUuid", "El valor debe ser un UUID valido").isUUID("4"),
         body("sedeUuid").isUUID("4"),
         body("pagoMatricula").optional().isObject(),
@@ -188,6 +193,7 @@ router.post(
         body("pagoMatricula.formaPagoUuid").optional().isNumeric(),
         body("pagoMatricula.monto").optional().isNumeric(),
         body("fechaInscripcion").isString(),
+        body("fechaInicio").isString(),
         validateFields,
     ],
     matriculaController.postMatricula

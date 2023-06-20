@@ -9,7 +9,7 @@ export const generateFichaMatricula = async (data: Matricula, doc: PDF) => {
             carrera,
             grupo,
             sede,
-            modulo,
+            //modulo,
             fecha_inicio,
             fecha_inscripcion,
             pagoMatricula,
@@ -72,11 +72,11 @@ export const generateFichaMatricula = async (data: Matricula, doc: PDF) => {
         };
 
         const tableDatos2 = {
-            headers: ["Lugar de nacimiento", "Celular", "Correo"],
+            headers: ["Lugar de residencia", "Celular", "Correo"],
             padding: 5,
             rows: [
                 [
-                    alumno.lugar_nacimiento,
+                    alumno.lugar_residencia,
                     alumno.celular ? alumno.celular : "-",
                     alumno.correo ? alumno.correo : "-",
                 ],
@@ -87,7 +87,7 @@ export const generateFichaMatricula = async (data: Matricula, doc: PDF) => {
             title: "Datos académicos",
             headers: [
                 "Carrera/Especialidad",
-                "Modulo",
+                //"Modulo",
                 "Horario",
                 "Modalidad/Sede",
             ],
@@ -95,7 +95,7 @@ export const generateFichaMatricula = async (data: Matricula, doc: PDF) => {
             rows: [
                 [
                     carrera.nombre,
-                    modulo.nombre,
+                    //modulo.nombre,
                     `${grupo.horario.dias} / ${grupo.horario.hora_inicio}:00 ${grupo.horario.hora_fin}:00`,
                     `${carrera.modalidad} - ${sede.nombre}`,
                 ],

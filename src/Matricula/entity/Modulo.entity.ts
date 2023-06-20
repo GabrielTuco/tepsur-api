@@ -1,6 +1,7 @@
-import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
+import { Column, Entity, ManyToOne } from "typeorm";
 import { EntityBase } from "../../entity";
-import { Matricula } from "./Matricula.entity";
+import { Horario } from "./Horario.entity";
+import { Docente } from "../../Teacher/entity/Docente.entity";
 
 @Entity()
 export class Modulo extends EntityBase {
@@ -10,6 +11,9 @@ export class Modulo extends EntityBase {
     @Column()
     duracion_semanas: string;
 
-    @OneToMany(() => Matricula, (matricula) => matricula.modulo)
-    matriculas: Matricula[];
+    @ManyToOne(() => Horario, (horario) => horario.modulos)
+    horario: Horario;
+
+    @ManyToOne(() => Docente, (docente) => docente.modulos)
+    docente: Docente;
 }

@@ -10,6 +10,6 @@ export const studentAdapter = (data: Partial<StudentDTO>) => {
         correo: data.correo,
         celular: data.celular,
         direccion: data.direccion,
-        lugar_nacimiento: data.lugarNacimiento,
+        lugar_residencia: data.lugarResidencia,
     };
 };

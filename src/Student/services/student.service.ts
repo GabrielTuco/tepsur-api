@@ -21,7 +21,7 @@ export class StudentService implements StudentRepository {
                 dni,
                 edad,
                 gradoEstudiosUuid,
-                lugarNacimiento,
+                lugarResidencia,
                 nombres,
                 sexo,
             } = data;
@@ -48,7 +48,7 @@ export class StudentService implements StudentRepository {
             alumno.dni = dni;
             alumno.edad = edad!;
             alumno.grado_estudios = gradoEstudiosExists!;
-            alumno.lugar_nacimiento = lugarNacimiento!;
+            alumno.lugar_residencia = lugarResidencia!;
             alumno.nombres = nombres;
             alumno.sexo = sexo;
             alumno.uuid = uuid();

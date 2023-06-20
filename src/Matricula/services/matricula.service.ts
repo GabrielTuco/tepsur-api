@@ -45,8 +45,8 @@ export class MatriculaService implements MatriculaRepository {
             const {
                 alumno,
                 carreraUuid,
-                moduloUuid,
                 horarioUuid,
+                modulos,
                 pagoMatricula,
                 secretariaUuid,
                 sedeUuid,
@@ -58,46 +58,34 @@ export class MatriculaService implements MatriculaRepository {
 
             const newMatricula = new Matricula();
             const carrera = await Carrera.findOneBy({ uuid: carreraUuid });
-            const modulo = await Modulo.findOneBy({ uuid: moduloUuid });
+
             const secretaria = await Secretaria.findOneBy({
                 uuid: secretariaUuid,
             });
             const sede = await Sede.findOneBy({ uuid: sedeUuid });
-            const horario = await Horario.findOneBy({ uuid: horarioUuid });
 
-            const grupos = await Grupo.createQueryBuilder("g")
-                .innerJoinAndSelect("g.horario", "h")
-                .where("h.uuid=:id", { id: horarioUuid })
-                .getMany();
-
-            const gruposDisponibles: string[] = [];
-            grupos.map(async (g) => {
-                const alumnosMatriculados = await Matricula.createQueryBuilder(
-                    "m"
-                )
-                    .innerJoin("m.grupo", "g")
-                    .where("g.uuid=:id", { id: g.uuid })
-                    .getCount();
-
-                if (alumnosMatriculados < g.cupos_maximos) {
-                    gruposDisponibles.push(g.uuid);
-                }
-            });
-
-            const arrPos = Math.floor(Math.random() * gruposDisponibles.length);
-            const grupo = await Grupo.findOneBy({
-                uuid: gruposDisponibles[arrPos],
-            });
+            //const horario = await Horario.findOneBy({ uuid: horarioUuid });
+            //const grupo = await this.setRandomGroup(horarioUuid);
 
             newMatricula.uuid = uuid();
             newMatricula.carrera = carrera!;
-            newMatricula.modulo = modulo!;
             newMatricula.alumno = newAlumno;
-            newMatricula.grupo = grupo!;
+            //newMatricula.grupo = grupo!;
             newMatricula.secretaria = secretaria!;
             newMatricula.sede = sede!;
             newMatricula.fecha_inscripcion = fechaInscripcion;
             newMatricula.fecha_inicio = fechaInicio;
+
+            if (modulos) {
+                const modulosExists = await Promise.all(
+                    modulos.map(
+                        async (m) => await Modulo.findOneBy({ uuid: m })
+                    )
+                );
+                newMatricula.modulos = modulosExists.filter(
+                    (element): element is Modulo => element !== null
+                );
+            }
 
             if (pagoMatricula) {
                 const newPagoMatricula = new PagoMatricula();
@@ -117,7 +105,7 @@ export class MatriculaService implements MatriculaRepository {
 
             await queryRunner.commitTransaction();
 
-            await this.registerPensiones(newMatricula);
+            //await this.registerPensiones(newMatricula);
 
             return newMatricula;
         } catch (error) {
@@ -153,6 +141,38 @@ export class MatriculaService implements MatriculaRepository {
                 });
                 return pension;
             });
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    public async setRandomGroup(horarioUuid: string): Promise<Grupo> {
+        try {
+            const grupos = await Grupo.createQueryBuilder("g")
+                .innerJoinAndSelect("g.horario", "h")
+                .where("h.uuid=:id", { id: horarioUuid })
+                .getMany();
+
+            const gruposDisponibles: string[] = [];
+            grupos.map(async (g) => {
+                const alumnosMatriculados = await Matricula.createQueryBuilder(
+                    "m"
+                )
+                    .innerJoin("m.grupo", "g")
+                    .where("g.uuid=:id", { id: g.uuid })
+                    .getCount();
+
+                if (alumnosMatriculados < g.cupos_maximos) {
+                    gruposDisponibles.push(g.uuid);
+                }
+            });
+
+            const arrPos = Math.floor(Math.random() * gruposDisponibles.length);
+            const grupo = await Grupo.findOneBy({
+                uuid: gruposDisponibles[arrPos],
+            });
+
+            return grupo!;
         } catch (error) {
             throw error;
         }
@@ -303,7 +323,7 @@ export class MatriculaService implements MatriculaRepository {
             newAlumno.ape_paterno = alumno.apePaterno;
             newAlumno.edad = alumno.edad;
             newAlumno.sexo = alumno.sexo;
-            newAlumno.lugar_nacimiento = alumno.lugarNacimiento;
+            newAlumno.lugar_residencia = alumno.lugarResidencia;
             newAlumno.celular = alumno.celular;
             newAlumno.correo = alumno.correo;
             newAlumno.direccion = newDireccionAlumno;

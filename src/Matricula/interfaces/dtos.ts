@@ -1,6 +1,10 @@
+import { TIPO_MATRICULA } from "../../interfaces/enums";
+
 export interface ModuleDTO {
     nombre: string;
     duracionSemanas: string;
+    horarioUuid: string;
+    docenteUuid: string;
 }
 
 export interface HorarioDTO {
@@ -45,13 +49,14 @@ export type UpdateScheduleDTO = Partial<ScheduleDTO>;
 export interface MatriculaDTO {
     alumno: AlumnoData;
     carreraUuid: string;
-    moduloUuid: string;
     horarioUuid: string;
+    modulos: string[];
     secretariaUuid: string;
     sedeUuid: string;
     pagoMatricula: PagoMatriculaData;
     fechaInscripcion: Date;
     fechaInicio: Date;
+    tipoMatricula: TIPO_MATRICULA;
 }
 
 export interface AlumnoData {
@@ -62,7 +67,7 @@ export interface AlumnoData {
     sexo: "m" | "f";
     edad: number;
     gradoEstudiosUuid: number;
-    lugarNacimiento: string;
+    lugarResidencia: string;
     celular: string;
     correo: string;
     direccion: DireccionDto;

@@ -1,9 +1,17 @@
-import { Column, Entity, JoinColumn, OneToMany, OneToOne } from "typeorm";
+import {
+    Column,
+    Entity,
+    JoinColumn,
+    JoinTable,
+    ManyToMany,
+    OneToMany,
+    OneToOne,
+} from "typeorm";
 import { EntityBase } from "../../entity/EntityBase";
 import { Direccion } from "../../entity/Direccion.entity";
 import { Docente } from "../../Teacher/entity/Docente.entity";
 import { Secretaria } from "../../Secretary/entity/Secretaria.entity";
-import { Matricula } from "../../Matricula/entity";
+import { Carrera, Matricula } from "../../Matricula/entity";
 
 @Entity()
 export class Sede extends EntityBase {
@@ -22,4 +30,8 @@ export class Sede extends EntityBase {
 
     @OneToMany(() => Matricula, (matricula) => matricula.sede)
     matriculas: Matricula[];
+
+    @ManyToMany(() => Carrera)
+    @JoinTable()
+    carreras: Carrera[];
 }

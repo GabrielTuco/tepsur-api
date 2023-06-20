@@ -34,7 +34,7 @@ export class Alumno extends EntityBase {
     grado_estudios: GradoEstudios;
 
     @Column({ nullable: true })
-    lugar_nacimiento: string;
+    lugar_residencia: string;
 
     @Column({ nullable: true })
     celular: string;
@@ -52,6 +52,4 @@ export class Alumno extends EntityBase {
     @OneToOne(() => Direccion)
     @JoinColumn()
     direccion: Direccion;
-
-    //TODO: ultimo_grupo
 }

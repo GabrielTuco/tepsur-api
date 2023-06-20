@@ -9,7 +9,7 @@ export interface StudentDTO {
     sexo: "m" | "f";
     edad?: number;
     gradoEstudiosUuid?: number;
-    lugarNacimiento?: string;
+    lugarResidencia?: string;
     celular?: string;
     correo?: string;
     direccion: DireccionDto;

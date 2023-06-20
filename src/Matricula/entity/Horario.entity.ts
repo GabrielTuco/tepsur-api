@@ -1,6 +1,7 @@
 import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
 import { EntityBase } from "../../entity";
 import { Grupo } from "./Grupo.entity";
+import { Modulo } from "./Modulo.entity";
 
 @Entity()
 export class Horario extends EntityBase {
@@ -18,4 +19,7 @@ export class Horario extends EntityBase {
 
     @OneToMany(() => Grupo, (grupo) => grupo.horario)
     grupos: Grupo[];
+
+    @OneToMany(() => Modulo, (modulo) => modulo.horario)
+    modulos: Modulo[];
 }

@@ -4,6 +4,7 @@ import { Carrera } from "./Carrera.entity";
 import { Horario } from "./Horario.entity";
 import { Docente } from "../../Teacher/entity/Docente.entity";
 import { Matricula } from "./Matricula.entity";
+import { ESTADO_GRUPO } from "../../interfaces/enums";
 
 @Entity()
 export class Grupo extends EntityBase {
@@ -13,10 +14,10 @@ export class Grupo extends EntityBase {
     @Column()
     fecha_inicio: Date;
 
-    @Column({ default: "ABIERTO" }) //EN_CURSO CERRADO
-    estado: string;
+    @Column({ default: ESTADO_GRUPO.ABIERTO })
+    estado: ESTADO_GRUPO;
 
-    @Column({ nullable: true, default: 50 })
+    @Column({ nullable: true, default: 60 })
     cupos_maximos: number;
 
     @ManyToOne(() => Horario, (horario) => horario.grupos)

@@ -10,7 +10,7 @@ import {
 import { EntityBase } from "../../entity/EntityBase";
 import { Usuario } from "../../Auth/entity/Usuario.entity";
 import { Sede } from "../../Sede/entity/Sede.entity";
-import { Grupo } from "../../Matricula/entity";
+import { Grupo, Modulo } from "../../Matricula/entity";
 
 @Entity()
 export class Docente extends EntityBase {
@@ -35,4 +35,7 @@ export class Docente extends EntityBase {
 
     @OneToMany(() => Grupo, (grupo) => grupo.docente, { nullable: true })
     grupos: Grupo[];
+
+    @OneToMany(() => Modulo, (modulo) => modulo.horario)
+    modulos: Modulo[];
 }

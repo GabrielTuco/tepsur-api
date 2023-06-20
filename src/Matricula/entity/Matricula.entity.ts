@@ -2,6 +2,8 @@ import {
     Column,
     Entity,
     JoinColumn,
+    JoinTable,
+    ManyToMany,
     ManyToOne,
     OneToMany,
     OneToOne,
@@ -15,6 +17,7 @@ import { PagoMatricula } from "./PagoMatricula.entity";
 import { Grupo } from "./Grupo.entity";
 import { Modulo } from "./Modulo.entity";
 import { Pension } from "../../Pension/entity/Pension.entity";
+import { TIPO_MATRICULA } from "../../interfaces/enums";
 
 @Entity()
 export class Matricula extends EntityBase {
@@ -25,11 +28,12 @@ export class Matricula extends EntityBase {
     @JoinColumn()
     alumno: Alumno;
 
-    @ManyToOne(() => Grupo, (grupo) => grupo.matriculas)
+    @ManyToOne(() => Grupo, (grupo) => grupo.matriculas, { nullable: true })
     grupo: Grupo;
 
-    @ManyToOne(() => Modulo, (modulo) => modulo.matriculas)
-    modulo: Modulo;
+    @ManyToMany(() => Modulo)
+    @JoinTable()
+    modulos: Modulo[];
 
     @ManyToOne(() => Secretaria, (secretaria) => secretaria.matriculas)
     secretaria: Secretaria;
@@ -49,4 +53,7 @@ export class Matricula extends EntityBase {
 
     @Column()
     fecha_inicio: Date;
+
+    @Column({ nullable: true })
+    tipo_matricula: TIPO_MATRICULA;
 }

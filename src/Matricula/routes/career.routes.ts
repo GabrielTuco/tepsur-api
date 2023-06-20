@@ -55,6 +55,14 @@ const careerController = new CareerController();
  *                          duracionSemanas:
  *                              type: string
  *                              example: '4 semanas'
+ *                          horarioUuid:
+ *                              type: string
+ *                              format: uuid
+ *                              description: El horario del modulo
+ *                          docenteUuid:
+ *                              type: string
+ *                              format: uuid
+ *                              description: El docente que dicta el modulo
  *
  *      CareerResponse:
  *          properties:
