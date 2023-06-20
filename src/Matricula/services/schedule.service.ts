@@ -51,7 +51,6 @@ export class ScheduleService implements ScheduleRepository {
             await Horario.update({ uuid }, data);
 
             await horario.reload();
-
             return horario;
         } catch (error) {
             throw error;
@@ -70,44 +69,24 @@ export class ScheduleService implements ScheduleRepository {
         }
     }
 
-    public async removeFromCareer(
-        carreraUuid: string,
-        horarioUuid: string
-    ): Promise<Carrera> {
+    public async listPerCareer(carreraUuid: string): Promise<Horario[]> {
         try {
-            //TODO validar que no hay grupos vinculados al horario caso contrario cancelar
+           const carrera = await Carrera.createQueryBuilder("c")
+            .innerJoinAndSelect("c.modulos","m")
+            .innerJoinAndSelect("m.horarios","h")
+            .where("c.uuid=:uuid",{uuid:carreraUuid}).getOne();
+           if(!carrera) throw new DatabaseError("Carrera not found",500,"");
 
-            const carrera = await Carrera.createQueryBuilder("c")
-                .innerJoinAndSelect("c.horarios", "h")
-                .where("c.uuid=:uuid", { uuid: carreraUuid })
-                .getOne();
+           const {modulos} = carrera;
+           const horariosMatriz =  modulos.map(m=>m.horarios)
 
-            if (!carrera)
-                throw new DatabaseError(
-                    "Carrera not found",
-                    500,
-                    "Database found error"
-                );
+           const horariosArray = horariosMatriz.flatMap(row=>row)
 
-            const horarioInCarrera = carrera.horarios.find(
-                (h) => h.uuid === horarioUuid
-            );
-
-            if (!horarioInCarrera)
-                throw new DatabaseError(
-                    "Este horario no pertenece a esta carrera",
-                    500,
-                    "Database found error"
-                );
-
-            carrera.horarios = carrera.horarios.filter(
-                (h) => h.uuid !== horarioUuid
-            );
-
-            await carrera.save();
-            await carrera.reload();
-
-            return carrera;
+           const horarios = horariosArray.filter((horario,index,self)=>{
+            return (index===self.findIndex(h=>h.uuid===horario.uuid))
+           })
+           
+           return horarios;
         } catch (error) {
             throw error;
         }

@@ -20,6 +20,5 @@ export class Horario extends EntityBase {
     @OneToMany(() => Grupo, (grupo) => grupo.horario)
     grupos: Grupo[];
 
-    @OneToMany(() => Modulo, (modulo) => modulo.horario)
-    modulos: Modulo[];
+    
 }

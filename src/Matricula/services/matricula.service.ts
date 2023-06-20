@@ -54,11 +54,12 @@ export class MatriculaService implements MatriculaRepository {
                 fechaInicio,
             } = data;
 
+            //Registro de datos personales del estudiante
             const newAlumno = await this.registerStudent(alumno, queryRunner);
 
+            //Registro de datos academicos del estudiante
             const newMatricula = new Matricula();
             const carrera = await Carrera.findOneBy({ uuid: carreraUuid });
-
             const secretaria = await Secretaria.findOneBy({
                 uuid: secretariaUuid,
             });
@@ -212,7 +213,7 @@ export class MatriculaService implements MatriculaRepository {
     }
 
     //Subida del documento de pago de matricula
-    async uploadPaidDocument(
+    public async uploadPaidDocument(
         uuid: string,
         image: fileUpload.UploadedFile
     ): Promise<Matricula> {
@@ -283,10 +284,10 @@ export class MatriculaService implements MatriculaRepository {
         }
     }
 
-    async findByStudent(_uuid: number): Promise<Matricula> {
+    public async findByStudent(_uuid: number): Promise<Matricula> {
         throw new Error("Method not implemented.");
     }
-    async findByUuid(_uuid: number): Promise<Matricula> {
+    public async findByUuid(_uuid: number): Promise<Matricula> {
         throw new Error("Method not implemented.");
     }
     async registerStudent(alumno: AlumnoData, queryRunner: QueryRunner) {

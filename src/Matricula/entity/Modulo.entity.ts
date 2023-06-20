@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from "typeorm";
 import { EntityBase } from "../../entity";
 import { Horario } from "./Horario.entity";
 import { Docente } from "../../Teacher/entity/Docente.entity";
@@ -11,8 +11,9 @@ export class Modulo extends EntityBase {
     @Column()
     duracion_semanas: string;
 
-    @ManyToOne(() => Horario, (horario) => horario.modulos)
-    horario: Horario;
+    @ManyToMany(()=>Horario)
+    @JoinTable()
+    horarios:Horario[];
 
     @ManyToOne(() => Docente, (docente) => docente.modulos)
     docente: Docente;
