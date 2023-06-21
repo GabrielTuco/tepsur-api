@@ -1,10 +1,10 @@
-import { TIPO_MATRICULA } from "../../interfaces/enums";
+import { TIPO_CARRERA, TIPO_MATRICULA } from "../../interfaces/enums";
 
 export interface ModuleDTO {
     nombre: string;
     duracionSemanas: string;
-    horarioUuid: string;
     docenteUuid: string;
+    horarios: HorarioDTO[];
 }
 
 export interface HorarioDTO {
@@ -17,10 +17,8 @@ export interface CareerDTO {
     numModulos: number;
     nombre: string;
     modulos: ModuleDTO[];
-    horariosExistentes: string[]; //uuids
-    horariosNuevos: HorarioDTO[];
-    modalidad: string;
     duracionMeses: number;
+    tipoCarrera: TIPO_CARRERA;
 }
 
 export interface GroupDTO {

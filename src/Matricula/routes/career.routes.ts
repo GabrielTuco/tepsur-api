@@ -19,32 +19,9 @@ const careerController = new CareerController();
  *                  description: El numero de modulos con los que cuenta la carrera
  *              nombre:
  *                  type: string
- *              modalidad:
- *                  type: string
  *              duracionMeses:
  *                  type: number
  *                  description: La duracion de la carrera en meses
- *              horariosExistentes:
- *                  type: array
- *                  items:
- *                      type: string
- *                      format: uuid
- *              horariosNuevos:
- *                  type: array
- *                  items:
- *                      type: object
- *                      properties:
- *                          horaInicio:
- *                              type: string
- *                              example: '08:00'
- *                          horaFin:
- *                              type: string
- *                              example: '11:00'
- *                          dias:
- *                              type: array
- *                              items:
- *                                  type: string
- *                              example: ['Lun','Mar','Vie']
  *              modulos:
  *                  type: array
  *                  items:
@@ -55,10 +32,22 @@ const careerController = new CareerController();
  *                          duracionSemanas:
  *                              type: string
  *                              example: '4 semanas'
- *                          horarioUuid:
- *                              type: string
- *                              format: uuid
- *                              description: El horario del modulo
+ *                          horarios:
+ *                              type: array
+ *                              items:
+ *                                  type: object
+ *                                  properties:
+ *                                      horaInicio:
+ *                                          type: string
+ *                                          example: '08:00'
+ *                                      horaFin:
+ *                                          type: string
+ *                                          example: '11:00'
+ *                                      dias:
+ *                                          type: array
+ *                                          items:
+ *                                              type: string
+ *                                              example: ['Lun','Mar','Vie']
  *                          docenteUuid:
  *                              type: string
  *                              format: uuid
@@ -89,6 +78,22 @@ const careerController = new CareerController();
  *                          duracionSemanas:
  *                              type: string
  *                              example: '4 semanas'
+ *                          horarios:
+ *                              type: array
+ *                              items:
+ *                                  type: object
+ *                                  properties:
+ *                                      hora_inicio:
+ *                                          type: string
+ *                                          example: '08:00'
+ *                                      hora_fin:
+ *                                          type: string
+ *                                          example: '11:00'
+ *                                      dias:
+ *                                          type: array
+ *                                          items:
+ *                                              type: string
+ *                                              example: ['Lun','Mar','Vie']
  */
 
 /**
@@ -325,14 +330,13 @@ router.post(
         body("modulos").isArray(),
         body("modulos.*.nombre").isString(),
         body("modulos.*.duracionSemanas").isString(),
-        body("horariosExistentes").optional().isArray(),
-        body("horariosExistentes.*").optional().isUUID("4"),
-        body("horariosNuevos").optional().isArray(),
-        body("horariosNuevos.*.horaInicio").optional().isString(),
-        body("horariosNuevos.*.horaFin").optional().isString(),
-        body("horariosNuevos.*.dias").optional().isArray(),
-        body("horariosNuevos.*.dias.*").optional().isString(),
-        body("modalidad").isString(),
+        body("modulos.*.docenteUuid").isUUID('4'),
+        body("modulos.*.horarios").isArray(),
+        body("modulos.*.horarios.*").isObject(),
+        body("modulos.*.horarios.*.horaInicio").isString(),
+        body("modulos.*.horarios.*.horaFin").isString(),
+        body("modulos.*.horarios.*.dias").isArray(),
+        body("modulos.*.horarios.*.dias.*").isString(),
         body("duracionMeses").isNumeric(),
         validateFields,
     ],

@@ -1,7 +1,7 @@
 import { v4 as uuid } from "uuid";
 import { DatabaseError } from "../../errors/DatabaseError";
 import { Carrera, Horario, Modulo } from "../entity";
-import { CareerDTO } from "../interfaces/dtos";
+import { CareerDTO, HorarioDTO } from "../interfaces/dtos";
 import { CareerRepository } from "../interfaces/repositories";
 import { Docente } from "../../Teacher/entity/Docente.entity";
 
@@ -24,30 +24,28 @@ export class CareerService implements CareerRepository {
                 numModulos,
                 nombre,
                 modulos,
-                horariosExistentes,
-                horariosNuevos,
-                modalidad,
                 duracionMeses,
+                tipoCarrera
             } = data;
 
             const modulosExists: Modulo[] = await Promise.all(
-                modulos.map(async (mod) => {
+                modulos.map(async (moduloData) => {
                     const modulo = await Modulo.findOneBy({
-                        nombre: mod.nombre,
+                        nombre: moduloData.nombre,
                     });
                     if (modulo) return modulo;
                     else {
-                        const horario = await Horario.findOneBy({
-                            uuid: mod.horarioUuid,
-                        });
-                        const docente = await Docente.findOneBy({
-                            uuid: mod.docenteUuid,
-                        });
+                        const horarios = await Promise.all(moduloData.horarios.map(async horarioData =>{
+                            const horario = await findOrCreateHorario(horarioData);
+                            return horario;
+                        }))
+
+                        const docente = await findDocenteByUuid(moduloData.docenteUuid);
                         const newModulo = new Modulo();
                         newModulo.uuid = uuid();
-                        newModulo.nombre = mod.nombre;
-                        newModulo.duracion_semanas = mod.duracionSemanas;
-                        newModulo.horario = horario!;
+                        newModulo.nombre = moduloData.nombre;
+                        newModulo.duracion_semanas = moduloData.duracionSemanas;
+                        newModulo.horarios = horarios;
                         newModulo.docente = docente!;
 
                         const savedModulo = await newModulo.save();
@@ -56,54 +54,23 @@ export class CareerService implements CareerRepository {
                 })
             );
 
-            // let horariosExists: (Horario | undefined)[] = [];
-            // let horarios: Horario[] = [];
-            // let nuevosHorarios: Horario[] = [];
-
-            // if (horariosExistentes) {
-            //     horariosExists = await Promise.all(
-            //         horariosExistentes.map(async (h) => {
-            //             const horario = await Horario.findOneBy({ uuid: h });
-            //             if (horario) return horario;
-            //         })
-            //     );
-
-            //     horarios = horariosExists.filter(
-            //         (h) => h !== undefined
-            //     ) as Horario[];
-            // }
-
-            // if (horariosNuevos) {
-            //     nuevosHorarios = await Promise.all(
-            //         horariosNuevos.map(async (h) => {
-            //             const newHorario = new Horario();
-            //             newHorario.uuid = uuid();
-            //             newHorario.hora_inicio = h.horaInicio;
-            //             newHorario.hora_fin = h.horaFin;
-            //             newHorario.dias = h.dias;
-
-            //             await newHorario.save();
-            //             return newHorario;
-            //         })
-            //     );
-            // }
-
-            //horarios = [...horarios, ...nuevosHorarios];
 
             const newCareer = new Carrera();
             newCareer.uuid = uuid();
             newCareer.num_modulos = numModulos;
             newCareer.nombre = nombre;
-            newCareer.modalidad = modalidad;
             newCareer.duracion_meses = duracionMeses;
             newCareer.modulos = modulosExists;
-            //newCareer.horarios = horarios;
+            newCareer.tipo_carrera = tipoCarrera;
 
             return await newCareer.save();
         } catch (error) {
             throw error;
         }
     }
+
+   
+
     public async listModules(uuid: string): Promise<Modulo[]> {
         try {
             const data = await Carrera.createQueryBuilder("c")
@@ -246,4 +213,30 @@ export class CareerService implements CareerRepository {
             throw error;
         }
     }
+}
+
+async function findOrCreateHorario(horarioData: HorarioDTO): Promise<Horario> {
+    const horario = await Horario.createQueryBuilder("h")
+        .where("h.hora_inicio = :inicio AND h.hora_fin = :fin AND array_to_string(h.dias, ',') = :dias", {
+            inicio: horarioData.horaInicio,
+            fin: horarioData.horaFin,
+            dias: horarioData.dias.toString()
+        })
+        .getOne();
+
+    if (horario) {
+        return horario;
+    } else {
+        const newHorario = new Horario();
+        newHorario.uuid = uuid();
+        newHorario.hora_inicio = horarioData.horaInicio;
+        newHorario.hora_fin = horarioData.horaFin;
+        newHorario.dias = horarioData.dias;
+        await newHorario.save();
+        return newHorario;
+    }
+}
+
+async function findDocenteByUuid(docenteUuid: string): Promise<Docente | null> {
+    return await Docente.findOneBy({ uuid: docenteUuid });
 }

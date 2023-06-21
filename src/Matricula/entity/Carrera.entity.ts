@@ -3,6 +3,7 @@ import { EntityBase } from "../../entity/EntityBase";
 import { Modulo } from "./Modulo.entity";
 import { Grupo } from "./Grupo.entity";
 import { Matricula } from "./Matricula.entity";
+import { TIPO_CARRERA } from "../../interfaces/enums";
 
 @Entity()
 export class Carrera extends EntityBase {
@@ -26,4 +27,7 @@ export class Carrera extends EntityBase {
         nullable: true,
     })
     matriculas: Matricula[];
+
+    @Column()
+    tipo_carrera: TIPO_CARRERA;
 }
