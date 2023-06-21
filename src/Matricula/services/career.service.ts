@@ -4,6 +4,8 @@ import { Carrera, Horario, Modulo } from "../entity";
 import { CareerDTO, HorarioDTO } from "../interfaces/dtos";
 import { CareerRepository } from "../interfaces/repositories";
 import { Docente } from "../../Teacher/entity/Docente.entity";
+import { AppDataSource } from "../../db/dataSource";
+import { QueryRunner } from "typeorm";
 
 export class CareerService implements CareerRepository {
     public async listAll(): Promise<Carrera[]> {
@@ -19,14 +21,13 @@ export class CareerService implements CareerRepository {
         }
     }
     public async register(data: CareerDTO): Promise<Carrera> {
+        const queryRunner = AppDataSource.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+
         try {
-            const {
-                numModulos,
-                nombre,
-                modulos,
-                duracionMeses,
-                tipoCarrera
-            } = data;
+            const { numModulos, nombre, modulos, duracionMeses, tipoCarrera } =
+                data;
 
             const modulosExists: Modulo[] = await Promise.all(
                 modulos.map(async (moduloData) => {
@@ -35,12 +36,19 @@ export class CareerService implements CareerRepository {
                     });
                     if (modulo) return modulo;
                     else {
-                        const horarios = await Promise.all(moduloData.horarios.map(async horarioData =>{
-                            const horario = await findOrCreateHorario(horarioData);
-                            return horario;
-                        }))
+                        const horarios = await Promise.all(
+                            moduloData.horarios.map(async (horarioData) => {
+                                const horario = await findOrCreateHorario(
+                                    horarioData,
+                                    queryRunner
+                                );
+                                return horario;
+                            })
+                        );
 
-                        const docente = await findDocenteByUuid(moduloData.docenteUuid);
+                        const docente = await findDocenteByUuid(
+                            moduloData.docenteUuid
+                        );
                         const newModulo = new Modulo();
                         newModulo.uuid = uuid();
                         newModulo.nombre = moduloData.nombre;
@@ -48,12 +56,11 @@ export class CareerService implements CareerRepository {
                         newModulo.horarios = horarios;
                         newModulo.docente = docente!;
 
-                        const savedModulo = await newModulo.save();
-                        return savedModulo;
+                        await queryRunner.manager.save(newModulo);
+                        return newModulo;
                     }
                 })
             );
-
 
             const newCareer = new Carrera();
             newCareer.uuid = uuid();
@@ -63,13 +70,17 @@ export class CareerService implements CareerRepository {
             newCareer.modulos = modulosExists;
             newCareer.tipo_carrera = tipoCarrera;
 
-            return await newCareer.save();
+            await queryRunner.manager.save(newCareer);
+            await queryRunner.commitTransaction();
+
+            return newCareer;
         } catch (error) {
+            await queryRunner.rollbackTransaction();
             throw error;
+        } finally {
+            await queryRunner.release();
         }
     }
-
-   
 
     public async listModules(uuid: string): Promise<Modulo[]> {
         try {
@@ -215,25 +226,36 @@ export class CareerService implements CareerRepository {
     }
 }
 
-async function findOrCreateHorario(horarioData: HorarioDTO): Promise<Horario> {
-    const horario = await Horario.createQueryBuilder("h")
-        .where("h.hora_inicio = :inicio AND h.hora_fin = :fin AND array_to_string(h.dias, ',') = :dias", {
-            inicio: horarioData.horaInicio,
-            fin: horarioData.horaFin,
-            dias: horarioData.dias.toString()
-        })
-        .getOne();
+async function findOrCreateHorario(
+    horarioData: HorarioDTO,
+    queryRunner: QueryRunner
+): Promise<Horario> {
+    try {
+        const horario = await Horario.createQueryBuilder("h")
+            .where(
+                "h.hora_inicio = :inicio AND h.hora_fin = :fin AND array_to_string(h.dias, ',') = :dias",
+                {
+                    inicio: horarioData.horaInicio,
+                    fin: horarioData.horaFin,
+                    dias: horarioData.dias.toString(),
+                }
+            )
+            .getOne();
 
-    if (horario) {
-        return horario;
-    } else {
-        const newHorario = new Horario();
-        newHorario.uuid = uuid();
-        newHorario.hora_inicio = horarioData.horaInicio;
-        newHorario.hora_fin = horarioData.horaFin;
-        newHorario.dias = horarioData.dias;
-        await newHorario.save();
-        return newHorario;
+        if (horario) {
+            return horario;
+        } else {
+            const newHorario = new Horario();
+            newHorario.uuid = uuid();
+            newHorario.hora_inicio = horarioData.horaInicio;
+            newHorario.hora_fin = horarioData.horaFin;
+            newHorario.dias = horarioData.dias;
+            await queryRunner.manager.save(newHorario);
+            return newHorario;
+        }
+    } catch (error) {
+        console.log(error);
+        throw error;
     }
 }
 

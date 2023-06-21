@@ -40,6 +40,7 @@ export interface CareerRepository {
 
 export interface GroupRepository {
     register(data: GroupDTO): Promise<Grupo>;
+    addStudent(matriculaUuid: string, grupoUuid: string): Promise<Grupo>;
     listGroups(): Promise<Grupo[]>;
     listEstudents(uuid: string): Promise<any>; //TODO Debe retornar un arreglo de matriculas o alumnos
     findByUuid(uuid: string): Promise<Grupo>;
@@ -52,9 +53,7 @@ export interface ScheduleRepository {
     findByUuid(uuid: string): Promise<Horario>;
     update(uuid: string, data: Partial<Horario>): Promise<Horario>;
     delete(uuid: string): Promise<void>;
-    listPerCareer(
-        carreraUuid: string,
-    ): Promise<Horario[]>;
+    listPerCareer(carreraUuid: string): Promise<Horario[]>;
 }
 
 export interface MatriculaRepository {

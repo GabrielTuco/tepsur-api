@@ -143,6 +143,51 @@ router.post(
 
 /**
  * @swagger
+ * /group/add-student:
+ *  patch:
+ *      summary: Agregar a un estudiante a un grupo
+ *      tags: [Group]
+ *      parameters:
+ *         - $ref: '#/components/parameters/token'
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          matriculaUuid:
+ *                              type: string
+ *                              format: uuid
+ *                          grupoUuid:
+ *                              type: string
+ *                              format: uuid
+ *      responses:
+ *          200:
+ *              description: El registro del nuevo grupo creado
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          $ref: '#/components/schemas/GroupResponse'
+ *          500:
+ *              description: Error de servidor
+ *
+ */
+router.patch(
+    "/add-student",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        body("matriculaUuid").isUUID("4"),
+        body("grupoUuid").isUUID("4"),
+        validateFields,
+    ],
+    groupController.patchAddStudent
+);
+
+/**
+ * @swagger
  * /group:
  *  get:
  *      summary: Listado de grupos

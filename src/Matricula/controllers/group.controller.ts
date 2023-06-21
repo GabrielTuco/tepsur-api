@@ -24,6 +24,28 @@ export class GroupController {
         }
     }
 
+    public async patchAddStudent(req: Request, res: Response) {
+        try {
+            const { matriculaUuid, grupoUuid } = req.body;
+            const grupo = await groupService.addStudent(
+                matriculaUuid,
+                grupoUuid
+            );
+
+            return res.json(grupo);
+        } catch (error) {
+            if (error instanceof DatabaseError) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                    name: error.name,
+                });
+            }
+            return res.status(500).json({
+                msg: "Internal Server Error, contact the administrator",
+            });
+        }
+    }
+
     public async getAll(_req: Request, res: Response) {
         try {
             const grupos = await groupService.listGroups();

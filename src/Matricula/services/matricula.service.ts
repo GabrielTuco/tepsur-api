@@ -45,7 +45,6 @@ export class MatriculaService implements MatriculaRepository {
             const {
                 alumno,
                 carreraUuid,
-                horarioUuid,
                 modulos,
                 pagoMatricula,
                 secretariaUuid,
@@ -65,13 +64,9 @@ export class MatriculaService implements MatriculaRepository {
             });
             const sede = await Sede.findOneBy({ uuid: sedeUuid });
 
-            //const horario = await Horario.findOneBy({ uuid: horarioUuid });
-            //const grupo = await this.setRandomGroup(horarioUuid);
-
             newMatricula.uuid = uuid();
             newMatricula.carrera = carrera!;
             newMatricula.alumno = newAlumno;
-            //newMatricula.grupo = grupo!;
             newMatricula.secretaria = secretaria!;
             newMatricula.sede = sede!;
             newMatricula.fecha_inscripcion = fechaInscripcion;

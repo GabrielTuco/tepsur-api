@@ -36,6 +36,6 @@ export class Docente extends EntityBase {
     @OneToMany(() => Grupo, (grupo) => grupo.docente, { nullable: true })
     grupos: Grupo[];
 
-    @OneToMany(() => Modulo, (modulo) => modulo.horario)
+    @OneToMany(() => Modulo, (modulo) => modulo.docente)
     modulos: Modulo[];
 }

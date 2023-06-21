@@ -237,49 +237,4 @@ router.delete(
     scheduleController.deleteSchedule
 );
 
-/**
- * @swagger
- * /schedule:
- *  delete:
- *      summary: Elimina un horario de una carrera (desvincular)
- *      tags: [Schedule]
- *      parameters:
- *         - $ref: '#/components/parameters/token'
- *         - in: query
- *           name: carreraUuid
- *           schema:
- *              type: string
- *              format: uuid
- *           required: true
- *           description: El id de la carrera
- *         - in: query
- *           name: horarioUuid
- *           schema:
- *              type: string
- *              format: uuid
- *           required: true
- *           description: El id del horario
- *      responses:
- *          200:
- *              description: Mensaje de confirmacion de eliminacion
- *              content:
- *                  application/json:
- *                      schema:
- *                          $ref: '#/components/schemas/Career'
- *          500:
- *              description: Error de servidor
- *
- */
-router.delete(
-    "/",
-    [
-        validateJWT,
-        checkAuthRole([ROLES.ADMIN]),
-        query("carreraUuid").isUUID("4"),
-        query("horarioUuid").isUUID("4"),
-        validateFields,
-    ],
-    scheduleController.deleteScheduleFromCareer
-);
-
 export default router;
