@@ -15,7 +15,7 @@ export class SedeService implements SedeRepository {
             console.log(error);
             throw new DatabaseError(
                 "No se pudieron obtener los registros",
-                404,
+                500,
                 ""
             );
         }
