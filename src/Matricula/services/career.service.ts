@@ -20,15 +20,15 @@ export class CareerService implements CareerRepository {
             throw error;
         }
     }
+
     public async register(data: CareerDTO): Promise<Carrera> {
         const queryRunner = AppDataSource.createQueryRunner();
         await queryRunner.connect();
         await queryRunner.startTransaction();
 
+        const { numModulos, nombre, modulos, duracionMeses, tipoCarrera } =
+            data;
         try {
-            const { numModulos, nombre, modulos, duracionMeses, tipoCarrera } =
-                data;
-
             const modulosExists: Modulo[] = await Promise.all(
                 modulos.map(async (moduloData) => {
                     const modulo = await Modulo.findOneBy({

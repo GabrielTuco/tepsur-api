@@ -1,9 +1,14 @@
 {
-    "preset":"ts-jest",
-    "coverageDirectory":"./coverage",
-    "testMatch":[
-        "**/?(*.)+spec.ts"
-    ],
-    "resetMocks":true,
-    "clearMocks":true
+    "testEnvironmentOptions": {
+        "jest": {
+            "verbose": true,
+            "extraGlobals": ["--develop"]
+        }
+    },
+    "preset": "ts-jest",
+    "coverageDirectory": "./coverage",
+    "roots": ["./tests"],
+    "testMatch": ["**/?(*.)+(spec).ts"],
+    "resetMocks": true,
+    "clearMocks": true
 }

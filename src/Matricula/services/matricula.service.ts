@@ -33,13 +33,14 @@ import { uploadImage } from "../../helpers/uploadImage";
 import { generateFichaMatricula } from "../helpers/generateFichaMatricula";
 import { AppDataSource } from "../../db/dataSource";
 import { PensionService } from "../../Pension/services/pension.service";
+import { MatriculaModulosModulo } from "../entity/MatriculaModulosModulo.entity";
 
 const pensionService = new PensionService();
 export class MatriculaService implements MatriculaRepository {
     public async register(data: MatriculaDTO): Promise<Matricula> {
         const queryRunner = AppDataSource.createQueryRunner();
         await queryRunner.connect();
-        await queryRunner.startTransaction();
+        await queryRunner.startTransaction(); //Start transaction
 
         try {
             const {
@@ -57,13 +58,22 @@ export class MatriculaService implements MatriculaRepository {
             const newAlumno = await this.registerStudent(alumno, queryRunner);
 
             //Registro de datos academicos del estudiante
-            const newMatricula = new Matricula();
-            const carrera = await Carrera.findOneBy({ uuid: carreraUuid });
             const secretaria = await Secretaria.findOneBy({
                 uuid: secretariaUuid,
             });
-            const sede = await Sede.findOneBy({ uuid: sedeUuid });
+            const carrera = await Carrera.findOneBy({ uuid: carreraUuid });
+            const sede = await Sede.findOne({
+                where: { uuid: sedeUuid },
+                relations: { carreras: true },
+            });
 
+            const carreraValid = sede?.carreras.find(
+                (c) => c.uuid === carrera?.uuid
+            );
+            if (!carreraValid)
+                throw new Error("Esta carrera no se puede llevar en esta sede");
+
+            const newMatricula = new Matricula();
             newMatricula.uuid = uuid();
             newMatricula.carrera = carrera!;
             newMatricula.alumno = newAlumno;
@@ -72,16 +82,7 @@ export class MatriculaService implements MatriculaRepository {
             newMatricula.fecha_inscripcion = fechaInscripcion;
             newMatricula.fecha_inicio = fechaInicio;
 
-            if (modulos) {
-                const modulosExists = await Promise.all(
-                    modulos.map(
-                        async (m) => await Modulo.findOneBy({ uuid: m })
-                    )
-                );
-                newMatricula.modulos = modulosExists.filter(
-                    (element): element is Modulo => element !== null
-                );
-            }
+            await queryRunner.manager.save(newMatricula);
 
             if (pagoMatricula) {
                 const newPagoMatricula = new PagoMatricula();
@@ -95,6 +96,46 @@ export class MatriculaService implements MatriculaRepository {
                 await queryRunner.manager.save(newPagoMatricula);
 
                 newMatricula.pagoMatricula = newPagoMatricula;
+            }
+
+            if (modulos) {
+                //Busqueda de modulos
+                const modulosExists = await Promise.all(
+                    modulos.map(
+                        async ({ uuid }) => await Modulo.findOneBy({ uuid })
+                    )
+                );
+
+                //Eliminacion de posibles nulos
+                const newModulosToMatricula = modulosExists.filter(
+                    (element): element is Modulo => element !== null
+                );
+
+                //Array de objetos con los modulos y propiedades adicionales
+                const newModulosToMatriculaWithCustomProperties =
+                    newModulosToMatricula.map((modulo, i) => {
+                        return {
+                            modulo,
+                            modalidad: modulos[i].modalidad,
+                            fechaInicio: modulos[i].fechaInicio,
+                        };
+                    });
+
+                newMatricula.matriculaModulosMatricula = await Promise.all(
+                    newModulosToMatriculaWithCustomProperties.map(
+                        async (modulo) => {
+                            const matriculaModulo =
+                                new MatriculaModulosModulo();
+                            matriculaModulo.matricula = newMatricula;
+                            matriculaModulo.modulo = modulo.modulo;
+                            matriculaModulo.modalidad = modulo.modalidad;
+                            matriculaModulo.fecha_inicio = modulo.fechaInicio;
+
+                            await queryRunner.manager.save(matriculaModulo);
+                            return matriculaModulo;
+                        }
+                    )
+                );
             }
 
             await queryRunner.manager.save(newMatricula);
@@ -282,33 +323,35 @@ export class MatriculaService implements MatriculaRepository {
     public async findByStudent(_uuid: number): Promise<Matricula> {
         throw new Error("Method not implemented.");
     }
+
     public async findByUuid(_uuid: number): Promise<Matricula> {
         throw new Error("Method not implemented.");
     }
+
     async registerStudent(alumno: AlumnoData, queryRunner: QueryRunner) {
         try {
-            const newDireccionAlumno = new Direccion();
-            newDireccionAlumno.uuid = uuid();
-            Object.assign(
-                newDireccionAlumno,
-                adaptedDireccion(alumno.direccion)
-            );
-            //await newDireccionAlumno.save();
-            await queryRunner.manager.save(newDireccionAlumno);
-
+            const { direccion } = alumno;
             const gradoEstudios = await GradoEstudios.findOneBy({
                 uuid: alumno.gradoEstudiosUuid,
             });
 
             const rol = await Rol.findOneBy({ nombre: "Alumno" });
-            const newUserAlumno = new Usuario();
 
+            const newDireccionAlumno = new Direccion();
+            newDireccionAlumno.uuid = uuid();
+            newDireccionAlumno.direccion_exacta = direccion.direccionExacta;
+            newDireccionAlumno.distrito = direccion.distrito;
+            newDireccionAlumno.provincia = direccion.provincia;
+            newDireccionAlumno.departamento = direccion.departamento;
+
+            await queryRunner.manager.save(newDireccionAlumno);
+
+            const newUserAlumno = new Usuario();
             newUserAlumno.uuid = uuid();
             newUserAlumno.usuario = alumno.dni;
             newUserAlumno.password = encryptPassword(alumno.dni);
             newUserAlumno.rol = rol!;
 
-            // await newUserAlumno.save();
             await queryRunner.manager.save(newUserAlumno);
 
             const newAlumno = new Alumno();

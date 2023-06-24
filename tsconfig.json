@@ -99,9 +99,7 @@
         /* Completeness */
         // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
         "skipLibCheck": true /* Skip type checking all .d.ts files. */,
-        "types": ["node", "express", "prettier"]
+        "types": ["node", "express", "prettier", "jest"]
     },
-    "exclude": [
-        "**/*.spec.ts"
-    ]
+    "exclude": ["**/*.spec.ts"]
 }

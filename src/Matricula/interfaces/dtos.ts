@@ -1,4 +1,8 @@
-import { TIPO_CARRERA, TIPO_MATRICULA } from "../../interfaces/enums";
+import {
+    MODALIDAD,
+    TIPO_CARRERA,
+    TIPO_MATRICULA,
+} from "../../interfaces/enums";
 
 export interface ModuleDTO {
     nombre: string;
@@ -48,7 +52,7 @@ export interface MatriculaDTO {
     alumno: AlumnoData;
     carreraUuid: string;
     horarioUuid: string;
-    modulos: string[];
+    modulos: { uuid: string; modalidad: MODALIDAD; fechaInicio: Date }[];
     secretariaUuid: string;
     sedeUuid: string;
     pagoMatricula: PagoMatriculaData;

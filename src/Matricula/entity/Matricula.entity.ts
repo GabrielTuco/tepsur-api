@@ -18,6 +18,7 @@ import { Grupo } from "./Grupo.entity";
 import { Modulo } from "./Modulo.entity";
 import { Pension } from "../../Pension/entity/Pension.entity";
 import { TIPO_MATRICULA } from "../../interfaces/enums";
+import { MatriculaModulosModulo } from "./MatriculaModulosModulo.entity";
 
 @Entity()
 export class Matricula extends EntityBase {
@@ -31,9 +32,14 @@ export class Matricula extends EntityBase {
     @ManyToOne(() => Grupo, (grupo) => grupo.matriculas, { nullable: true })
     grupo: Grupo;
 
-    @ManyToMany(() => Modulo)
-    @JoinTable()
-    modulos: Modulo[];
+    // @ManyToMany(() => Modulo, { nullable: true })
+    // @JoinTable()
+    // modulos: Modulo[];
+    @OneToMany(
+        () => MatriculaModulosModulo,
+        (matriculaModulosMatricula) => matriculaModulosMatricula.matricula
+    )
+    matriculaModulosMatricula: MatriculaModulosModulo[];
 
     @ManyToOne(() => Secretaria, (secretaria) => secretaria.matriculas)
     secretaria: Secretaria;

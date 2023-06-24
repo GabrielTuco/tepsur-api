@@ -2,7 +2,7 @@ import { Router } from "express";
 import { MatriculaController } from "../controllers/matricula.controller";
 import { validateJWT } from "../../middlewares/validateJWT";
 import { checkAuthRole } from "../../middlewares/checkAuthRole";
-import { ROLES } from "../../interfaces/enums";
+import { ROLES, TIPO_MATRICULA } from "../../interfaces/enums";
 import { body, param } from "express-validator";
 import { validateFields } from "../../middlewares/validateFields";
 
@@ -38,8 +38,7 @@ const matriculaController = new MatriculaController();
  *                  type: number
  *                  description: Edad del alumno
  *              gradoEstudiosUuid:
- *                  type: string
- *                  format: uuid
+ *                  type: number
  *                  description: Grado de estudios del almuno
  *              lugarNacimiento:
  *                  type: string
@@ -90,9 +89,19 @@ const matriculaController = new MatriculaController();
  *              modulos:
  *                  type: array
  *                  items:
- *                      type: string
- *                      format: uuid
- *                      description:  Uuid de los modulos de la carrera
+ *                      type: object
+ *                      properties:
+ *                          uuid:
+ *                              type: string
+ *                              format: uuid
+ *                              description:  Uuid de los modulos de la carrera
+ *                          modalidad:
+ *                              type: string
+ *                              description: La modalidad en la que se va llevar el modulo
+ *                          fechaInicio:
+ *                              type: string
+ *                              format: date-time
+ *                              description: La fecha de inicio del modulo
  *              secretariaUuid:
  *                  type: string
  *                  format: uuid
@@ -108,14 +117,15 @@ const matriculaController = new MatriculaController();
  *              tipoMatricula:
  *                  type: string
  *                  description: El tipo de matricula que se registra
+ *                  enum: [nuevo,reingreso]
  *                  example: "nuevo"
  *              fechaInscripcion:
  *                  type: string
- *                  format: datetime
+ *                  format: date-time
  *                  description:  Fecha de inscripcion
  *              fechaInicio:
  *                  type: string
- *                  format: datetime
+ *                  format: date-time
  *                  description:  Fecha de inicio de clases
  */
 
@@ -132,6 +142,8 @@ const matriculaController = new MatriculaController();
  *  post:
  *      summary: Registrar una nueva matricula del estudiante
  *      tags: [Matricula]
+ *      parameters:
+ *          - $ref: '#/components/parameters/token'
  *      requestBody:
  *          required: true
  *          content:
@@ -153,14 +165,16 @@ const matriculaController = new MatriculaController();
 router.post(
     "/",
     [
-        //validateJWT,
-        //checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        validateJWT,
+        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+
+        //Datos personales del alumno
         body("alumno").isObject(),
-        body("alumno.dni").isString(),
+        body("alumno.dni").isString().isLength({ min: 8, max: 8 }),
         body("alumno.nombres").isString(),
         body("alumno.apePaterno").isString(),
         body("alumno.apeMaterno").isString(),
-        body("alumno.sexo", "Los valores permitidos son: 'm' o 'f' ").isIn([
+        body("alumno.sexo", "Los valores permitidos son: 'm'|'f' ").isIn([
             "m",
             "f",
         ]),
@@ -179,21 +193,29 @@ router.post(
         body("alumno.direccion.distrito").isString(),
         body("alumno.direccion.provincia").isString(),
         body("alumno.direccion.departamento").isString(),
+
+        //Datos academicos
         body("carreraUuid", "El valor debe ser un UUID valido").isUUID("4"),
         body("modulos", "Debe ser un array de UUIDS").optional().isArray(),
         body("modulos.*", "El valor debe ser un UUID valido")
             .optional()
             .isUUID("4"),
         //TODO: agregar middleware para ver si el horario pertenece a la carrera
-        //body("horarioUuid", "El valor debe ser un UUID valido").optional().isUUID("4"),
+        // body("horarioUuid", "El valor debe ser un UUID valido").optional().isUUID("4"),
+        body(
+            "tipoMatricula",
+            "Los valores aceptados son: 'nuevo'|'reingreso'"
+        ).isIn([TIPO_MATRICULA.NUEVO, TIPO_MATRICULA.REINGRESO]),
         body("secretariaUuid", "El valor debe ser un UUID valido").isUUID("4"),
         body("sedeUuid").isUUID("4"),
+        body("fechaInscripcion").isString(),
+        body("fechaInicio").isString(),
+
+        //Pago de matricula(opcional)
         body("pagoMatricula").optional().isObject(),
         body("pagoMatricula.numComprobante").optional().isString(),
         body("pagoMatricula.formaPagoUuid").optional().isNumeric(),
         body("pagoMatricula.monto").optional().isNumeric(),
-        body("fechaInscripcion").isString(),
-        body("fechaInicio").isString(),
         validateFields,
     ],
     matriculaController.postMatricula

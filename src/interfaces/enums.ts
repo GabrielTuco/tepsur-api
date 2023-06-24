@@ -12,18 +12,23 @@ export enum TIPO_MATRICULA {
 }
 
 export enum ESTADO_GRUPO {
-    ABIERTO = "ABIERTO",
-    EN_CURSO = "EN_CURSO",
-    CERRADO = "CERRADO",
+    ABIERTO = "abierto",
+    EN_CURSO = "en_curso",
+    CERRADO = "cerrado",
 }
 
 export enum CONDICION_ALUMNO {
-    NUEVO = "NUEVO",
-    CONTINUA = "CONTINUA",
-    CAMBIO_HORARIO = "CAMBIO_HORARIO",
+    NUEVO = "nuevo",
+    CONTINUA = "continua",
+    CAMBIO_HORARIO = "cambio_horario",
 }
 
 export enum TIPO_CARRERA {
-    MODULAR = "MODULAR",
-    SEMESTRAL ="SEMESTRAL"
+    MODULAR = "modular",
+    SEMESTRAL = "semestral",
+}
+
+export enum MODALIDAD {
+    VIRTUAL = "virtual",
+    PRESENCIAL = "presencial",
 }

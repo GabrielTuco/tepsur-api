@@ -23,17 +23,18 @@ import { Horario } from "../Matricula/entity/Horario.entity";
 import { MetodoPago } from "../Matricula/entity/MetodoPago.entity";
 import { Pension } from "../Pension/entity/Pension.entity";
 import { PagoPension } from "../Pension/entity/PagoPension.entity";
+import { MatriculaModulosModulo } from "../Matricula/entity/MatriculaModulosModulo.entity";
 
 //Yargs config
 const argv = yargs(process.argv.slice(2))
     .options({
-        dev: { type: "boolean" },
+        develop: { type: "boolean" },
     })
     .parseSync();
 
 let dataSourceOptions: object;
 
-if (!!argv.dev) {
+if (!!argv.develop) {
     dataSourceOptions = {
         port: parseInt(`${process.env.DEV_DB_PORT}`) || 5432,
         username: `${process.env.DEV_DB_USER}`,
@@ -72,6 +73,7 @@ export const AppDataSource = new DataSource({
         Horario,
         GradoEstudios,
         Matricula,
+        MatriculaModulosModulo,
         PagoMatricula,
         MetodoPago,
         Pension,

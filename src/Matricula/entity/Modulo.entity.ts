@@ -1,7 +1,15 @@
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from "typeorm";
+import {
+    Column,
+    Entity,
+    JoinTable,
+    ManyToMany,
+    ManyToOne,
+    OneToMany,
+} from "typeorm";
 import { EntityBase } from "../../entity";
 import { Horario } from "./Horario.entity";
 import { Docente } from "../../Teacher/entity/Docente.entity";
+import { MatriculaModulosModulo } from "./MatriculaModulosModulo.entity";
 
 @Entity()
 export class Modulo extends EntityBase {
@@ -11,10 +19,16 @@ export class Modulo extends EntityBase {
     @Column()
     duracion_semanas: string;
 
-    @ManyToMany(()=>Horario)
+    @ManyToMany(() => Horario)
     @JoinTable()
-    horarios:Horario[];
+    horarios: Horario[];
 
     @ManyToOne(() => Docente, (docente) => docente.modulos)
     docente: Docente;
+
+    @OneToMany(
+        () => MatriculaModulosModulo,
+        (matriculaModulosMatricula) => matriculaModulosMatricula.modulo
+    )
+    matriculaModulosMatricula: MatriculaModulosModulo[];
 }

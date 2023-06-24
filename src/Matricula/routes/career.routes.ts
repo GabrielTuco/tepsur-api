@@ -3,7 +3,7 @@ import { body, param } from "express-validator";
 import { validateFields } from "../../middlewares/validateFields";
 import { CareerController } from "../controllers/career.controller";
 import { validateJWT } from "../../middlewares/validateJWT";
-import { ROLES } from "../../interfaces/enums";
+import { ROLES, TIPO_CARRERA } from "../../interfaces/enums";
 import { checkAuthRole } from "../../middlewares/checkAuthRole";
 
 const router = Router();
@@ -22,6 +22,10 @@ const careerController = new CareerController();
  *              duracionMeses:
  *                  type: number
  *                  description: La duracion de la carrera en meses
+ *              tipoCarrera:
+ *                  type: string
+ *                  enum: [modular,semestral]
+ *                  example: "modular"
  *              modulos:
  *                  type: array
  *                  items:
@@ -102,6 +106,59 @@ const careerController = new CareerController();
  *  name: Career
  *  description: Endpoints para las carreras
  */
+
+/**
+ * @swagger
+ * /career:
+ *  post:
+ *      summary: Crea una nueva carrera
+ *      tags: [Career]
+ *      parameters:
+ *          - $ref: '#/components/parameters/token'
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      $ref: '#/components/schemas/Career'
+ *      responses:
+ *          200:
+ *              description: La nueva carrera creada
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          $ref: '#/components/schemas/CareerResponse'
+ *          500:
+ *              description: Error de servidor
+ *
+ */
+router.post(
+    "/",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        body("nombre").isString(),
+        body("numModulos").isNumeric(),
+        body("modulos").isArray(),
+        body("modulos.*.nombre").isString(),
+        body("modulos.*.duracionSemanas").isString(),
+        body("modulos.*.docenteUuid").isUUID("4"),
+        body("modulos.*.horarios").isArray(),
+        body("modulos.*.horarios.*").isObject(),
+        body("modulos.*.horarios.*.horaInicio").isString(),
+        body("modulos.*.horarios.*.horaFin").isString(),
+        body("modulos.*.horarios.*.dias").isArray(),
+        body("modulos.*.horarios.*.dias.*").isString(),
+        body("tipoCarrera", "").isIn([
+            TIPO_CARRERA.MODULAR,
+            TIPO_CARRERA.SEMESTRAL,
+        ]),
+        body("duracionMeses").isNumeric(),
+        validateFields,
+    ],
+    careerController.postCareer
+);
 
 /**
  * @swagger
@@ -292,55 +349,6 @@ router.get(
         validateFields,
     ],
     careerController.getSchedulesOfCareer
-);
-
-/**
- * @swagger
- * /career:
- *  post:
- *      summary: Crea una nueva carrera
- *      tags: [Career]
- *      parameters:
- *          - $ref: '#/components/parameters/token'
- *      requestBody:
- *          required: true
- *          content:
- *              application/json:
- *                  schema:
- *                      $ref: '#/components/schemas/Career'
- *      responses:
- *          200:
- *              description: La nueva carrera creada
- *              content:
- *                  application/json:
- *                      schema:
- *                          type: object
- *                          $ref: '#/components/schemas/CareerResponse'
- *          500:
- *              description: Error de servidor
- *
- */
-router.post(
-    "/",
-    [
-        validateJWT,
-        checkAuthRole([ROLES.ADMIN]),
-        body("nombre").isString(),
-        body("numModulos").isNumeric(),
-        body("modulos").isArray(),
-        body("modulos.*.nombre").isString(),
-        body("modulos.*.duracionSemanas").isString(),
-        body("modulos.*.docenteUuid").isUUID('4'),
-        body("modulos.*.horarios").isArray(),
-        body("modulos.*.horarios.*").isObject(),
-        body("modulos.*.horarios.*.horaInicio").isString(),
-        body("modulos.*.horarios.*.horaFin").isString(),
-        body("modulos.*.horarios.*.dias").isArray(),
-        body("modulos.*.horarios.*.dias.*").isString(),
-        body("duracionMeses").isNumeric(),
-        validateFields,
-    ],
-    careerController.postCareer
 );
 
 /**

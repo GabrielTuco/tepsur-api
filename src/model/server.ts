@@ -1,6 +1,7 @@
 import * as dotenv from "dotenv";
 dotenv.config();
 
+import http from "http";
 import express, { Application } from "express";
 import cors from "cors";
 import morgan from "morgan";
@@ -29,6 +30,7 @@ import {
     metodoPagoRoutes,
 } from "../Matricula/routes";
 import { swaggerCustomCss } from "../swagger-custom-styles";
+import { DataSource } from "typeorm";
 
 interface Paths {
     auth: string;
@@ -50,6 +52,8 @@ interface Paths {
 
 class Server implements ServerBase {
     cloudinary: any;
+    dataSource: DataSource;
+    server: http.Server;
     constructor(
         private app: Application = express(),
         private port: string | number = process.env.PORT || 3000,
@@ -78,15 +82,26 @@ class Server implements ServerBase {
             api_secret: process.env.CLOUDINARY_API_SECRET,
         });
 
-        this.connectDB();
+        //this.connectDB();
         this.middlewares();
         this.routes();
+    }
+    get getApp() {
+        return this.app;
     }
 
     async connectDB() {
         try {
-            await AppDataSource.initialize();
+            this.dataSource = await AppDataSource.initialize();
             console.log("Database conected... OK");
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    public async closeConnectionDB() {
+        try {
+            await this.dataSource.destroy();
         } catch (error) {
             console.log(error);
         }
@@ -117,7 +132,11 @@ class Server implements ServerBase {
         });
         //Documentation
         const specs = swaggerJSDoc(options);
-        this.app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(specs,swaggerCustomCss));
+        this.app.use(
+            "/api/docs",
+            swaggerUi.serve,
+            swaggerUi.setup(specs, swaggerCustomCss)
+        );
 
         this.app.use(this.paths.auth, authRoutes);
         this.app.use(this.paths.secretary, secretaryRoutes);
@@ -136,9 +155,12 @@ class Server implements ServerBase {
     }
 
     listen() {
-        this.app.listen(this.port, () => {
-            console.log(`Server on line in port: ${this.port}`);
+        this.server = this.app.listen(this.port, () => {
+            console.log(`Server online in port: ${this.port}`);
         });
+    }
+    stop() {
+        this.server.close();
     }
 }
 
