@@ -12,15 +12,11 @@ const matriculaService = new MatriculaService();
 const validateDniService = new ValidateDniService();
 const ubigeoService = new UbigeoService();
 export class MatriculaController {
-    public async getList(req: Request, res: Response) {
+    public async postMatricula(req: Request, res: Response) {
         try {
-            const { year, month } = req.query;
-            const matriculas = await matriculaService.getAll(
-                year?.toString(),
-                month?.toString()
-            );
+            const matricula = await matriculaService.register(req.body);
 
-            return res.json(matriculas);
+            return res.json(matricula);
         } catch (error) {
             console.log(error);
             if (error instanceof DatabaseError) {
@@ -35,11 +31,18 @@ export class MatriculaController {
         }
     }
 
-    public async postMatricula(req: Request, res: Response) {
+    public async putSetModulesToMatricula(req: Request, res: Response) {
         try {
-            const matricula = await matriculaService.register(req.body);
+            const { matriculaUuid } = req.params;
+            const { modulosMatricula } = req.body;
 
-            return res.json(matricula);
+            const matriculaWithNewModules =
+                await matriculaService.setModulesForMatricula(
+                    matriculaUuid,
+                    modulosMatricula
+                );
+
+            return res.json(matriculaWithNewModules);
         } catch (error) {
             console.log(error);
             if (error instanceof DatabaseError) {
@@ -94,6 +97,29 @@ export class MatriculaController {
             const gradoEstudio = await gradoEstudioService.register(req.body);
 
             return res.json(gradoEstudio);
+        } catch (error) {
+            console.log(error);
+            if (error instanceof DatabaseError) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                    name: error.name,
+                });
+            }
+            return res.status(500).json({
+                msg: "Internal server error",
+            });
+        }
+    }
+
+    public async getList(req: Request, res: Response) {
+        try {
+            const { year, month } = req.query;
+            const matriculas = await matriculaService.getAll(
+                year?.toString(),
+                month?.toString()
+            );
+
+            return res.json(matriculas);
         } catch (error) {
             console.log(error);
             if (error instanceof DatabaseError) {

@@ -1,10 +1,10 @@
-import { Column, Entity, ManyToOne, PrimaryColumn } from "typeorm";
+import { BaseEntity, Column, Entity, ManyToOne, PrimaryColumn } from "typeorm";
 import { MODALIDAD } from "../../interfaces/enums";
 import { Matricula } from "./Matricula.entity";
 import { Modulo } from "./Modulo.entity";
 
 @Entity()
-export class MatriculaModulosModulo {
+export class MatriculaModulosModulo extends BaseEntity {
     @PrimaryColumn()
     matriculaUuid: string;
 

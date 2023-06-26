@@ -2,7 +2,7 @@ import { Router } from "express";
 import { MatriculaController } from "../controllers/matricula.controller";
 import { validateJWT } from "../../middlewares/validateJWT";
 import { checkAuthRole } from "../../middlewares/checkAuthRole";
-import { ROLES, TIPO_MATRICULA } from "../../interfaces/enums";
+import { MODALIDAD, ROLES, TIPO_MATRICULA } from "../../interfaces/enums";
 import { body, param } from "express-validator";
 import { validateFields } from "../../middlewares/validateFields";
 
@@ -97,6 +97,7 @@ const matriculaController = new MatriculaController();
  *                              description:  Uuid de los modulos de la carrera
  *                          modalidad:
  *                              type: string
+ *                              enum: [virtual, presencial]
  *                              description: La modalidad en la que se va llevar el modulo
  *                          fechaInicio:
  *                              type: string
@@ -352,6 +353,76 @@ router.post(
         validateFields,
     ],
     matriculaController.postGradoEstudio
+);
+
+/**
+ * @swagger
+ * /matricula/set-modules-to-matricula/{matriculaUuid}:
+ *  put:
+ *      summary: Establecer los modulos donde se matricula el alumno
+ *      tags: [Matricula]
+ *      parameters:
+ *          - $ref: '#/components/parameters/token'
+ *          - in: path
+ *            name: matriculaUuid
+ *            schema:
+ *              type: string
+ *              format: uuid
+ *            required: true
+ *            description: Uuid de la matricula
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          modulosMatricula:
+ *                              type: array
+ *                              items:
+ *                                  type: object
+ *                                  properties:
+ *                                      uuid:
+ *                                          type: string
+ *                                          format: uuid
+ *                                          description:  Uuid de los modulos de la carrera
+ *                                      modalidad:
+ *                                          type: string
+ *                                          enum: [virtual, presencial]
+ *                                          description: La modalidad en la que se va llevar el modulo
+ *                                      fechaInicio:
+ *                                          type: string
+ *                                          format: date-time
+ *                                          description: La fecha de inicio del modulo
+ *      responses:
+ *          200:
+ *              description: La matricula con los modulos registrados
+ *              content:
+ *                  application/json:
+ *                       schema:
+ *                          type: object
+ *                          $ref: '#/components/schemas/Matricula'
+ *          500:
+ *              description: Error de servidor
+ *
+ */
+router.put(
+    "/set-modules-to-matricula/:matriculaUuid",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        param("matriculaUuid").isUUID("4"),
+        body("modulosMatricula").isArray(),
+        body("modulosMatricula.*").isObject(),
+        body("modulosMatricula.*.uuid").isUUID("4"),
+        body("modulosMatricula.*.modalidad").isIn([
+            MODALIDAD.VIRTUAL,
+            MODALIDAD.PRESENCIAL,
+        ]),
+        body("moudlosMatricula.*.fechaInicio").isString(),
+        validateFields,
+    ],
+    matriculaController.putSetModulesToMatricula
 );
 
 /**

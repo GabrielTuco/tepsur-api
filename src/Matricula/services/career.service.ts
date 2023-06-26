@@ -6,6 +6,7 @@ import { CareerRepository } from "../interfaces/repositories";
 import { Docente } from "../../Teacher/entity/Docente.entity";
 import { AppDataSource } from "../../db/dataSource";
 import { QueryRunner } from "typeorm";
+import { TIPO_CARRERA } from "../../interfaces/enums";
 
 export class CareerService implements CareerRepository {
     public async listAll(): Promise<Carrera[]> {
@@ -36,25 +37,28 @@ export class CareerService implements CareerRepository {
                     });
                     if (modulo) return modulo;
                     else {
-                        const horarios = await Promise.all(
-                            moduloData.horarios.map(async (horarioData) => {
-                                const horario = await findOrCreateHorario(
-                                    horarioData,
-                                    queryRunner
-                                );
-                                return horario;
-                            })
-                        );
-
-                        const docente = await findDocenteByUuid(
-                            moduloData.docenteUuid
-                        );
                         const newModulo = new Modulo();
                         newModulo.uuid = uuid();
                         newModulo.nombre = moduloData.nombre;
                         newModulo.duracion_semanas = moduloData.duracionSemanas;
-                        newModulo.horarios = horarios;
-                        newModulo.docente = docente!;
+
+                        if (tipoCarrera === TIPO_CARRERA.MODULAR) {
+                            const horarios = await Promise.all(
+                                moduloData.horarios.map(async (horarioData) => {
+                                    const horario = await findOrCreateHorario(
+                                        horarioData,
+                                        queryRunner
+                                    );
+                                    return horario;
+                                })
+                            );
+                            const docente = await findDocenteByUuid(
+                                moduloData.docenteUuid
+                            );
+
+                            newModulo.horarios = horarios;
+                            newModulo.docente = docente!;
+                        }
 
                         await queryRunner.manager.save(newModulo);
                         return newModulo;

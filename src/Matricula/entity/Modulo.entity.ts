@@ -19,11 +19,11 @@ export class Modulo extends EntityBase {
     @Column()
     duracion_semanas: string;
 
-    @ManyToMany(() => Horario)
+    @ManyToMany(() => Horario, { nullable: true })
     @JoinTable()
     horarios: Horario[];
 
-    @ManyToOne(() => Docente, (docente) => docente.modulos)
+    @ManyToOne(() => Docente, (docente) => docente.modulos, { nullable: true })
     docente: Docente;
 
     @OneToMany(

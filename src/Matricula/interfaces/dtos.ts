@@ -48,6 +48,11 @@ export interface ScheduleDTO {
 
 export type UpdateScheduleDTO = Partial<ScheduleDTO>;
 
+export interface ModuloMatriculaDTO {
+    uuid: string;
+    modalidad: MODALIDAD;
+    fechaInicio: Date;
+}
 export interface MatriculaDTO {
     alumno: AlumnoData;
     carreraUuid: string;

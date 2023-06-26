@@ -20,6 +20,7 @@ import {
     MatriculaDTO,
     AlumnoData,
     PagoMatriculaData,
+    ModuloMatriculaDTO,
 } from "../interfaces/dtos";
 import { MatriculaRepository } from "../interfaces/repositories";
 import { Direccion } from "../../entity";
@@ -34,6 +35,7 @@ import { generateFichaMatricula } from "../helpers/generateFichaMatricula";
 import { AppDataSource } from "../../db/dataSource";
 import { PensionService } from "../../Pension/services/pension.service";
 import { MatriculaModulosModulo } from "../entity/MatriculaModulosModulo.entity";
+import { MODALIDAD } from "../../interfaces/enums";
 
 const pensionService = new PensionService();
 export class MatriculaService implements MatriculaRepository {
@@ -215,6 +217,79 @@ export class MatriculaService implements MatriculaRepository {
         }
     }
 
+    public async setModulesForMatricula(
+        matriculaUuid: string,
+        modulosMatricula: ModuloMatriculaDTO[]
+    ): Promise<Matricula> {
+        try {
+            const matricula = await Matricula.createQueryBuilder("m")
+                .innerJoinAndSelect("m.carrera", "c")
+                .innerJoinAndSelect("c.modulos", "m")
+                .innerJoinAndSelect("m.matriculaModulosMatricula", "mm")
+                .where("m.uuid=:uuid", { uuid: matriculaUuid })
+                .getOne();
+
+            if (!matricula)
+                throw new DatabaseError("Matricula not found", 500, "");
+
+            //Busqueda de modulos
+            const modulosExists = await Promise.all(
+                modulosMatricula.map(
+                    async ({ uuid }) => await Modulo.findOneBy({ uuid })
+                )
+            );
+
+            //Eliminacion de posibles nulos
+            const newModulosToMatricula = modulosExists.filter(
+                (element): element is Modulo => element !== null
+            );
+
+            //Validar si todos los modulos a registrar pertenecen a la carrera
+            const isModulosValid = newModulosToMatricula.every((m1) => {
+                return matricula.carrera.modulos.every(
+                    (m2) => m1.uuid === m2.uuid
+                );
+            });
+
+            if (!isModulosValid)
+                throw new Error(
+                    "Algunos modulos no pertenecen a la carrera en la que se matriculo el alumno"
+                );
+
+            //Array de objetos con los modulos y propiedades adicionales
+            const newModulosToMatriculaWithCustomProperties =
+                newModulosToMatricula.map((modulo, i) => {
+                    return {
+                        modulo,
+                        modalidad: modulosMatricula[i].modalidad,
+                        fechaInicio: modulosMatricula[i].fechaInicio,
+                    };
+                });
+
+            matricula.matriculaModulosMatricula = await Promise.all(
+                newModulosToMatriculaWithCustomProperties.map(
+                    async (modulo) => {
+                        const matriculaModulo = new MatriculaModulosModulo();
+                        matriculaModulo.matricula = matricula;
+                        matriculaModulo.modulo = modulo.modulo;
+                        matriculaModulo.modalidad = modulo.modalidad;
+                        matriculaModulo.fecha_inicio = modulo.fechaInicio;
+
+                        await matriculaModulo.save();
+                        return matriculaModulo;
+                    }
+                )
+            );
+
+            await matricula.save();
+            await matricula.reload();
+
+            return matricula;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     public async getAll(
         year: string | undefined,
         month: string | undefined
@@ -376,6 +451,16 @@ export class MatriculaService implements MatriculaRepository {
         }
     }
 
+    public async listModules(): Promise<Modulo[]> {
+        try {
+            const modules = await Modulo.find();
+
+            return modules;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     public async generatePDF(
         uuid: string,
         doc: PDF,
@@ -412,17 +497,8 @@ export class MatriculaService implements MatriculaRepository {
     ): Promise<Matricula> {
         throw new Error("Method not implemented.");
     }
+
     public async delete(_uuid: string): Promise<Matricula> {
         throw new Error("Method not implemented.");
-    }
-
-    public async listModules(): Promise<Modulo[]> {
-        try {
-            const modules = await Modulo.find();
-
-            return modules;
-        } catch (error) {
-            throw error;
-        }
     }
 }

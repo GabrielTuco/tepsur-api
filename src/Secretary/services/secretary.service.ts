@@ -78,6 +78,7 @@ export class SecretaryService implements SecretaryRepository {
                 .innerJoinAndSelect("se.direccion", "d")
                 .where("u.uuid= :id", { id: usuario.uuid })
                 .getOne();
+
             if (!secretaryExists)
                 throw new DatabaseError("Secretary not found", 404, "");
             return secretaryExists;

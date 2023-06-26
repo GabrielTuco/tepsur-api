@@ -5,6 +5,16 @@ import { v2 as cloudinary } from "cloudinary";
 import { uploadImage } from "../../helpers/uploadImage";
 
 export class UserService {
+    public async listUsers(): Promise<Usuario[]> {
+        try {
+            const users = await Usuario.find({ relations: { rol: true } });
+
+            return users;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     public async findByUser(user: string) {
         try {
             const userExists = await Usuario.createQueryBuilder("u")
@@ -18,6 +28,7 @@ export class UserService {
             return null;
         }
     }
+
     public async findById(uuid: string) {
         try {
             const userExists = await Usuario.createQueryBuilder("u")

@@ -51,11 +51,16 @@ const careerController = new CareerController();
  *                                          type: array
  *                                          items:
  *                                              type: string
- *                                              example: ['Lun','Mar','Vie']
+ *                                              example: "Lun"
  *                          docenteUuid:
  *                              type: string
  *                              format: uuid
  *                              description: El docente que dicta el modulo
+ *          required:
+ *              - numModulos
+ *              - nombre
+ *              - duracionMeses
+ *              - tipoCarrera
  *
  *      CareerResponse:
  *          properties:
@@ -81,7 +86,7 @@ const careerController = new CareerController();
  *                              type: string
  *                          duracionSemanas:
  *                              type: string
- *                              example: '4 semanas'
+ *                              example: "4 semanas"
  *                          horarios:
  *                              type: array
  *                              items:
@@ -97,7 +102,7 @@ const careerController = new CareerController();
  *                                          type: array
  *                                          items:
  *                                              type: string
- *                                              example: ['Lun','Mar','Vie']
+ *                                              example: "Lun"
  */
 
 /**
@@ -143,8 +148,8 @@ router.post(
         body("modulos").isArray(),
         body("modulos.*.nombre").isString(),
         body("modulos.*.duracionSemanas").isString(),
-        body("modulos.*.docenteUuid").isUUID("4"),
-        body("modulos.*.horarios").isArray(),
+        body("modulos.*.docenteUuid").optional().isUUID("4"),
+        body("modulos.*.horarios").optional().isArray(),
         body("modulos.*.horarios.*").isObject(),
         body("modulos.*.horarios.*.horaInicio").isString(),
         body("modulos.*.horarios.*.horaFin").isString(),

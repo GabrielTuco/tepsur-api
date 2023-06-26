@@ -5,6 +5,20 @@ import { UserService } from "../services/user.service";
 const userService = new UserService();
 
 export class UserController {
+    public async getAllUsers(_req: Request, res: Response) {
+        try {
+            const users = await userService.listUsers();
+
+            return res.json(users);
+        } catch (error) {
+            console.log(error);
+
+            return res.status(500).json({
+                err: "Ocurrio un error",
+            });
+        }
+    }
+
     public async patchUserAvatar(req: Request, res: Response) {
         const { id } = req.params;
 
