@@ -28,6 +28,7 @@ import {
     moduleRoutes,
     scheduleRoutes,
     metodoPagoRoutes,
+    tarifaPensionCarreraRoutes,
 } from "../Matricula/routes";
 import { swaggerCustomCss } from "../swagger-custom-styles";
 import { DataSource } from "typeorm";
@@ -48,6 +49,7 @@ interface Paths {
     group: string;
     matricula: string;
     metodoPago: string;
+    tarifaPension: string;
 }
 
 class Server implements ServerBase {
@@ -73,6 +75,7 @@ class Server implements ServerBase {
             group: "/api/group",
             matricula: "/api/matricula",
             metodoPago: "/api/metodo-pago",
+            tarifaPension: "/api/tarifa-pension",
         }
     ) {
         //Cloudinary config
@@ -152,6 +155,7 @@ class Server implements ServerBase {
         this.app.use(this.paths.matricula, matriculaRoutes);
         this.app.use(this.paths.metodoPago, metodoPagoRoutes);
         this.app.use(this.paths.student, studentRoutes);
+        this.app.use(this.paths.tarifaPension, tarifaPensionCarreraRoutes);
     }
 
     listen() {

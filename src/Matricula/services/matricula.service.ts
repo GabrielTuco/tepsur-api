@@ -10,21 +10,21 @@ import {
     Carrera,
     GradoEstudios,
     Grupo,
-    Horario,
     Matricula,
     MetodoPago,
     Modulo,
     PagoMatricula,
+    TarifaPensionCarrera,
 } from "../entity";
 import {
     MatriculaDTO,
     AlumnoData,
     PagoMatriculaData,
     ModuloMatriculaDTO,
+    DireccionDto,
 } from "../interfaces/dtos";
 import { MatriculaRepository } from "../interfaces/repositories";
 import { Direccion } from "../../entity";
-import { adaptedDireccion } from "../adapters/direccion.adapter";
 import { Rol, Usuario } from "../../Auth/entity";
 import { encryptPassword } from "../../helpers/encryptPassword";
 import { Secretaria } from "../../Secretary/entity/Secretaria.entity";
@@ -42,7 +42,7 @@ export class MatriculaService implements MatriculaRepository {
     public async register(data: MatriculaDTO): Promise<Matricula> {
         const queryRunner = AppDataSource.createQueryRunner();
         await queryRunner.connect();
-        await queryRunner.startTransaction(); //Start transaction
+        await queryRunner.startTransaction();
 
         try {
             const {
@@ -54,10 +54,24 @@ export class MatriculaService implements MatriculaRepository {
                 sedeUuid,
                 fechaInscripcion,
                 fechaInicio,
+                tipoMatricula,
             } = data;
 
             //Registro de datos personales del estudiante
-            const newAlumno = await this.registerStudent(alumno, queryRunner);
+            const newDireccion = await this.registerAddressStudent(
+                alumno.direccion
+            );
+            await queryRunner.manager.save(newDireccion);
+
+            const newUser = await this.registerUserStudent(alumno.dni);
+            await queryRunner.manager.save(newUser);
+
+            const newAlumno = await this.registerStudent(
+                alumno,
+                newDireccion,
+                newUser
+            );
+            await queryRunner.manager.save(newAlumno);
 
             //Registro de datos academicos del estudiante
             const secretaria = await Secretaria.findOneBy({
@@ -83,6 +97,7 @@ export class MatriculaService implements MatriculaRepository {
             newMatricula.sede = sede!;
             newMatricula.fecha_inscripcion = fechaInscripcion;
             newMatricula.fecha_inicio = fechaInicio;
+            newMatricula.tipo_matricula = tipoMatricula;
 
             await queryRunner.manager.save(newMatricula);
 
@@ -142,12 +157,13 @@ export class MatriculaService implements MatriculaRepository {
 
             await queryRunner.manager.save(newMatricula);
 
-            await queryRunner.commitTransaction();
+            await this.registerPensiones(newMatricula, carreraUuid);
 
-            //await this.registerPensiones(newMatricula);
+            await queryRunner.commitTransaction();
 
             return newMatricula;
         } catch (error) {
+            console.log(error);
             await queryRunner.rollbackTransaction();
             throw error;
         } finally {
@@ -155,28 +171,42 @@ export class MatriculaService implements MatriculaRepository {
         }
     }
 
-    public async registerPensiones(matricula: Matricula): Promise<void> {
+    public async registerPensiones(
+        matricula: Matricula,
+        carreraUuid: string
+    ): Promise<void> {
         try {
             const fechaInicio = new Date(matricula.fecha_inicio);
             const mesInicio = fechaInicio.getMonth() + 1;
             const duracionCarrera = matricula.carrera.duracion_meses;
             const fechaFin = moment().add(duracionCarrera, "M").toDate();
-            const meses: number[] = [];
+            const meses: { mes: number; fechaLimite: Date }[] = [];
+
+            const tarifa = await TarifaPensionCarrera.createQueryBuilder("t")
+                .innerJoinAndSelect("t.carrera", "c")
+                .where("c.uuid=:uuid", { uuid: carreraUuid })
+                .getOne();
+            if (!tarifa) throw new DatabaseError("Tarifa not found", 500, "");
+            const tarifaPension = tarifa.tarifa;
 
             const yearDifference =
                 fechaFin.getFullYear() - fechaInicio.getFullYear();
             for (let i = 0; i < duracionCarrera; i++) {
                 if (mesInicio + i > 12)
-                    meses.push(mesInicio + i - 12 * yearDifference);
-                else meses.push(mesInicio + i);
+                    meses.push({
+                        mes: mesInicio + i - 12 * yearDifference,
+                        fechaLimite: new Date(),
+                    });
+                else
+                    meses.push({ mes: mesInicio + i, fechaLimite: new Date() });
             }
 
-            meses.map(async (m) => {
+            meses.map(async ({ mes, fechaLimite }) => {
                 const pension = await pensionService.register({
                     matricula,
-                    mes: m,
-                    monto: 150,
-                    fechaLimite: new Date(),
+                    mes,
+                    monto: tarifaPension,
+                    fechaLimite: fechaLimite,
                 });
                 return pension;
             });
@@ -297,14 +327,13 @@ export class MatriculaService implements MatriculaRepository {
         try {
             const matriculas = await Matricula.createQueryBuilder("m")
                 .innerJoinAndSelect("m.carrera", "c")
-                .innerJoinAndSelect("m.modulo", "mo")
                 .innerJoinAndSelect("m.alumno", "a")
                 .innerJoinAndSelect("a.grado_estudios", "ge")
                 .innerJoinAndSelect("m.secretaria", "sc")
                 .innerJoinAndSelect("a.direccion", "d")
                 .leftJoinAndSelect("m.grupo", "g")
                 .innerJoinAndSelect("m.sede", "s")
-                .innerJoinAndSelect("g.horario", "h")
+                .leftJoinAndSelect("g.horario", "h")
                 .leftJoinAndSelect("m.pagoMatricula", "p")
                 .leftJoinAndSelect("p.forma_pago", "fp")
                 .where(
@@ -395,23 +424,8 @@ export class MatriculaService implements MatriculaRepository {
         }
     }
 
-    public async findByStudent(_uuid: number): Promise<Matricula> {
-        throw new Error("Method not implemented.");
-    }
-
-    public async findByUuid(_uuid: number): Promise<Matricula> {
-        throw new Error("Method not implemented.");
-    }
-
-    async registerStudent(alumno: AlumnoData, queryRunner: QueryRunner) {
+    async registerAddressStudent(direccion: DireccionDto): Promise<Direccion> {
         try {
-            const { direccion } = alumno;
-            const gradoEstudios = await GradoEstudios.findOneBy({
-                uuid: alumno.gradoEstudiosUuid,
-            });
-
-            const rol = await Rol.findOneBy({ nombre: "Alumno" });
-
             const newDireccionAlumno = new Direccion();
             newDireccionAlumno.uuid = uuid();
             newDireccionAlumno.direccion_exacta = direccion.direccionExacta;
@@ -419,15 +433,37 @@ export class MatriculaService implements MatriculaRepository {
             newDireccionAlumno.provincia = direccion.provincia;
             newDireccionAlumno.departamento = direccion.departamento;
 
-            await queryRunner.manager.save(newDireccionAlumno);
+            return newDireccionAlumno;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async registerUserStudent(dni: string): Promise<Usuario> {
+        try {
+            const rol = await Rol.findOneBy({ nombre: "Alumno" });
 
             const newUserAlumno = new Usuario();
             newUserAlumno.uuid = uuid();
-            newUserAlumno.usuario = alumno.dni;
-            newUserAlumno.password = encryptPassword(alumno.dni);
+            newUserAlumno.usuario = dni;
+            newUserAlumno.password = encryptPassword(dni);
             newUserAlumno.rol = rol!;
 
-            await queryRunner.manager.save(newUserAlumno);
+            return newUserAlumno;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async registerStudent(
+        alumno: AlumnoData,
+        newDireccionAlumno: Direccion,
+        newUserAlumno: Usuario
+    ) {
+        try {
+            const gradoEstudios = await GradoEstudios.findOneBy({
+                uuid: alumno.gradoEstudiosUuid,
+            });
 
             const newAlumno = new Alumno();
             newAlumno.uuid = uuid();
@@ -444,7 +480,6 @@ export class MatriculaService implements MatriculaRepository {
             newAlumno.grado_estudios = gradoEstudios!;
             newAlumno.usuario = newUserAlumno;
 
-            await queryRunner.manager.save(newAlumno);
             return newAlumno;
         } catch (error) {
             throw error;
@@ -498,7 +533,62 @@ export class MatriculaService implements MatriculaRepository {
         throw new Error("Method not implemented.");
     }
 
+    public async findByStudent(_uuid: number): Promise<Matricula> {
+        throw new Error("Method not implemented.");
+    }
+
+    public async findByUuid(_uuid: number): Promise<Matricula> {
+        throw new Error("Method not implemented.");
+    }
+
     public async delete(_uuid: string): Promise<Matricula> {
+        throw new Error("Method not implemented.");
+    }
+
+    public async changeSede(
+        _matriculaUuid: string,
+        _sedeUuid: string
+    ): Promise<Matricula> {
+        throw new Error("Method not implemented.");
+    }
+    public async changeModalidadModulo(
+        matriculaUuid: string,
+        moduloUuid: string,
+        modalidad: MODALIDAD
+    ): Promise<Matricula> {
+        try {
+            const matricula = await Matricula.findOne({
+                where: { uuid: matriculaUuid },
+                relations: { matriculaModulosMatricula: true },
+            });
+
+            if (!matricula)
+                throw new DatabaseError("Matricula not found", 500, "");
+
+            const modulo = matricula.matriculaModulosMatricula.find(
+                (m) => m.moduloUuid === moduloUuid
+            );
+            if (!modulo)
+                throw new DatabaseError(
+                    "Modulo not found in this matricula",
+                    500,
+                    ""
+                );
+
+            modulo.modalidad = modalidad;
+
+            await matricula.save();
+            await matricula.reload();
+
+            return matricula;
+        } catch (error) {
+            throw error;
+        }
+    }
+    public async changeHorario(
+        _matriculaUuid: string,
+        _moduloUuid: string
+    ): Promise<Matricula> {
         throw new Error("Method not implemented.");
     }
 }

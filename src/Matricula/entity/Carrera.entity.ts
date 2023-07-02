@@ -4,7 +4,6 @@ import { Modulo } from "./Modulo.entity";
 import { Grupo } from "./Grupo.entity";
 import { Matricula } from "./Matricula.entity";
 import { TIPO_CARRERA } from "../../interfaces/enums";
-import { Sede } from "../../Sede/entity/Sede.entity";
 
 @Entity()
 export class Carrera extends EntityBase {

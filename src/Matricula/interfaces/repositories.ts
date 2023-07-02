@@ -8,6 +8,7 @@ import {
     MetodoPago,
     Modulo,
     PagoMatricula,
+    TarifaPensionCarrera,
 } from "../entity";
 import {
     AlumnoData,
@@ -15,11 +16,15 @@ import {
     GroupDTO,
     MatriculaDTO,
     ModuleDTO,
+    ModuloMatriculaDTO,
     PagoMatriculaData,
     ScheduleDTO,
+    TarifaPensionCarreraDTO,
 } from "./dtos";
 import { Response } from "express";
-import { QueryRunner } from "typeorm";
+import { MODALIDAD } from "../../interfaces/enums";
+import { Direccion } from "../../entity";
+import { Usuario } from "../../Auth/entity";
 
 export interface ModuleRepository {
     register(data: ModuleDTO): Promise<Modulo>;
@@ -58,6 +63,12 @@ export interface ScheduleRepository {
 
 export interface MatriculaRepository {
     register(data: MatriculaDTO): Promise<Matricula>;
+    registerPensiones(matricula: Matricula, carreraUuid: string): Promise<void>;
+    setRandomGroup(horarioUuid: string): Promise<Grupo>;
+    setModulesForMatricula(
+        matriculaUuid: string,
+        modulosMatricula: ModuloMatriculaDTO[]
+    ): Promise<Matricula>;
     uploadPaidDocument(
         uuid: string,
         image: fileUpload.UploadedFile
@@ -70,7 +81,8 @@ export interface MatriculaRepository {
     findByUuid(uuid: number): Promise<Matricula>;
     registerStudent(
         data: AlumnoData,
-        queryRunner: QueryRunner
+        newDireccionAlumno: Direccion,
+        newUserAlumno: Usuario
     ): Promise<Alumno>;
     generatePDF(
         uuid: string,
@@ -84,6 +96,16 @@ export interface MatriculaRepository {
     update(uuid: string, data: Partial<MatriculaDTO>): Promise<Matricula>;
     delete(uuid: string): Promise<Matricula>;
     listModules(): Promise<Modulo[]>;
+    changeSede(matriculaUuid: string, sedeUuid: string): Promise<Matricula>;
+    changeModalidadModulo(
+        matriculaUuid: string,
+        moduloUuid: string,
+        modalidad: MODALIDAD
+    ): Promise<Matricula>;
+    changeHorario(
+        matriculaUuid: string,
+        moduloUuid: string
+    ): Promise<Matricula>;
 }
 
 export interface MetodoPagoRepository {
@@ -96,4 +118,13 @@ export interface UbigeoRepository {
     listDepartaments(): Promise<string[]>;
     listProvinces(id: string): Promise<string[]>;
     listDistricts(depId: string, provId: string): Promise<string[]>;
+}
+
+export interface TarifaPensionCarreraRepository {
+    register(data: TarifaPensionCarreraDTO): Promise<TarifaPensionCarrera>;
+    listAll(): Promise<TarifaPensionCarrera[]>;
+    findByUuid(uuid: string): Promise<TarifaPensionCarrera>;
+    findByCarreraUuid(carreraUuid: string): Promise<TarifaPensionCarrera>;
+    update(uuid: string, data: any): Promise<TarifaPensionCarrera>;
+    delete(uuid: string): Promise<TarifaPensionCarrera>;
 }

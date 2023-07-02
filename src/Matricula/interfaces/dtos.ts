@@ -23,6 +23,7 @@ export interface CareerDTO {
     modulos: ModuleDTO[];
     duracionMeses: number;
     tipoCarrera: TIPO_CARRERA;
+    sedeUuid: string;
 }
 
 export interface GroupDTO {
@@ -95,4 +96,9 @@ export interface PagoMatriculaData {
 
 export interface GradoEstudiosDTO {
     descripcion: string;
+}
+
+export interface TarifaPensionCarreraDTO {
+    carreraUuid: string;
+    tarifa: number;
 }

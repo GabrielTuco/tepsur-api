@@ -26,6 +26,10 @@ const careerController = new CareerController();
  *                  type: string
  *                  enum: [modular,semestral]
  *                  example: "modular"
+ *              sedeUuid:
+ *                  type: string
+ *                  format: uuid
+ *                  description: Sede en donde se registra la carrera
  *              modulos:
  *                  type: array
  *                  items:
@@ -155,6 +159,7 @@ router.post(
         body("modulos.*.horarios.*.horaFin").isString(),
         body("modulos.*.horarios.*.dias").isArray(),
         body("modulos.*.horarios.*.dias.*").isString(),
+        body("sedeUuid", "Debe ser un uuid valido").isUUID("4"),
         body("tipoCarrera", "").isIn([
             TIPO_CARRERA.MODULAR,
             TIPO_CARRERA.SEMESTRAL,
