@@ -41,6 +41,7 @@ export interface CareerRepository {
     update(uuid: string, data: Partial<Carrera>): Promise<Carrera>;
     addModule(uuid: string, module: Partial<Modulo>): Promise<Carrera>;
     removeModule(uuid: string, moduleUuid: string): Promise<Carrera>;
+    delete(uuid: string): Promise<Carrera>;
 }
 
 export interface GroupRepository {

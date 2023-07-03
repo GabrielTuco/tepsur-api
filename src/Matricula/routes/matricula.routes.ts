@@ -71,7 +71,8 @@ const matriculaController = new MatriculaController();
  *                  type: string
  *                  description: Numero de comprobante
  *              formaPagoUuid:
- *                  type: string
+ *                  type: number
+ *                  example: 2
  *                  description: UUID del tipo de forma de pago
  *              monto:
  *                  type: number

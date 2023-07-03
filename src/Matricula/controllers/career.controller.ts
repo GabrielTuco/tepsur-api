@@ -174,4 +174,23 @@ export class CareerController {
             });
         }
     }
+
+    public async delete(req: Request, res: Response) {
+        try {
+            const { uuid } = req.params;
+            const carrera = await careerService.delete(uuid);
+
+            return res.json(carrera);
+        } catch (error) {
+            if (error instanceof DatabaseError) {
+                return res.status(error.codeStatus).json({
+                    name: error.name,
+                    msg: error.message,
+                });
+            }
+            return res.status(500).json({
+                msg: "Internal Server Error",
+            });
+        }
+    }
 }

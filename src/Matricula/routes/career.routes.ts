@@ -503,4 +503,55 @@ router.patch(
     careerController.patchRemoveModule
 );
 
+/**
+ * @swagger
+ * /career/{uuid}:
+ *  delete:
+ *      summary: Eliminar una carrera (eliminacion logica)
+ *      tags: [Career]
+ *      parameters:
+ *          - $ref: '#/components/parameters/token'
+ *          - in: path
+ *            name: uuid
+ *            schema:
+ *                 type: string
+ *                 format: uuid
+ *            required: true
+ *            description: El uuid de la carrera
+ *      responses:
+ *          200:
+ *              description: La carrera eliminada (eliminacion logica)
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          $ref: '#/components/schemas/CareerResponse'
+ *          404:
+ *              description: La carrera no esta registrada en la base de datos
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              name:
+ *                                  type: string
+ *                                  description: El nombre del error
+ *                              msg:
+ *                                  type: string
+ *                                  example: "Carrera not found"
+ *
+ *          500:
+ *              description: Error de servidor
+ *
+ */
+router.delete(
+    "/:uuid",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        param("uuid").isUUID("4"),
+        validateFields,
+    ],
+    careerController.delete
+);
 export default router;

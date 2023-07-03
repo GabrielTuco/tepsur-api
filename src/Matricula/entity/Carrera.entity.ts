@@ -30,4 +30,7 @@ export class Carrera extends EntityBase {
 
     @Column()
     tipo_carrera: TIPO_CARRERA;
+
+    @Column({ default: "activo" })
+    estado: string;
 }
