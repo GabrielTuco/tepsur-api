@@ -1,11 +1,11 @@
 import {
-  Column,
-  Entity,
-  JoinColumn,
-  JoinTable,
-  ManyToMany,
-  OneToMany,
-  OneToOne,
+    Column,
+    Entity,
+    JoinColumn,
+    JoinTable,
+    ManyToMany,
+    OneToMany,
+    OneToOne,
 } from "typeorm";
 import { EntityBase } from "../../entity/EntityBase";
 import { Direccion } from "../../entity/Direccion.entity";
@@ -16,26 +16,29 @@ import { Administrador } from "../../entity";
 
 @Entity()
 export class Sede extends EntityBase {
-  @Column({ unique: true })
-  nombre: string;
+    @Column({ unique: true })
+    nombre: string;
 
-  @OneToOne(() => Direccion)
-  @JoinColumn()
-  direccion: Direccion;
+    @Column({ default: "activo" })
+    estado: string;
 
-  @OneToMany(() => Docente, (docente) => docente.sede)
-  docentes: Docente[];
+    @OneToOne(() => Direccion)
+    @JoinColumn()
+    direccion: Direccion;
 
-  @OneToMany(() => Secretaria, (secretaria) => secretaria.sede)
-  secretarias: Secretaria[];
+    @OneToMany(() => Docente, (docente) => docente.sede)
+    docentes: Docente[];
 
-  @OneToMany(() => Administrador, (administrador) => administrador.sede)
-  administradores: Administrador[];
+    @OneToMany(() => Secretaria, (secretaria) => secretaria.sede)
+    secretarias: Secretaria[];
 
-  @ManyToMany(() => Carrera)
-  @JoinTable()
-  carreras: Carrera[];
+    @OneToMany(() => Administrador, (administrador) => administrador.sede)
+    administradores: Administrador[];
 
-  @OneToMany(() => Matricula, (matricula) => matricula.sede)
-  matriculas: Matricula[];
+    @ManyToMany(() => Carrera)
+    @JoinTable()
+    carreras: Carrera[];
+
+    @OneToMany(() => Matricula, (matricula) => matricula.sede)
+    matriculas: Matricula[];
 }

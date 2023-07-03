@@ -65,6 +65,7 @@ export class AdministratorService {
             const adminExists = await Administrador.createQueryBuilder("a")
                 .innerJoinAndSelect("a.usuario", "u")
                 .innerJoinAndSelect("u.rol", "r")
+                .leftJoinAndSelect("a.sede", "s")
                 .where("u.uuid= :id", { id: usuario.uuid })
                 .getOne();
             return adminExists || null;

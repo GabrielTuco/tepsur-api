@@ -4,6 +4,7 @@ export interface SedeRepository {
     listAll(): Promise<Sede[]>;
     findById(uuid: string): Promise<Sede | null>;
     register(sede: SedeDTO): Promise<Sede>;
+    delete(uuid: string): Promise<Sede>;
 }
 
 export interface SedeDTO {

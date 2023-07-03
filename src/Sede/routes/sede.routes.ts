@@ -3,10 +3,14 @@ import { SedeController } from "../controllers/sede.controller";
 import { validateJWT } from "../../middlewares/validateJWT";
 import { checkAuthRole } from "../../middlewares/checkAuthRole";
 import { ROLES } from "../../interfaces/enums";
+import { SedeService } from "../services/sede.service";
+import { param } from "express-validator";
+import { validateFields } from "../../middlewares/validateFields";
 
 const router = Router();
 
-const sedeController = new SedeController();
+const sedeService = new SedeService();
+const sedeController = new SedeController(sedeService);
 
 /**
  * @swagger
@@ -54,7 +58,7 @@ const sedeController = new SedeController();
  *  parameters:
  *      codSede:
  *          in: path
- *          name: id
+ *          name: uuid
  *          required: true
  *          schema:
  *              type: string
@@ -105,7 +109,7 @@ router.get(
 
 /**
  * @swagger
- * /sede/{id}:
+ * /sede/{uuid}:
  *  get:
  *      summary: Retorna la sede a buscar
  *      tags: [Sede]
@@ -188,4 +192,44 @@ router.post(
     sedeController.postSede
 );
 
+/**
+ * @swagger
+ * /sede/{uuid}:
+ *  delete:
+ *      summary: Eliminar una sede (eliminacion logica)
+ *      tags: [Sede]
+ *      parameters:
+ *          - $ref: '#/components/parameters/codSede'
+ *      responses:
+ *          200:
+ *              description: La sede registrada
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          $ref: '#/components/schemas/Sede'
+ *          401:
+ *              description: Token de autenticacion faltante
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              msg:
+ *                                  type: string
+ *                                  description: El error de autenticacion
+ *          500:
+ *              description: Error de servidor
+ *
+ */
+router.delete(
+    "/:uuid",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        param("uuid").isUUID("4"),
+        validateFields,
+    ],
+    sedeController.deleteSede
+);
 export default router;

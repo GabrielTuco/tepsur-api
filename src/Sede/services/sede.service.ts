@@ -5,10 +5,11 @@ import { SedeDTO, SedeRepository } from "../interfaces/sede.repository";
 import { v4 as uuid } from "uuid";
 
 export class SedeService implements SedeRepository {
-    public async listAll(): Promise<Sede[]> {
+    public listAll = async (): Promise<Sede[]> => {
         try {
             const data = await Sede.createQueryBuilder("s")
                 .innerJoinAndSelect("s.direccion", "d")
+                .where("s.estado='activo'")
                 .getMany();
             return data;
         } catch (error) {
@@ -19,23 +20,25 @@ export class SedeService implements SedeRepository {
                 ""
             );
         }
-    }
-    public async findById(uuid: string): Promise<Sede | null> {
+    };
+    public findById = async (uuid: string): Promise<Sede> => {
         try {
             const sede = await Sede.createQueryBuilder("s")
                 .innerJoinAndSelect("s.direccion", "d")
-                .where("s.uuid= :uuid", { uuid })
+                .where("s.uuid= :uuid and estado='activo'", { uuid })
                 .getOne();
+            if (!sede)
+                throw new DatabaseError(
+                    "No se pudo encontrar el registro",
+                    404,
+                    ""
+                );
             return sede;
         } catch (error) {
-            throw new DatabaseError(
-                "No se pudo encontrar el registro",
-                404,
-                ""
-            );
+            throw error;
         }
-    }
-    public async register({ nombre, direccion }: SedeDTO): Promise<Sede> {
+    };
+    public register = async ({ nombre, direccion }: SedeDTO): Promise<Sede> => {
         try {
             const newAddress = new Direccion();
             newAddress.uuid = uuid();
@@ -59,5 +62,23 @@ export class SedeService implements SedeRepository {
                 ""
             );
         }
-    }
+    };
+    public delete = async (uuid: string): Promise<Sede> => {
+        try {
+            const sede = await Sede.findOneBy({ uuid, estado: "activo" });
+            if (!sede)
+                throw new DatabaseError(
+                    "Sede not found",
+                    404,
+                    "Not found error"
+                );
+            sede.estado = "inactivo";
+            await sede.save();
+            await sede.reload();
+
+            return sede;
+        } catch (error) {
+            throw error;
+        }
+    };
 }

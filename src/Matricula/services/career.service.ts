@@ -110,7 +110,7 @@ export class CareerService implements CareerRepository {
         try {
             const data = await Carrera.createQueryBuilder("c")
                 .leftJoinAndSelect("c.modulos", "modulo")
-                .where("c.uuid = :uuid", { uuid })
+                .where("c.uuid = :uuid and c.estado='activo'", { uuid })
                 .getOne();
 
             if (!data) {
@@ -138,7 +138,7 @@ export class CareerService implements CareerRepository {
 
     public async findByUuid(uuid: string): Promise<Carrera> {
         try {
-            const data = await Carrera.findOneBy({ uuid });
+            const data = await Carrera.findOneBy({ uuid, estado: "activo" });
             if (!data) {
                 throw new DatabaseError("No se econtro el registro", 404, "");
             }
@@ -149,7 +149,10 @@ export class CareerService implements CareerRepository {
     }
     public async findByName(name: string): Promise<Carrera> {
         try {
-            const data = await Carrera.findOneBy({ nombre: name });
+            const data = await Carrera.findOneBy({
+                nombre: name,
+                estado: "activo",
+            });
             if (!data) {
                 throw new DatabaseError("No se econtro el registro", 404, "");
             }
@@ -180,7 +183,7 @@ export class CareerService implements CareerRepository {
         try {
             const career = await Carrera.findOne({
                 relations: { modulos: true },
-                where: { uuid: careerUuid },
+                where: { uuid: careerUuid, estado: "activo" },
             });
             if (!career) throw new DatabaseError("Career not found", 500, "");
 
@@ -224,7 +227,7 @@ export class CareerService implements CareerRepository {
         try {
             const career = await Carrera.findOne({
                 relations: { modulos: true },
-                where: { uuid: careerUuid },
+                where: { uuid: careerUuid, estado: "activo" },
             });
             if (!career) throw new DatabaseError("Career not found", 500, "");
 
