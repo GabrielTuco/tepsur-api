@@ -5,9 +5,11 @@ import { validateFields } from "../middlewares/validateFields";
 import { validateJWT } from "../middlewares/validateJWT";
 import { checkAuthRole } from "../middlewares/checkAuthRole";
 import { ROLES } from "../interfaces/enums";
+import { AdministratorService } from "../services/admin.service";
 
 const router = Router();
-const adminController = new AdministratorController();
+const adminService = new AdministratorService();
+const adminController = new AdministratorController(adminService);
 
 /**
  * @swagger

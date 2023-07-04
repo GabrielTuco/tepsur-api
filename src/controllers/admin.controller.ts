@@ -2,14 +2,12 @@ import { Request, Response } from "express";
 import { AdministratorService } from "../services/admin.service";
 import { encryptPassword } from "../helpers/encryptPassword";
 
-const administratorService = new AdministratorService();
-
 export class AdministratorController {
-    public async postAdministrator(req: Request, res: Response) {
+    constructor(private readonly administratorService: AdministratorService) {}
+    public postAdministrator = async (req: Request, res: Response) => {
         try {
-            const administratorCreated = await administratorService.register(
-                req.body
-            );
+            const administratorCreated =
+                await this.administratorService.register(req.body);
 
             if (!administratorCreated) {
                 return res.status(400).json({
@@ -17,9 +15,8 @@ export class AdministratorController {
                 });
             }
             const administratorUserCreated =
-                await administratorService.createUser({
+                await this.administratorService.createUser({
                     adminUuid: administratorCreated.uuid,
-                    codRol: 1,
                     usuario: administratorCreated.dni,
                     password: encryptPassword(administratorCreated.dni),
                 });
@@ -37,5 +34,5 @@ export class AdministratorController {
                 msg: "contact the administrator",
             });
         }
-    }
+    };
 }

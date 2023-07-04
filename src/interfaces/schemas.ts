@@ -1,4 +1,4 @@
-export interface AdministratorSchema {
+export interface AdministratorDTO {
     id?: number;
     dni: string;
     nombres: string;
@@ -6,6 +6,7 @@ export interface AdministratorSchema {
     apeMaterno: string;
     celular: string;
     correo: string;
+    sedeUuid: string;
     codUsuario?: number | null;
 }
 

@@ -25,6 +25,7 @@ import { Pension } from "../Pension/entity/Pension.entity";
 import { PagoPension } from "../Pension/entity/PagoPension.entity";
 import { MatriculaModulosModulo } from "../Matricula/entity/MatriculaModulosModulo.entity";
 import { TarifaPensionCarrera } from "../Matricula/entity/TarifaPensionCarrera.entity";
+import { Especializacion } from "../Especializacion/entity/Especializacion.entity";
 
 //Yargs config
 const argv = yargs(process.argv.slice(2))
@@ -74,6 +75,7 @@ export const AppDataSource = new DataSource({
     Horario,
     GradoEstudios,
     Matricula,
+    Especializacion,
     MatriculaModulosModulo,
     PagoMatricula,
     MetodoPago,

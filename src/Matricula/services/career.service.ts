@@ -12,14 +12,12 @@ import { Sede } from "../../Sede/entity/Sede.entity";
 export class CareerService implements CareerRepository {
     public async listAll(): Promise<Carrera[]> {
         try {
-            const carreras = await Carrera.find({
-                where: {
-                    estado: "activo",
-                },
-                relations: {
-                    modulos: true,
-                },
-            });
+            const carreras = await Carrera.createQueryBuilder("c")
+                .innerJoinAndSelect("c.modulos", "m")
+                .leftJoinAndSelect("m.horarios", "h")
+                .where("c.estado='activo'")
+                .getMany();
+
             return carreras;
         } catch (error) {
             throw error;

@@ -3,18 +3,30 @@ import { Rol, Usuario } from "../Auth/entity";
 import { Administrador } from "../entity";
 import { DatabaseError } from "../errors/DatabaseError";
 import { UserEntity } from "../interfaces/entities";
-import { AdministratorSchema } from "../interfaces/schemas";
+import { AdministratorDTO } from "../interfaces/schemas";
+import { Sede } from "../Sede/entity/Sede.entity";
 
 export class AdministratorService {
-    public async register({
-        dni,
-        apeMaterno,
-        apePaterno,
-        nombres,
-        celular,
-        correo,
-    }: AdministratorSchema) {
+    public register = async (data: AdministratorDTO) => {
+        const {
+            dni,
+            apeMaterno,
+            apePaterno,
+            nombres,
+            celular,
+            correo,
+            sedeUuid,
+        } = data;
         try {
+            const sede = await Sede.findOneBy({ uuid: sedeUuid });
+
+            if (!sede)
+                throw new DatabaseError(
+                    "Sede not found",
+                    404,
+                    "Not found error"
+                );
+
             const newAdministrator = new Administrador();
             newAdministrator.dni = dni;
             newAdministrator.uuid = uuid();
@@ -23,32 +35,38 @@ export class AdministratorService {
             newAdministrator.ape_paterno = apePaterno;
             newAdministrator.celular = celular;
             newAdministrator.correo = correo;
+            newAdministrator.sede = sede;
 
             return await newAdministrator.save();
-        } catch (error: any) {
+        } catch (error) {
             console.log(error);
-            throw new DatabaseError(error, 500, "DatabaseError");
+            throw error;
         }
-    }
+    };
 
-    public async createUser({
+    public createUser = async ({
         adminUuid,
-        codRol,
         password,
         usuario,
-    }: UserEntity & { adminUuid: string }) {
+    }: UserEntity & { adminUuid: string }) => {
         try {
             const administrator = await Administrador.findOneBy({
                 uuid: adminUuid,
             });
             if (administrator) {
                 const newUser = new Usuario();
-                const role = await Rol.findOneBy({ uuid: codRol });
+                const role = await Rol.findOneBy({ nombre: "Administrador" });
 
+                if (!role)
+                    throw new DatabaseError(
+                        "Rol not valid or not found",
+                        404,
+                        "Not found error"
+                    );
                 newUser.uuid = uuid();
                 newUser.usuario = usuario;
                 newUser.password = password;
-                newUser.rol = role!;
+                newUser.rol = role;
 
                 const savedUser = await newUser.save();
                 administrator.usuario = savedUser;
@@ -59,8 +77,8 @@ export class AdministratorService {
             console.log(error);
             throw new Error("Error creando el usuario para el administrador");
         }
-    }
-    public async searchByUser(usuario: Usuario) {
+    };
+    public searchByUser = async (usuario: Usuario) => {
         try {
             const adminExists = await Administrador.createQueryBuilder("a")
                 .innerJoinAndSelect("a.usuario", "u")
@@ -73,5 +91,5 @@ export class AdministratorService {
             console.log(error);
             return null;
         }
-    }
+    };
 }
