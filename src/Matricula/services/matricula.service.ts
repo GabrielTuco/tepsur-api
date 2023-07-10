@@ -1,5 +1,4 @@
 import { Response } from "express";
-import { QueryRunner } from "typeorm";
 import { v4 as uuid } from "uuid";
 import PDF from "pdfkit-table";
 import fileUpload from "express-fileupload";
@@ -34,12 +33,12 @@ import { uploadImage } from "../../helpers/uploadImage";
 import { generateFichaMatricula } from "../helpers/generateFichaMatricula";
 import { AppDataSource } from "../../db/dataSource";
 import { PensionService } from "../../Pension/services/pension.service";
-import { MatriculaModulosModulo } from "../entity/MatriculaModulosModulo.entity";
-import { MODALIDAD } from "../../interfaces/enums";
+import { MatriculaModulosModulo } from "../entity/MatriculaModulosModulo";
+import { ESTADO_MODULO_MATRICULA, MODALIDAD } from "../../interfaces/enums";
 
 const pensionService = new PensionService();
 export class MatriculaService implements MatriculaRepository {
-    public async register(data: MatriculaDTO): Promise<Matricula> {
+    public register = async (data: MatriculaDTO): Promise<Matricula> => {
         const queryRunner = AppDataSource.createQueryRunner();
         await queryRunner.connect();
         await queryRunner.startTransaction();
@@ -138,7 +137,7 @@ export class MatriculaService implements MatriculaRepository {
                         };
                     });
 
-                newMatricula.matriculaModulosMatricula = await Promise.all(
+                newMatricula.matriculaModulosModulo = await Promise.all(
                     newModulosToMatriculaWithCustomProperties.map(
                         async (modulo) => {
                             const matriculaModulo =
@@ -147,6 +146,8 @@ export class MatriculaService implements MatriculaRepository {
                             matriculaModulo.modulo = modulo.modulo;
                             matriculaModulo.modalidad = modulo.modalidad;
                             matriculaModulo.fecha_inicio = modulo.fechaInicio;
+                            matriculaModulo.estado =
+                                ESTADO_MODULO_MATRICULA.MATRICULADO;
 
                             await queryRunner.manager.save(matriculaModulo);
                             return matriculaModulo;
@@ -154,6 +155,7 @@ export class MatriculaService implements MatriculaRepository {
                     )
                 );
             }
+            //! Registrar el resto de modulos que va a llevar el estudiante con un estado de POR_LLEVAR
 
             await queryRunner.manager.save(newMatricula);
 
@@ -169,12 +171,12 @@ export class MatriculaService implements MatriculaRepository {
         } finally {
             await queryRunner.release();
         }
-    }
+    };
 
-    public async registerPensiones(
+    public registerPensiones = async (
         matricula: Matricula,
         carreraUuid: string
-    ): Promise<void> {
+    ): Promise<void> => {
         try {
             const fechaInicio = new Date(matricula.fecha_inicio);
             const mesInicio = fechaInicio.getMonth() + 1;
@@ -213,9 +215,9 @@ export class MatriculaService implements MatriculaRepository {
         } catch (error) {
             throw error;
         }
-    }
+    };
 
-    public async setRandomGroup(horarioUuid: string): Promise<Grupo> {
+    public setRandomGroup = async (horarioUuid: string): Promise<Grupo> => {
         try {
             const grupos = await Grupo.createQueryBuilder("g")
                 .innerJoinAndSelect("g.horario", "h")
@@ -245,12 +247,12 @@ export class MatriculaService implements MatriculaRepository {
         } catch (error) {
             throw error;
         }
-    }
+    };
 
-    public async setModulesForMatricula(
+    public setModulesForMatricula = async (
         matriculaUuid: string,
         modulosMatricula: ModuloMatriculaDTO[]
-    ): Promise<Matricula> {
+    ): Promise<Matricula> => {
         try {
             const matricula = await Matricula.createQueryBuilder("m")
                 .innerJoinAndSelect("m.carrera", "c")
@@ -296,7 +298,7 @@ export class MatriculaService implements MatriculaRepository {
                     };
                 });
 
-            matricula.matriculaModulosMatricula = await Promise.all(
+            matricula.matriculaModulosModulo = await Promise.all(
                 newModulosToMatriculaWithCustomProperties.map(
                     async (modulo) => {
                         const matriculaModulo = new MatriculaModulosModulo();
@@ -304,6 +306,8 @@ export class MatriculaService implements MatriculaRepository {
                         matriculaModulo.modulo = modulo.modulo;
                         matriculaModulo.modalidad = modulo.modalidad;
                         matriculaModulo.fecha_inicio = modulo.fechaInicio;
+                        matriculaModulo.estado =
+                            ESTADO_MODULO_MATRICULA.MATRICULADO;
 
                         await matriculaModulo.save();
                         return matriculaModulo;
@@ -318,12 +322,12 @@ export class MatriculaService implements MatriculaRepository {
         } catch (error) {
             throw error;
         }
-    }
+    };
 
-    public async getAll(
+    public getAll = async (
         year: string | undefined,
         month: string | undefined
-    ): Promise<Matricula[]> {
+    ): Promise<Matricula[]> => {
         try {
             const matriculas = await Matricula.createQueryBuilder("m")
                 .innerJoinAndSelect("m.carrera", "c")
@@ -350,13 +354,13 @@ export class MatriculaService implements MatriculaRepository {
         } catch (error) {
             throw error;
         }
-    }
+    };
 
     //Subida del documento de pago de matricula
-    public async uploadPaidDocument(
+    public uploadPaidDocument = async (
         uuid: string,
         image: fileUpload.UploadedFile
-    ): Promise<Matricula> {
+    ): Promise<Matricula> => {
         try {
             const matricula = await Matricula.createQueryBuilder("m")
                 .innerJoinAndSelect("m.pagoMatricula", "p")
@@ -390,13 +394,13 @@ export class MatriculaService implements MatriculaRepository {
         } catch (error) {
             throw error;
         }
-    }
+    };
 
     //Registro de pago de matricula
-    public async updatePagoMatricula(
+    public updatePagoMatricula = async (
         matriculaUuid: string,
         data: PagoMatriculaData
-    ): Promise<PagoMatricula> {
+    ): Promise<PagoMatricula> => {
         try {
             const matricula = await Matricula.findOneBy({
                 uuid: matriculaUuid,
@@ -422,9 +426,11 @@ export class MatriculaService implements MatriculaRepository {
         } catch (error) {
             throw error;
         }
-    }
+    };
 
-    async registerAddressStudent(direccion: DireccionDto): Promise<Direccion> {
+    public registerAddressStudent = async (
+        direccion: DireccionDto
+    ): Promise<Direccion> => {
         try {
             const newDireccionAlumno = new Direccion();
             newDireccionAlumno.uuid = uuid();
@@ -437,9 +443,9 @@ export class MatriculaService implements MatriculaRepository {
         } catch (error) {
             throw error;
         }
-    }
+    };
 
-    async registerUserStudent(dni: string): Promise<Usuario> {
+    public registerUserStudent = async (dni: string): Promise<Usuario> => {
         try {
             const rol = await Rol.findOneBy({ nombre: "Alumno" });
 
@@ -453,13 +459,13 @@ export class MatriculaService implements MatriculaRepository {
         } catch (error) {
             throw error;
         }
-    }
+    };
 
-    async registerStudent(
+    public registerStudent = async (
         alumno: AlumnoData,
         newDireccionAlumno: Direccion,
         newUserAlumno: Usuario
-    ) {
+    ) => {
         try {
             const gradoEstudios = await GradoEstudios.findOneBy({
                 uuid: alumno.gradoEstudiosUuid,
@@ -484,9 +490,9 @@ export class MatriculaService implements MatriculaRepository {
         } catch (error) {
             throw error;
         }
-    }
+    };
 
-    public async listModules(): Promise<Modulo[]> {
+    public listModules = async (): Promise<Modulo[]> => {
         try {
             const modules = await Modulo.find();
 
@@ -494,13 +500,13 @@ export class MatriculaService implements MatriculaRepository {
         } catch (error) {
             throw error;
         }
-    }
+    };
 
-    public async generatePDF(
+    public generatePDF = async (
         uuid: string,
         doc: PDF,
         stream: Response<any, Record<string, any>>
-    ): Promise<any> {
+    ): Promise<any> => {
         try {
             const data = await Matricula.createQueryBuilder("m")
                 .innerJoinAndSelect("m.carrera", "c")
@@ -524,48 +530,48 @@ export class MatriculaService implements MatriculaRepository {
         } catch (error) {
             throw error;
         }
-    }
+    };
 
-    public async update(
+    public update = async (
         _uuid: string,
         _data: Partial<MatriculaDTO>
-    ): Promise<Matricula> {
+    ): Promise<Matricula> => {
         throw new Error("Method not implemented.");
-    }
+    };
 
-    public async findByStudent(_uuid: number): Promise<Matricula> {
+    public findByStudent = async (_uuid: number): Promise<Matricula> => {
         throw new Error("Method not implemented.");
-    }
+    };
 
-    public async findByUuid(_uuid: number): Promise<Matricula> {
+    public findByUuid = async (_uuid: number): Promise<Matricula> => {
         throw new Error("Method not implemented.");
-    }
+    };
 
-    public async delete(_uuid: string): Promise<Matricula> {
+    public delete = async (_uuid: string): Promise<Matricula> => {
         throw new Error("Method not implemented.");
-    }
+    };
 
-    public async changeSede(
+    public changeSede = async (
         _matriculaUuid: string,
         _sedeUuid: string
-    ): Promise<Matricula> {
+    ): Promise<Matricula> => {
         throw new Error("Method not implemented.");
-    }
-    public async changeModalidadModulo(
+    };
+    public changeModalidadModulo = async (
         matriculaUuid: string,
         moduloUuid: string,
         modalidad: MODALIDAD
-    ): Promise<Matricula> {
+    ): Promise<Matricula> => {
         try {
             const matricula = await Matricula.findOne({
                 where: { uuid: matriculaUuid },
-                relations: { matriculaModulosMatricula: true },
+                //relations: { matriculaModulosMatricula: true },
             });
 
             if (!matricula)
                 throw new DatabaseError("Matricula not found", 500, "");
 
-            const modulo = matricula.matriculaModulosMatricula.find(
+            const modulo = matricula.matriculaModulosModulo.find(
                 (m) => m.moduloUuid === moduloUuid
             );
             if (!modulo)
@@ -584,11 +590,11 @@ export class MatriculaService implements MatriculaRepository {
         } catch (error) {
             throw error;
         }
-    }
-    public async changeHorario(
+    };
+    public changeHorario = async (
         _matriculaUuid: string,
         _moduloUuid: string
-    ): Promise<Matricula> {
+    ): Promise<Matricula> => {
         throw new Error("Method not implemented.");
-    }
+    };
 }

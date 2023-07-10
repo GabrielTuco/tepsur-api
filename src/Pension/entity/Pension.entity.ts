@@ -1,6 +1,5 @@
-import { Column, Entity, ManyToOne, OneToOne, PrimaryColumn } from "typeorm";
+import { Column, Entity, ManyToOne } from "typeorm";
 import { Matricula } from "../../Matricula/entity";
-import { PagoPension } from "./PagoPension.entity";
 import { EntityBase } from "../../entity";
 
 @Entity()

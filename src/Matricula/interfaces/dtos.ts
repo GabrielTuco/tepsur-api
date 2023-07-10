@@ -7,8 +7,7 @@ import {
 export interface ModuleDTO {
     nombre: string;
     duracionSemanas: string;
-    docenteUuid: string;
-    horarios: HorarioDTO[];
+    orden: number;
 }
 
 export interface HorarioDTO {
@@ -29,15 +28,14 @@ export interface CareerDTO {
 export interface GroupDTO {
     nombre: string;
     fechaInicio: Date;
+    modalidad: MODALIDAD;
+    cuposMaximos: number;
+    sedeUuid: string;
     horarioUuid: string;
     carreraUuid: string;
     docenteUuid: string;
-    cuposMaximos: number;
-}
-
-enum Turno {
-    "Mañana" = "Mañana",
-    "Tarde" = "Tarde",
+    moduloUuid: string;
+    responsableUuid: string;
 }
 
 export interface ScheduleDTO {

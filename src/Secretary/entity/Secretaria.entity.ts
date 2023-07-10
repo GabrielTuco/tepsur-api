@@ -5,12 +5,11 @@ import {
     ManyToOne,
     OneToMany,
     OneToOne,
-    PrimaryColumn,
 } from "typeorm";
 import { EntityBase } from "../../entity/EntityBase";
 import { Usuario } from "../../Auth/entity/Usuario.entity";
 import { Sede } from "../../Sede/entity/Sede.entity";
-import { Matricula } from "../../Matricula/entity";
+import { Grupo, Matricula } from "../../Matricula/entity";
 
 @Entity()
 export class Secretaria extends EntityBase {
@@ -41,4 +40,7 @@ export class Secretaria extends EntityBase {
 
     @OneToMany(() => Matricula, (matricula) => matricula.secretaria)
     matriculas: Matricula[];
+
+    @OneToMany(() => Grupo, (grupo) => grupo.secretaria)
+    grupos: Grupo[];
 }

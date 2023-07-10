@@ -36,6 +36,19 @@ export class SecretaryController {
         }
     }
 
+    public async getSecretaries(_req: Request, res: Response) {
+        try {
+            const secretaries = await secretaryService.listAll();
+
+            return res.json(secretaries);
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                message: "contact the administrator",
+            });
+        }
+    }
+
     public async patchSecretary(req: Request, res: Response) {
         const { id } = req.params;
         try {

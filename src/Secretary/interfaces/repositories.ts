@@ -4,6 +4,7 @@ import { CreateSecretaryUserDTO, CreateSecretaryDTO } from "./secretary.dto";
 
 export interface SecretaryRepository {
     register(data: CreateSecretaryDTO): Promise<Secretaria>;
+    listAll(): Promise<Secretaria[]>;
     createUser(data: CreateSecretaryUserDTO): Promise<Secretaria>;
     searchByUser(usuario: Usuario): Promise<Secretaria>;
     update(

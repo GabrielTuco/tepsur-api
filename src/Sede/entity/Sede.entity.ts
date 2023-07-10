@@ -11,7 +11,7 @@ import { EntityBase } from "../../entity/EntityBase";
 import { Direccion } from "../../entity/Direccion.entity";
 import { Docente } from "../../Teacher/entity/Docente.entity";
 import { Secretaria } from "../../Secretary/entity/Secretaria.entity";
-import { Carrera, Matricula } from "../../Matricula/entity";
+import { Carrera, Grupo, Matricula } from "../../Matricula/entity";
 import { Administrador } from "../../entity";
 
 @Entity()
@@ -31,6 +31,9 @@ export class Sede extends EntityBase {
 
     @OneToMany(() => Secretaria, (secretaria) => secretaria.sede)
     secretarias: Secretaria[];
+
+    @OneToMany(() => Grupo, (grupo) => grupo.sede)
+    grupos: Grupo[];
 
     @OneToMany(() => Administrador, (administrador) => administrador.sede)
     administradores: Administrador[];

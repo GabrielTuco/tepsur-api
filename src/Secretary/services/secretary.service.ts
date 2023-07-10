@@ -69,6 +69,19 @@ export class SecretaryService implements SecretaryRepository {
             throw error;
         }
     }
+    public async listAll(): Promise<Secretaria[]> {
+        try {
+            const secretarias = await Secretaria.find({
+                relations: {
+                    usuario: true,
+                    sede: true,
+                },
+            });
+            return secretarias;
+        } catch (error) {
+            throw error;
+        }
+    }
     public async searchByUser(usuario: Usuario) {
         try {
             const secretaryExists = await Secretaria.createQueryBuilder("s")

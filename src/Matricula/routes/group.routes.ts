@@ -2,9 +2,17 @@ import { Router } from "express";
 import { GroupController } from "../controllers/group.controller";
 import { body, param } from "express-validator";
 import { validateFields } from "../../middlewares/validateFields";
-import { ROLES } from "../../interfaces/enums";
+import { MODALIDAD, ROLES } from "../../interfaces/enums";
 import { validateJWT } from "../../middlewares/validateJWT";
 import { checkAuthRole } from "../../middlewares/checkAuthRole";
+import {
+    isCarreraValid,
+    isDocenteValid,
+    isHorarioValid,
+    isModuloValid,
+    isSecretariaValid,
+    isSedeValid,
+} from "../middlewares/validations";
 
 const router = Router();
 const groupController = new GroupController();
@@ -27,6 +35,10 @@ const groupController = new GroupController();
  *                  type: string
  *                  format: date-time
  *                  description: La fecha inicio del grupo
+ *              sedeUuid:
+ *                  type: string
+ *                  format: uuid
+ *                  description: El uuid unico de la sede
  *              horarioUuid:
  *                  type: string
  *                  format: uuid
@@ -39,15 +51,23 @@ const groupController = new GroupController();
  *                  type: string
  *                  format: uuid
  *                  description: El uuid unico del docente
+ *              responsableUuid:
+ *                  type: string
+ *                  format: uuid
+ *                  description: El uuid unica de la secretaria(responsable del grupo)
  *              cuposMaximos:
  *                  type: number
  *                  description: Numero maximo de cupos para el grupo
  *          required:
  *              - nombre
  *              - fechaInicio
+ *              - sedeUuid
+ *              - modalidad
  *              - horarioUuid
  *              - carreraUuid
  *              - docenteUuid
+ *              - moduloUuid
+ *              - responsableUuid
  *              - cuposMaximos
  *      GroupResponse:
  *          properties:
@@ -71,6 +91,15 @@ const groupController = new GroupController();
  *              docente:
  *                  type: object
  *                  description: El docente a cargo del grupo
+ *              secretaria:
+ *                  type: object
+ *                  description: La secretaria a cargo del grupo
+ *              sede:
+ *                  type: object
+ *                  description: La sede donde esta ubicado el grupo
+ *              modulo:
+ *                  type: object
+ *                  description: El modulo que se esta llevando en el grupo
  *          example:
  *              uuid: 03ed1634-ce6f-4125-b158-7ded8565d70b
  *              nombre: Grupo test
@@ -85,6 +114,19 @@ const groupController = new GroupController();
  *                  num_modulos: 2
  *                  nombre: Mecanica automotriz
  *                  modalidad: presencial
+ *              modulo:
+ *                  uuid: 03ed1634-ce6f-4125-b158-7ded8565d70b
+ *                  duracion_semanas: 4 semanas
+ *              sede:
+ *                  uuid: 03ed1634-ce6f-4125-b158-7ded8565d70b
+ *                  nombre: Sede Punex
+ *              secretaria:
+ *                  uuid: 03ed1634-ce6f-4125-b158-7ded8565d70b
+ *                  nombres: Test Test
+ *                  ape_paterno: prueba
+ *                  ape_materno: prueba
+ *                  celular: 654345432
+ *                  correo: test@gmail.com
  *              docente:
  *                  uuid: 03ed1634-ce6f-4125-b158-7ded8565d70b
  *                  dni: 45342312
@@ -131,11 +173,27 @@ router.post(
     [
         validateJWT,
         checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
-        body("nombre").exists(),
-        body("fechaInicio").exists(),
-        body("horarioUuid").isUUID("4"),
-        body("carreraUuid").isUUID("4"),
-        body("docenteUuid").isUUID("4"),
+        body("nombre").isString(),
+        body("fechaInicio").isString(),
+        body("modalidad").isIn([MODALIDAD.PRESENCIAL, MODALIDAD.VIRTUAL]),
+        body("cuposMaximos").isNumeric(),
+        body(
+            [
+                "sedeUuid",
+                "horarioUuid",
+                "carreraUuid",
+                "docenteUuid",
+                "moduloUuid",
+                "responsableUuid",
+            ],
+            "Debe ser un UUID valido"
+        ).isUUID("4"),
+        body("sedeUuid").custom(isSedeValid),
+        body("horarioUuid").custom(isHorarioValid),
+        body("carreraUuid").custom(isCarreraValid),
+        body("docenteUuid").custom(isDocenteValid),
+        body("moduloUuid").custom(isModuloValid),
+        body("responsableUuid").custom(isSecretariaValid),
         validateFields,
     ],
     groupController.postGroup

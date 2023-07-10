@@ -1,12 +1,12 @@
-import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
+import { Column, Entity, OneToMany } from "typeorm";
 import { EntityBase } from "../../entity";
 import { Grupo } from "./Grupo.entity";
-import { Modulo } from "./Modulo.entity";
+import { DIAS } from "../../interfaces/enums";
 
 @Entity()
 export class Horario extends EntityBase {
     @Column("text", { array: true })
-    dias: string[]; //['Lun','Mar','Mie']
+    dias: DIAS[]; //['Lun','Mar','Mie']
 
     @Column()
     hora_inicio: string; // hh:mm en formato de 24 horas
@@ -19,6 +19,4 @@ export class Horario extends EntityBase {
 
     @OneToMany(() => Grupo, (grupo) => grupo.horario)
     grupos: Grupo[];
-
-    
 }

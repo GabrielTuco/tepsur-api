@@ -1,12 +1,9 @@
 import { v4 as uuid } from "uuid";
 import { DatabaseError } from "../../errors/DatabaseError";
 import { Carrera, Horario, Modulo } from "../entity";
-import { CareerDTO, HorarioDTO } from "../interfaces/dtos";
+import { CareerDTO } from "../interfaces/dtos";
 import { CareerRepository } from "../interfaces/repositories";
-import { Docente } from "../../Teacher/entity/Docente.entity";
 import { AppDataSource } from "../../db/dataSource";
-import { QueryRunner } from "typeorm";
-import { TIPO_CARRERA } from "../../interfaces/enums";
 import { Sede } from "../../Sede/entity/Sede.entity";
 
 export class CareerService implements CareerRepository {
@@ -14,7 +11,7 @@ export class CareerService implements CareerRepository {
         try {
             const carreras = await Carrera.createQueryBuilder("c")
                 .innerJoinAndSelect("c.modulos", "m")
-                .leftJoinAndSelect("m.horarios", "h")
+                //.leftJoinAndSelect("m.horarios", "h")
                 .where("c.estado='activo'")
                 .getMany();
 
@@ -49,24 +46,7 @@ export class CareerService implements CareerRepository {
                         newModulo.uuid = uuid();
                         newModulo.nombre = moduloData.nombre;
                         newModulo.duracion_semanas = moduloData.duracionSemanas;
-
-                        if (tipoCarrera === TIPO_CARRERA.MODULAR) {
-                            const horarios = await Promise.all(
-                                moduloData.horarios.map(async (horarioData) => {
-                                    const horario = await findOrCreateHorario(
-                                        horarioData,
-                                        queryRunner
-                                    );
-                                    return horario;
-                                })
-                            );
-                            const docente = await findDocenteByUuid(
-                                moduloData.docenteUuid
-                            );
-
-                            newModulo.horarios = horarios;
-                            newModulo.docente = docente!;
-                        }
+                        newModulo.orden = moduloData.orden;
 
                         await queryRunner.manager.save(newModulo);
                         return newModulo;
@@ -78,7 +58,7 @@ export class CareerService implements CareerRepository {
                 relations: { carreras: true },
             });
 
-            if (!sede) throw new DatabaseError("Sede not found", 500, "");
+            if (!sede) throw new DatabaseError("Sede not found", 404, "");
 
             const newCareer = new Carrera();
             newCareer.uuid = uuid();
@@ -268,41 +248,4 @@ export class CareerService implements CareerRepository {
             throw error;
         }
     }
-}
-
-async function findOrCreateHorario(
-    horarioData: HorarioDTO,
-    queryRunner: QueryRunner
-): Promise<Horario> {
-    try {
-        const horario = await Horario.createQueryBuilder("h")
-            .where(
-                "h.hora_inicio = :inicio AND h.hora_fin = :fin AND array_to_string(h.dias, ',') = :dias",
-                {
-                    inicio: horarioData.horaInicio,
-                    fin: horarioData.horaFin,
-                    dias: horarioData.dias.toString(),
-                }
-            )
-            .getOne();
-
-        if (horario) {
-            return horario;
-        } else {
-            const newHorario = new Horario();
-            newHorario.uuid = uuid();
-            newHorario.hora_inicio = horarioData.horaInicio;
-            newHorario.hora_fin = horarioData.horaFin;
-            newHorario.dias = horarioData.dias;
-            await queryRunner.manager.save(newHorario);
-            return newHorario;
-        }
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
-}
-
-async function findDocenteByUuid(docenteUuid: string): Promise<Docente | null> {
-    return await Docente.findOneBy({ uuid: docenteUuid });
 }

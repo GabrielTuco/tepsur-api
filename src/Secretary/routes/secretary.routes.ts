@@ -2,7 +2,6 @@ import { Router } from "express";
 import { SecretaryController } from "../controllers/secretary.controller";
 import { body, param } from "express-validator";
 import { validateFields } from "../../middlewares/validateFields";
-import { hasPermissionRole } from "../../middlewares/hasPermissionRole";
 import { ROLES } from "../../interfaces/enums";
 import { validateJWT } from "../../middlewares/validateJWT";
 import { checkAuthRole } from "../../middlewares/checkAuthRole";
@@ -101,6 +100,33 @@ router.post(
     secretaryController.postSecretary
 );
 
+/**
+ * @swagger
+ * /secretary:
+ *  get:
+ *      summary: Listado de secretarias registradas
+ *      tags: [Secretary]
+ *      parameters:
+ *         - $ref: '#/components/parameters/token'
+ *      responses:
+ *          200:
+ *              description: La secretaria con su nuevo usuario creado
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: array
+ *                          items:
+ *                              type: object
+ *                              $ref: '#/components/schemas/Secretary'
+ *          500:
+ *              description: Error de servidor
+ *
+ */
+router.get(
+    "/",
+    [validateJWT, checkAuthRole([ROLES.ADMIN])],
+    secretaryController.getSecretaries
+);
 router.patch(
     "/:id",
     [

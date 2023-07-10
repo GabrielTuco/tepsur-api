@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from "typeorm";
+import { Column, Entity, JoinColumn, OneToOne } from "typeorm";
 import { MetodoPago } from "../../Matricula/entity";
 import { Pension } from "./Pension.entity";
 import { EntityBase } from "../../entity";

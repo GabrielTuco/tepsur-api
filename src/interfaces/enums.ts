@@ -32,3 +32,20 @@ export enum MODALIDAD {
     VIRTUAL = "virtual",
     PRESENCIAL = "presencial",
 }
+
+export enum DIAS {
+    LUN = "Lun",
+    MAR = "Mar",
+    MIE = "Mie",
+    JUE = "Jue",
+    VIE = "Vie",
+    SAB = "Sab",
+    DOM = "Dom",
+}
+
+export enum ESTADO_MODULO_MATRICULA {
+    MATRICULADO = "matriculado", //Indica que el modulo se registro en la matricula para su asignacion a un grupo
+    EN_CURSO = "en_curso", //Indica que el modulo actualmente se esta llevando
+    CULMINADO = "culminado", //Indica que el modulo ya fue culminado por el alumno
+    POR_LLEVAR = "por_llevar", //Indica que el modulo aun esta pendiente por llevar
+}

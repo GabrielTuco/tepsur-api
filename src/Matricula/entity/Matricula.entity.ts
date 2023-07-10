@@ -2,8 +2,6 @@ import {
     Column,
     Entity,
     JoinColumn,
-    JoinTable,
-    ManyToMany,
     ManyToOne,
     OneToMany,
     OneToOne,
@@ -14,11 +12,10 @@ import { Alumno } from "../../Student/entity/Alumno.entity";
 import { Secretaria } from "../../Secretary/entity/Secretaria.entity";
 import { Sede } from "../../Sede/entity/Sede.entity";
 import { PagoMatricula } from "./PagoMatricula.entity";
-import { Grupo } from "./Grupo.entity";
-import { Modulo } from "./Modulo.entity";
 import { Pension } from "../../Pension/entity/Pension.entity";
 import { TIPO_MATRICULA } from "../../interfaces/enums";
-import { MatriculaModulosModulo } from "./MatriculaModulosModulo.entity";
+import { MatriculaGruposGrupo } from "./MatriculaGruposGrupo.entity";
+import { MatriculaModulosModulo } from "./MatriculaModulosModulo";
 
 @Entity()
 export class Matricula extends EntityBase {
@@ -29,17 +26,17 @@ export class Matricula extends EntityBase {
     @JoinColumn()
     alumno: Alumno;
 
-    @ManyToOne(() => Grupo, (grupo) => grupo.matriculas, { nullable: true })
-    grupo: Grupo;
+    @OneToMany(
+        () => MatriculaGruposGrupo,
+        (matriculaGruposGrupo) => matriculaGruposGrupo.matricula
+    )
+    matriculaGruposGrupo: MatriculaGruposGrupo[];
 
-    // @ManyToMany(() => Modulo, { nullable: true })
-    // @JoinTable()
-    // modulos: Modulo[];
     @OneToMany(
         () => MatriculaModulosModulo,
-        (matriculaModulosMatricula) => matriculaModulosMatricula.matricula
+        (matriculaModulosModulo) => matriculaModulosModulo.matricula
     )
-    matriculaModulosMatricula: MatriculaModulosModulo[];
+    matriculaModulosModulo: MatriculaModulosModulo[];
 
     @ManyToOne(() => Secretaria, (secretaria) => secretaria.matriculas)
     secretaria: Secretaria;

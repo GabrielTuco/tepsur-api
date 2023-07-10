@@ -1,11 +1,4 @@
-import {
-    Column,
-    Entity,
-    JoinColumn,
-    ManyToOne,
-    OneToOne,
-    PrimaryColumn,
-} from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from "typeorm";
 import { Direccion, EntityBase } from "../../entity";
 import { Usuario } from "../../Auth/entity";
 import { GradoEstudios } from "../../Matricula/entity";
@@ -38,6 +31,9 @@ export class Alumno extends EntityBase {
 
     @Column({ nullable: true })
     celular: string;
+
+    @Column({ nullable: true })
+    celular_referencia: string;
 
     @Column({ nullable: true, unique: true })
     correo: string;

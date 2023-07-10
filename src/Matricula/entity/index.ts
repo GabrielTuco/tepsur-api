@@ -3,7 +3,7 @@ export * from "./GradoEstudios.entity";
 export * from "./Grupo.entity";
 export * from "./Horario.entity";
 export * from "./Matricula.entity";
-export * from "./MatriculaModulosModulo.entity";
+export * from "./MatriculaGruposGrupo.entity";
 export * from "./MetodoPago.entity";
 export * from "./Modulo.entity";
 export * from "./PagoMatricula.entity";

@@ -1,0 +1,1 @@
+export * from "./Alumno.entity";
