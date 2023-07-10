@@ -59,7 +59,7 @@ export interface ScheduleRepository {
     findByUuid(uuid: string): Promise<Horario>;
     update(uuid: string, data: Partial<Horario>): Promise<Horario>;
     delete(uuid: string): Promise<void>;
-    listPerCareer(carreraUuid: string): Promise<Horario[]>;
+    //listPerCareer(carreraUuid: string): Promise<Horario[]>;
 }
 
 export interface MatriculaRepository {

@@ -9,7 +9,6 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from "typeorm";
-import { EntityBase } from "../../entity/EntityBase";
 import { Usuario } from "./Usuario.entity";
 import { Permiso } from "./Permiso.entity";
 

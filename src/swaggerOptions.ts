@@ -1,4 +1,4 @@
-import { SwaggerOptions, SwaggerUiOptions } from "swagger-ui-express";
+import { SwaggerOptions } from "swagger-ui-express";
 
 export const options: SwaggerOptions = {
     definition: {
@@ -16,8 +16,8 @@ export const options: SwaggerOptions = {
                 url: "https://tepsur-api-production.up.railway.app/api",
             },
             {
-                url: "https://arnoldolanda-potential-fiesta-7x4jqrgw7gq3xqjw-5000.preview.app.github.dev/api"
-            }
+                url: "https://arnoldolanda-potential-fiesta-7x4jqrgw7gq3xqjw-5000.preview.app.github.dev/api",
+            },
         ],
     },
     apis: ["./src/**/*.routes.ts"],

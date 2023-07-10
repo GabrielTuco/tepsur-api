@@ -1,4 +1,5 @@
 import {
+    DIAS,
     MODALIDAD,
     TIPO_CARRERA,
     TIPO_MATRICULA,
@@ -40,7 +41,7 @@ export interface GroupDTO {
 
 export interface ScheduleDTO {
     // turno: Turno;
-    dias: string[];
+    dias: DIAS[];
     horaInicio: string;
     horaFin: string;
 }

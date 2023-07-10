@@ -69,26 +69,26 @@ export class ScheduleService implements ScheduleRepository {
         }
     }
 
-    public async listPerCareer(carreraUuid: string): Promise<Horario[]> {
-        try {
-           const carrera = await Carrera.createQueryBuilder("c")
-            .innerJoinAndSelect("c.modulos","m")
-            .innerJoinAndSelect("m.horarios","h")
-            .where("c.uuid=:uuid",{uuid:carreraUuid}).getOne();
-           if(!carrera) throw new DatabaseError("Carrera not found",500,"");
+    // public async listPerCareer(carreraUuid: string): Promise<Horario[]> {
+    //     try {
+    //        const carrera = await Carrera.createQueryBuilder("c")
+    //         .innerJoinAndSelect("c.modulos","m")
+    //         .innerJoinAndSelect("m.horarios","h")
+    //         .where("c.uuid=:uuid",{uuid:carreraUuid}).getOne();
+    //        if(!carrera) throw new DatabaseError("Carrera not found",500,"");
 
-           const {modulos} = carrera;
-           const horariosMatriz =  modulos.map(m=>m.horarios)
+    //        const {modulos} = carrera;
+    //        const horariosMatriz =  modulos.map(m=>m.horarios)
 
-           const horariosArray = horariosMatriz.flatMap(row=>row)
+    //        const horariosArray = horariosMatriz.flatMap(row=>row)
 
-           const horarios = horariosArray.filter((horario,index,self)=>{
-            return (index===self.findIndex(h=>h.uuid===horario.uuid))
-           })
-           
-           return horarios;
-        } catch (error) {
-            throw error;
-        }
-    }
+    //        const horarios = horariosArray.filter((horario,index,self)=>{
+    //         return (index===self.findIndex(h=>h.uuid===horario.uuid))
+    //        })
+
+    //        return horarios;
+    //     } catch (error) {
+    //         throw error;
+    //     }
+    // }
 }

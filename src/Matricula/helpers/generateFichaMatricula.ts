@@ -7,7 +7,7 @@ export const generateFichaMatricula = async (data: Matricula, doc: PDF) => {
         const {
             alumno,
             carrera,
-            grupo,
+            //grupo,
             sede,
             //modulo,
             fecha_inicio,
@@ -96,7 +96,7 @@ export const generateFichaMatricula = async (data: Matricula, doc: PDF) => {
                 [
                     carrera.nombre,
                     //modulo.nombre,
-                    `${grupo.horario.dias} / ${grupo.horario.hora_inicio}:00 ${grupo.horario.hora_fin}:00`,
+                    //`${grupo.horario.dias} / ${grupo.horario.hora_inicio}:00 ${grupo.horario.hora_fin}:00`,
                     `${/*carrera.modalidad*/ ""} - ${sede.nombre}`,
                 ],
             ],
