@@ -154,8 +154,27 @@ export class MatriculaService implements MatriculaRepository {
                         }
                     )
                 );
+                const totalModulosCarrera = carrera!.modulos;
+                const modulosRestantes = totalModulosCarrera!.map((modulo) => {
+                    const moduloExistsInArray = newModulosToMatricula.find(
+                        (m) => m.uuid === modulo.uuid
+                    );
+                    if (!moduloExistsInArray) {
+                        return modulo;
+                    }
+                });
+
+                const modulosRestantesWithoutNulls = modulosRestantes!.filter(
+                    (element): element is Modulo => element !== undefined
+                );
+
+                modulosRestantesWithoutNulls.map(async (m) => {
+                    const matriculaModulo = new MatriculaModulosModulo();
+                    matriculaModulo.modulo = m;
+                    matriculaModulo.estado = ESTADO_MODULO_MATRICULA.POR_LLEVAR;
+                    await queryRunner.manager.save(matriculaModulo);
+                });
             }
-            //! Registrar el resto de modulos que va a llevar el estudiante con un estado de POR_LLEVAR
 
             await queryRunner.manager.save(newMatricula);
 

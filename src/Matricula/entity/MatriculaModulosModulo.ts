@@ -15,10 +15,10 @@ export class MatriculaModulosModulo extends EntityBase {
     @Column()
     estado: ESTADO_MODULO_MATRICULA;
 
-    @Column()
+    @Column({ nullable: true })
     fecha_inicio: Date;
 
-    @Column()
+    @Column({ nullable: true })
     modalidad: MODALIDAD;
 
     @ManyToMany(
