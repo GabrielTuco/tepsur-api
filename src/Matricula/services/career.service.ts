@@ -9,14 +9,12 @@ import { Sede } from "../../Sede/entity/Sede.entity";
 export class CareerService implements CareerRepository {
     public async listAll(sedeUuid: string): Promise<Carrera[]> {
         try {
-            const sede = await Sede.findOne({
-                where: {
-                    uuid: sedeUuid,
-                },
-                relations: {
-                    carreras: true,
-                },
-            });
+            const sede = await Sede.createQueryBuilder("s")
+                .innerJoinAndSelect("s.carreras", "c")
+                .innerJoinAndSelect("c.modulos", "m")
+                .where("s.uuid=:uuid", { uuid: sedeUuid })
+                .getOne();
+
             if (!sede)
                 throw new DatabaseError(
                     "Sede not found",

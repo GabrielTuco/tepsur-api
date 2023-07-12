@@ -124,7 +124,7 @@ router.post(
  */
 router.get(
     "/",
-    [validateJWT, checkAuthRole([ROLES.ADMIN])],
+    [validateJWT, checkAuthRole([ROLES.ADMIN, ROLES.SECRE])],
     secretaryController.getSecretaries
 );
 router.patch(
