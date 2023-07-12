@@ -66,6 +66,18 @@ export interface MatriculaDTO {
     tipoMatricula: TIPO_MATRICULA;
 }
 
+export interface TrasladoMatriculaDTO {
+    alumno: AlumnoData;
+    carreraUuid: string;
+    grupoUuid: string;
+    moduloActualUuid: string;
+    modulosCompletados: string[];
+    secretariaUuid: string;
+    sedeUuid: string;
+    pagoMatricula: PagoMatriculaData;
+    fechaInicio: Date;
+}
+
 export interface AlumnoData {
     dni: string;
     nombres: string;

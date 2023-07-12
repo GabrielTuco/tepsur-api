@@ -20,6 +20,7 @@ import {
     PagoMatriculaData,
     ScheduleDTO,
     TarifaPensionCarreraDTO,
+    TrasladoMatriculaDTO,
 } from "./dtos";
 import { Response } from "express";
 import { MODALIDAD } from "../../interfaces/enums";
@@ -107,6 +108,7 @@ export interface MatriculaRepository {
         matriculaUuid: string,
         moduloUuid: string
     ): Promise<Matricula>;
+    trasladoAlumno(data: TrasladoMatriculaDTO): Promise<Matricula>;
 }
 
 export interface MetodoPagoRepository {

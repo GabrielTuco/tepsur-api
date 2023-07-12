@@ -129,6 +129,41 @@ const matriculaController = new MatriculaController();
  *                  type: string
  *                  format: date-time
  *                  description:  Fecha de inicio de clases
+ *      TrasladoMatricula:
+ *          properties:
+ *              alumno:
+ *                  type: object
+ *                  $ref: '#/components/schemas/Alumno'
+ *                  description: Datos del alumno
+ *              carreraUuid:
+ *                  type: string
+ *                  format: uuid
+ *                  description:  Uuid de la carrera
+ *              grupoUuid:
+ *                  type: string
+ *                  format: uuid
+ *                  description:  Uuid del grupo
+ *              modulosCompletos:
+ *                  type: array
+ *                  items:
+ *                      type: string
+ *                      format: uuid
+ *              secretariaUuid:
+ *                  type: string
+ *                  format: uuid
+ *                  description:  Uuid de la secretaria que registra
+ *              sedeUuid:
+ *                  type: string
+ *                  format: uuid
+ *                  description:  Uuid de la sede
+ *              pagoMatricula:
+ *                  type: object
+ *                  $ref: '#/components/schemas/PagoMatricula'
+ *                  description: Informacion del pago de la matricula
+ *              fechaInicio:
+ *                  type: string
+ *                  format: date-time
+ *                  description:  Fecha de inicio de clases
  */
 
 /**
@@ -154,7 +189,7 @@ const matriculaController = new MatriculaController();
  *                      $ref: '#/components/schemas/Matricula'
  *      responses:
  *          200:
- *              description: La secretaria con su nuevo usuario creado
+ *              description: La matricula registrada del alumno
  *              content:
  *                  application/json:
  *                      schema:
@@ -221,6 +256,88 @@ router.post(
         validateFields,
     ],
     matriculaController.postMatricula
+);
+
+/**
+ * @swagger
+ * /matricula/traslado:
+ *  post:
+ *      summary: Hacer un traslado interno del alumno para registrarlo en el nuevo sistema
+ *      tags: [Matricula]
+ *      parameters:
+ *          - $ref: '#/components/parameters/token'
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      $ref: '#/components/schemas/TrasladoMatricula'
+ *      responses:
+ *          200:
+ *              description: El registro de la matricula del alumno trasladado
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          $ref: '#/components/schemas/Matricula'
+ *          500:
+ *              description: Error de servidor
+ *
+ */
+router.post(
+    "/traslado",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+
+        //Datos personales del alumno
+        body("alumno").isObject(),
+        body("alumno.dni").isString().isLength({ min: 8, max: 8 }),
+        body("alumno.nombres").isString(),
+        body("alumno.apePaterno").isString(),
+        body("alumno.apeMaterno").isString(),
+        body("alumno.sexo", "Los valores permitidos son: 'm'|'f' ").isIn([
+            "m",
+            "f",
+        ]),
+        body("alumno.edad").isNumeric(),
+        body(
+            "alumno.gradoEstudiosUuid",
+            "El valor debe ser un UUID valido"
+        ).isNumeric(),
+        body("alumno.lugarNacimiento").isString(),
+        body("alumno.celular", "No es un numero de celular valido")
+            .isString()
+            .isLength({ min: 9, max: 9 }),
+        body("alumno.correo", "No es un correo valido").isEmail(),
+        body("alumno.direccion").isObject(),
+        body("alumno.direccion.direccionExacta").isString(),
+        body("alumno.direccion.distrito").isString(),
+        body("alumno.direccion.provincia").isString(),
+        body("alumno.direccion.departamento").isString(),
+
+        //Datos academicos
+        body("carreraUuid", "El valor debe ser un UUID valido").isUUID("4"),
+        body("grupoUuid", "El valor debe ser un UUID valido").isUUID("4"),
+        body("moduloActualUuid", "El valor debe ser un UUID valido")
+            .optional()
+            .isUUID("4"),
+        body("modulosCompletados", "Debe ser un array de UUIDS").isArray(),
+        body("modulosCompletados.*", "El valor debe ser un UUID valido")
+            .optional()
+            .isUUID("4"),
+        body("secretariaUuid", "El valor debe ser un UUID valido").isUUID("4"),
+        body("sedeUuid").isUUID("4"),
+        body("fechaInicio").isString(),
+
+        //Pago de matricula
+        body("pagoMatricula").isObject(),
+        body("pagoMatricula.numComprobante").isString(),
+        body("pagoMatricula.formaPagoUuid").isNumeric(),
+        body("pagoMatricula.monto").isNumeric(),
+        validateFields,
+    ],
+    matriculaController.postTrasladoMatricula
 );
 
 /**

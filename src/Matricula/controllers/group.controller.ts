@@ -51,6 +51,7 @@ export class GroupController {
             const grupos = await groupService.listGroups();
             return res.json(grupos);
         } catch (error) {
+            console.log(error);
             if (error instanceof DatabaseError) {
                 return res.status(error.codeStatus).json({
                     msg: error.message,

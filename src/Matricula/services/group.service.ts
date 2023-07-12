@@ -152,9 +152,9 @@ export class GroupService implements GroupRepository {
                 .innerJoinAndSelect("g.docente", "d")
                 .innerJoinAndSelect("g.horario", "h")
                 .innerJoinAndSelect("g.carrera", "c")
-                .leftJoinAndSelect("g.matriculas", "m")
-                .leftJoinAndSelect("m.alumno", "a")
-                .leftJoinAndSelect("m.secretaria", "s")
+                .leftJoinAndSelect("g.secretaria", "s")
+                .innerJoinAndSelect("g.modulo", "m")
+                .innerJoinAndSelect("g.sede", "se")
                 .getMany();
 
             return grupos;

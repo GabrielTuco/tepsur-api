@@ -10,6 +10,7 @@ import {
     GradoEstudios,
     Grupo,
     Matricula,
+    MatriculaGruposGrupo,
     MetodoPago,
     Modulo,
     PagoMatricula,
@@ -21,6 +22,7 @@ import {
     PagoMatriculaData,
     ModuloMatriculaDTO,
     DireccionDto,
+    TrasladoMatriculaDTO,
 } from "../interfaces/dtos";
 import { MatriculaRepository } from "../interfaces/repositories";
 import { Direccion } from "../../entity";
@@ -34,7 +36,12 @@ import { generateFichaMatricula } from "../helpers/generateFichaMatricula";
 import { AppDataSource } from "../../db/dataSource";
 import { PensionService } from "../../Pension/services/pension.service";
 import { MatriculaModulosModulo } from "../entity/MatriculaModulosModulo";
-import { ESTADO_MODULO_MATRICULA, MODALIDAD } from "../../interfaces/enums";
+import {
+    CONDICION_ALUMNO,
+    ESTADO_MODULO_MATRICULA,
+    MODALIDAD,
+    TIPO_MATRICULA,
+} from "../../interfaces/enums";
 
 const pensionService = new PensionService();
 export class MatriculaService implements MatriculaRepository {
@@ -178,7 +185,119 @@ export class MatriculaService implements MatriculaRepository {
 
             await queryRunner.manager.save(newMatricula);
 
+            //! Registrar pensiones por cada modulo matriculado
             await this.registerPensiones(newMatricula, carreraUuid);
+
+            await queryRunner.commitTransaction();
+
+            return newMatricula;
+        } catch (error) {
+            console.log(error);
+            await queryRunner.rollbackTransaction();
+            throw error;
+        } finally {
+            await queryRunner.release();
+        }
+    };
+
+    public trasladoAlumno = async (
+        data: TrasladoMatriculaDTO
+    ): Promise<Matricula> => {
+        //todo: ver como registrar el modulo que va a llevar el causa
+        const queryRunner = AppDataSource.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+
+        try {
+            const {
+                alumno,
+                carreraUuid,
+                fechaInicio,
+                grupoUuid,
+                modulosCompletados,
+                pagoMatricula,
+                secretariaUuid,
+                sedeUuid,
+            } = data;
+
+            //Registro de datos personales del estudiante
+            const newDireccion = await this.registerAddressStudent(
+                alumno.direccion
+            );
+            await queryRunner.manager.save(newDireccion);
+
+            const newUser = await this.registerUserStudent(alumno.dni);
+            await queryRunner.manager.save(newUser);
+
+            const newAlumno = await this.registerStudent(
+                alumno,
+                newDireccion,
+                newUser
+            );
+            await queryRunner.manager.save(newAlumno);
+
+            //Registro de datos academicos del estudiante
+            const secretaria = await Secretaria.findOneBy({
+                uuid: secretariaUuid,
+            });
+            const carrera = await Carrera.findOneBy({ uuid: carreraUuid });
+            const sede = await Sede.findOne({
+                where: { uuid: sedeUuid },
+                relations: { carreras: true },
+            });
+
+            const carreraValid = sede?.carreras.find(
+                (c) => c.uuid === carrera?.uuid
+            );
+            if (!carreraValid)
+                throw new Error("Esta carrera no se puede llevar en esta sede");
+
+            const newMatricula = new Matricula();
+            newMatricula.uuid = uuid();
+            newMatricula.carrera = carrera!;
+            newMatricula.alumno = newAlumno;
+            newMatricula.secretaria = secretaria!;
+            newMatricula.sede = sede!;
+            newMatricula.fecha_inscripcion = new Date();
+            newMatricula.fecha_inicio = fechaInicio;
+            newMatricula.tipo_matricula = TIPO_MATRICULA.NUEVO;
+
+            await queryRunner.manager.save(newMatricula);
+
+            //TODO: Validar que los modulos pertenecen a la carrera
+
+            const newPagoMatricula = new PagoMatricula();
+            const metodoPago = await MetodoPago.findOneBy({
+                uuid: pagoMatricula.formaPagoUuid,
+            });
+            newPagoMatricula.uuid = uuid();
+            newPagoMatricula.num_comprobante = pagoMatricula.numComprobante;
+            newPagoMatricula.forma_pago = metodoPago!;
+            newPagoMatricula.monto = pagoMatricula.monto;
+            await queryRunner.manager.save(newPagoMatricula);
+
+            newMatricula.pagoMatricula = newPagoMatricula;
+
+            modulosCompletados.map(async (m) => {
+                const matriculaModulo = new MatriculaModulosModulo();
+                matriculaModulo.modulo = (await Modulo.findOneBy({
+                    uuid: m,
+                })) as Modulo;
+                matriculaModulo.estado = ESTADO_MODULO_MATRICULA.CULMINADO;
+
+                await queryRunner.manager.save(matriculaModulo);
+            });
+
+            const matriculaGrupo = new MatriculaGruposGrupo();
+            matriculaGrupo.matricula = newMatricula;
+            matriculaGrupo.grupo = (await Grupo.findOneBy({
+                uuid: grupoUuid,
+            })) as Grupo;
+            matriculaGrupo.condicion = CONDICION_ALUMNO.NUEVO;
+
+            await queryRunner.manager.save(matriculaGrupo);
+
+            await queryRunner.manager.save(newMatricula);
 
             await queryRunner.commitTransaction();
 

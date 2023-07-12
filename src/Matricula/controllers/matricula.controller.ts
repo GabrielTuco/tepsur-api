@@ -31,6 +31,24 @@ export class MatriculaController {
         }
     }
 
+    public async postTrasladoMatricula(req: Request, res: Response) {
+        try {
+            const matricula = await matriculaService.trasladoAlumno(req.body);
+            return res.json(matricula);
+        } catch (error) {
+            console.log(error);
+            if (error instanceof DatabaseError) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                    name: error.name,
+                });
+            }
+            return res.status(500).json({
+                msg: "Internal server error",
+            });
+        }
+    }
+
     public async putSetModulesToMatricula(req: Request, res: Response) {
         try {
             const { matriculaUuid } = req.params;
