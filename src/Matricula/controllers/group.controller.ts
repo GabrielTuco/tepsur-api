@@ -89,6 +89,7 @@ export class GroupController {
             const grupo = await groupService.findByUuid(id);
             return res.json(grupo);
         } catch (error) {
+            console.log(error);
             if (error instanceof DatabaseError) {
                 return res.status(error.codeStatus).json({
                     msg: error.message,
