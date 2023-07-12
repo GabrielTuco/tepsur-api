@@ -5,9 +5,10 @@ import { DatabaseError } from "../../errors/DatabaseError";
 const careerService = new CareerService();
 
 export class CareerController {
-    public async getCareers(_req: Request, res: Response) {
+    public async getCareers(req: Request, res: Response) {
         try {
-            const carreras = await careerService.listAll();
+            const { sede } = req.query;
+            const carreras = await careerService.listAll(String(sede));
             return res.json(carreras);
         } catch (error) {
             if (error instanceof DatabaseError) {

@@ -47,6 +47,10 @@ const groupController = new GroupController();
  *                  type: string
  *                  format: uuid
  *                  description: El uuid unico de la carrera
+ *              moduloUuid:
+ *                  type: string
+ *                  format: uuid
+ *                  description: El uuid unico del modulo
  *              docenteUuid:
  *                  type: string
  *                  format: uuid
@@ -66,7 +70,6 @@ const groupController = new GroupController();
  *              - horarioUuid
  *              - carreraUuid
  *              - docenteUuid
- *              - moduloUuid
  *              - responsableUuid
  *              - cuposMaximos
  *      GroupResponse:
@@ -183,16 +186,16 @@ router.post(
                 "horarioUuid",
                 "carreraUuid",
                 "docenteUuid",
-                "moduloUuid",
                 "responsableUuid",
             ],
             "Debe ser un UUID valido"
         ).isUUID("4"),
+        body("moduloUuid").optional().isUUID("4"),
         body("sedeUuid").custom(isSedeValid),
         body("horarioUuid").custom(isHorarioValid),
         body("carreraUuid").custom(isCarreraValid),
         body("docenteUuid").custom(isDocenteValid),
-        body("moduloUuid").custom(isModuloValid),
+        body("moduloUuid").optional().custom(isModuloValid),
         body("responsableUuid").custom(isSecretariaValid),
         validateFields,
     ],

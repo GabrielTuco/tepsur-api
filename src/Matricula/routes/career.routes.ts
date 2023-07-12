@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { body, param } from "express-validator";
+import { body, param, query } from "express-validator";
 import { validateFields } from "../../middlewares/validateFields";
 import { CareerController } from "../controllers/career.controller";
 import { validateJWT } from "../../middlewares/validateJWT";
@@ -40,26 +40,9 @@ const careerController = new CareerController();
  *                          duracionSemanas:
  *                              type: string
  *                              example: '4 semanas'
- *                          horarios:
- *                              type: array
- *                              items:
- *                                  type: object
- *                                  properties:
- *                                      horaInicio:
- *                                          type: string
- *                                          example: '08:00'
- *                                      horaFin:
- *                                          type: string
- *                                          example: '11:00'
- *                                      dias:
- *                                          type: array
- *                                          items:
- *                                              type: string
- *                                              example: "Lun"
- *                          docenteUuid:
- *                              type: string
- *                              format: uuid
- *                              description: El docente que dicta el modulo
+ *                          orden:
+ *                              type: number
+ *                              description: El orden en el que se lleva el modulo
  *          required:
  *              - numModulos
  *              - nombre
@@ -91,22 +74,9 @@ const careerController = new CareerController();
  *                          duracionSemanas:
  *                              type: string
  *                              example: "4 semanas"
- *                          horarios:
- *                              type: array
- *                              items:
- *                                  type: object
- *                                  properties:
- *                                      hora_inicio:
- *                                          type: string
- *                                          example: '08:00'
- *                                      hora_fin:
- *                                          type: string
- *                                          example: '11:00'
- *                                      dias:
- *                                          type: array
- *                                          items:
- *                                              type: string
- *                                              example: "Lun"
+ *                          orden:
+ *                              type: number
+ *                              example: 1
  */
 
 /**
@@ -152,13 +122,7 @@ router.post(
         body("modulos").isArray(),
         body("modulos.*.nombre").isString(),
         body("modulos.*.duracionSemanas").isString(),
-        body("modulos.*.docenteUuid").optional().isUUID("4"),
-        body("modulos.*.horarios").optional().isArray(),
-        body("modulos.*.horarios.*").isObject(),
-        body("modulos.*.horarios.*.horaInicio").isString(),
-        body("modulos.*.horarios.*.horaFin").isString(),
-        body("modulos.*.horarios.*.dias").isArray(),
-        body("modulos.*.horarios.*.dias.*").isString(),
+        body("modulos.*.orden").isNumeric(),
         body("sedeUuid", "Debe ser un uuid valido").isUUID("4"),
         body("tipoCarrera", "").isIn([
             TIPO_CARRERA.MODULAR,
@@ -178,6 +142,12 @@ router.post(
  *      tags: [Career]
  *      parameters:
  *         - $ref: '#/components/parameters/token'
+ *         - in: query
+ *           name: sede
+ *           schema:
+ *              type: string
+ *              format: uuid
+ *           description: El uuid de la sede
  *      responses:
  *          200:
  *              description: El listado de carreras
@@ -194,7 +164,11 @@ router.post(
  */
 router.get(
     "/",
-    [validateJWT, checkAuthRole([ROLES.ADMIN, ROLES.SECRE])],
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        query("sede").isUUID("4"),
+    ],
     careerController.getCareers
 );
 

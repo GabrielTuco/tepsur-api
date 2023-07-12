@@ -173,11 +173,16 @@ export class GroupService implements GroupRepository {
             const grupo = await Grupo.findOneBy({ uuid });
             if (!grupo) throw new DatabaseError("Grupo no encontrado", 404, "");
 
-            const students = await Matricula.createQueryBuilder("m")
-                .innerJoinAndSelect("m.alumno", "a")
-                .innerJoin("m.grupo", "g")
-                .where("g.uuid= :uuid", { uuid })
-                .getMany();
+            const studentsByGrupo = await MatriculaGruposGrupo.find({
+                where: {
+                    grupoUuid: grupo.uuid,
+                },
+                relations: { matricula: true },
+            });
+
+            const students = studentsByGrupo.map(
+                (student) => student.matricula
+            );
 
             return students;
         } catch (error) {

@@ -8,9 +8,10 @@ import { StudentDTO } from "../interfaces/dtos";
 import { StudentRepository } from "../interfaces/repositories";
 import { encryptPassword } from "../../helpers/encryptPassword";
 import { GradoEstudios } from "../../Matricula/entity";
+import { Sede } from "../../Sede/entity";
 
 export class StudentService implements StudentRepository {
-    public async register(data: StudentDTO): Promise<Alumno> {
+    public register = async (data: StudentDTO): Promise<Alumno> => {
         try {
             const {
                 apeMaterno,
@@ -57,9 +58,25 @@ export class StudentService implements StudentRepository {
         } catch (error) {
             throw error;
         }
-    }
+    };
 
-    public async createUser(uuid: string): Promise<Usuario> {
+    public listBySede = async (sedeUuid: string): Promise<Alumno[]> => {
+        try {
+            const sede = await Sede.createQueryBuilder("s")
+                .innerJoinAndSelect("s.matriculas", "m")
+                .innerJoinAndSelect("m.alumno", "a")
+                .where("s.uuid=:uuid", { uuid: sedeUuid })
+                .getOne();
+
+            const alumnos = sede!.matriculas.map((m) => m.alumno);
+
+            return alumnos;
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    public createUser = async (uuid: string): Promise<Usuario> => {
         try {
             const alumno = await Alumno.findOneBy({ uuid });
             const rolExists = await Rol.findOneBy({ nombre: "Alumno" });
@@ -80,9 +97,9 @@ export class StudentService implements StudentRepository {
         } catch (error) {
             throw error;
         }
-    }
+    };
 
-    public async searchByUuid(uuid: string): Promise<Alumno> {
+    public searchByUuid = async (uuid: string): Promise<Alumno> => {
         try {
             const alumno = await Alumno.findOneBy({ uuid });
             if (!alumno) {
@@ -96,8 +113,8 @@ export class StudentService implements StudentRepository {
         } catch (error) {
             throw error;
         }
-    }
-    public async searchByDni(dni: string): Promise<Alumno> {
+    };
+    public searchByDni = async (dni: string): Promise<Alumno> => {
         try {
             const alumno = await Alumno.findOneBy({ dni });
             if (!alumno) {
@@ -111,9 +128,9 @@ export class StudentService implements StudentRepository {
         } catch (error) {
             throw error;
         }
-    }
+    };
 
-    public async searchByUser(usuario: Usuario) {
+    public searchByUser = async (usuario: Usuario) => {
         try {
             const studentExists = await Alumno.createQueryBuilder("a")
                 .innerJoinAndSelect("a.usuario", "u")
@@ -132,11 +149,11 @@ export class StudentService implements StudentRepository {
             console.log(error);
             throw error;
         }
-    }
-    public async updateInfo(
+    };
+    public updateInfo = async (
         uuid: string,
         data: Partial<StudentDTO>
-    ): Promise<Alumno> {
+    ): Promise<Alumno> => {
         try {
             const alumno = await Alumno.findOneBy({ uuid });
             if (!alumno) throw new DatabaseError("Alumno not found", 500, "");
@@ -149,5 +166,5 @@ export class StudentService implements StudentRepository {
         } catch (error) {
             throw error;
         }
-    }
+    };
 }

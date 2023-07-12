@@ -4,6 +4,7 @@ import { Modulo } from "./Modulo.entity";
 import { Grupo } from "./Grupo.entity";
 import { Matricula } from "./Matricula.entity";
 import { TIPO_CARRERA } from "../../interfaces/enums";
+import { Sede } from "../../Sede/entity";
 
 @Entity()
 export class Carrera extends EntityBase {
@@ -33,4 +34,7 @@ export class Carrera extends EntityBase {
 
     @Column({ default: "activo" })
     estado: string;
+
+    @ManyToMany(() => Sede, (sede) => sede.carreras)
+    sedes: Sede[];
 }

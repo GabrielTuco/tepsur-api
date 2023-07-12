@@ -14,57 +14,6 @@ const matriculaController = new MatriculaController();
  * @swagger
  * components:
  *  schemas:
- *      Alumno:
- *          properties:
- *              id:
- *                  type: number
- *                  description : El id autogenerado de la secretaria
- *              dni:
- *                  type: string
- *                  description: Dni de la secretaria
- *              nombres:
- *                  type: string
- *                  description: Primero y/o segundo nombre
- *              apePaterno:
- *                  type: string
- *                  description: Apellido paterno
- *              apeMaterno:
- *                  type: string
- *                  description: Apellido materno
- *              sexo:
- *                  type: string
- *                  description: Sexo
- *              edad:
- *                  type: number
- *                  description: Edad del alumno
- *              gradoEstudiosUuid:
- *                  type: number
- *                  description: Grado de estudios del almuno
- *              lugarNacimiento:
- *                  type: string
- *                  description: Lugar de nacimiento
- *              celular:
- *                  type: string
- *                  description: Celular
- *              correo:
- *                  type: string
- *                  description: Correo
- *              direccion:
- *                  type: object
- *                  $ref: '#/components/schemas/Direccion'
- *                  description: El codigo de la sede en la que se registra la secretaria
- *          required:
- *              - dni
- *              - nombre
- *              - apePaterno
- *              - apeMaterno
- *              - sexo
- *              - edad
- *              - gradoEstudiosUuid
- *              - lugarNacimiento
- *              - celular
- *              - correo
- *              - direccion
  *      PagoMatricula:
  *          properties:
  *              numComprobante:

@@ -7,13 +7,24 @@ import { AppDataSource } from "../../db/dataSource";
 import { Sede } from "../../Sede/entity/Sede.entity";
 
 export class CareerService implements CareerRepository {
-    public async listAll(): Promise<Carrera[]> {
+    public async listAll(sedeUuid: string): Promise<Carrera[]> {
         try {
-            const carreras = await Carrera.createQueryBuilder("c")
-                .innerJoinAndSelect("c.modulos", "m")
-                //.leftJoinAndSelect("m.horarios", "h")
-                .where("c.estado='activo'")
-                .getMany();
+            const sede = await Sede.findOne({
+                where: {
+                    uuid: sedeUuid,
+                },
+                relations: {
+                    carreras: true,
+                },
+            });
+            if (!sede)
+                throw new DatabaseError(
+                    "Sede not found",
+                    404,
+                    "Not found error"
+                );
+
+            const carreras = sede.carreras;
 
             return carreras;
         } catch (error) {
