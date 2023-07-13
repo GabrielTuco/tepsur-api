@@ -88,6 +88,7 @@ export interface AlumnoData {
     gradoEstudiosUuid: number;
     lugarResidencia: string;
     celular: string;
+    celularReferencia: string;
     correo: string;
     direccion: DireccionDto;
 }

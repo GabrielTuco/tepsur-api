@@ -48,6 +48,9 @@ const studentController = new StudentController(studentService);
  *              celular:
  *                  type: string
  *                  description: Celular
+ *              celularReferencia:
+ *                  type: string
+ *                  description: Celular de referencia
  *              correo:
  *                  type: string
  *                  description: Correo

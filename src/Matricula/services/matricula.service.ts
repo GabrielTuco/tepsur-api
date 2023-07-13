@@ -619,6 +619,7 @@ export class MatriculaService implements MatriculaRepository {
             newAlumno.sexo = alumno.sexo;
             newAlumno.lugar_residencia = alumno.lugarResidencia;
             newAlumno.celular = alumno.celular;
+            newAlumno.celular_referencia = alumno.celularReferencia
             newAlumno.correo = alumno.correo;
             newAlumno.direccion = newDireccionAlumno;
             newAlumno.grado_estudios = gradoEstudios!;
