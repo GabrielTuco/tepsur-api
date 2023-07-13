@@ -46,6 +46,7 @@ const adminController = new AdministratorController(adminService);
  *              - nombres
  *              - apePaterno
  *              - apeMaterno
+ *              - celular
  */
 
 /**
