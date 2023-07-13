@@ -54,7 +54,7 @@ export class Matricula extends EntityBase {
     @Column()
     fecha_inscripcion: Date;
 
-    @Column()
+    @Column({nullable:true})
     fecha_inicio: Date;
 
     @Column({ nullable: true })
