@@ -189,7 +189,7 @@ router.post(
     body("modulos", "Debe ser un array de UUIDS").optional().isArray(),
     body("modulos.*", "El valor debe ser un UUID valido")
       .optional()
-      .isUUID("4"),
+      .isObject(),
     //TODO: agregar middleware para ver si el horario pertenece a la carrera
     // body("horarioUuid", "El valor debe ser un UUID valido").optional().isUUID("4"),
     body(
