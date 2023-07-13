@@ -150,7 +150,9 @@ export class MatriculaService implements MatriculaRepository {
                             const matriculaModulo =
                                 new MatriculaModulosModulo();
                             matriculaModulo.matricula = newMatricula;
+                            matriculaModulo.matriculaUuid = newMatricula.uuid;
                             matriculaModulo.modulo = modulo.modulo;
+                            matriculaModulo.moduloUuid = modulo.modulo.uuid;
                             matriculaModulo.modalidad = modulo.modalidad;
                             matriculaModulo.fecha_inicio = modulo.fechaInicio;
                             matriculaModulo.estado =
