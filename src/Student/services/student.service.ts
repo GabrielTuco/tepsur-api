@@ -11,160 +11,152 @@ import { GradoEstudios } from "../../Matricula/entity";
 import { Sede } from "../../Sede/entity";
 
 export class StudentService implements StudentRepository {
-    public register = async (data: StudentDTO): Promise<Alumno> => {
-        try {
-            const {
-                apeMaterno,
-                apePaterno,
-                celular,
-                correo,
-                direccion,
-                dni,
-                edad,
-                gradoEstudiosUuid,
-                lugarResidencia,
-                nombres,
-                sexo,
-            } = data;
+  public register = async (data: StudentDTO): Promise<Alumno> => {
+    try {
+      const {
+        apeMaterno,
+        apePaterno,
+        celular,
+        correo,
+        direccion,
+        dni,
+        edad,
+        gradoEstudiosUuid,
+        lugarResidencia,
+        nombres,
+        sexo,
+      } = data;
 
-            const newDireccion = new Direccion();
-            newDireccion.direccion_exacta = direccion.direccionExacta!;
-            newDireccion.departamento = direccion.departamento!;
-            newDireccion.distrito = direccion.distrito!;
-            newDireccion.provincia = direccion.provincia!;
+      const newDireccion = new Direccion();
+      newDireccion.direccion_exacta = direccion.direccionExacta!;
+      newDireccion.departamento = direccion.departamento!;
+      newDireccion.distrito = direccion.distrito!;
+      newDireccion.provincia = direccion.provincia!;
 
-            const savedDireccion = await newDireccion.save();
+      const savedDireccion = await newDireccion.save();
 
-            const gradoEstudiosExists = await GradoEstudios.findOneBy({
-                uuid: gradoEstudiosUuid,
-            });
+      const gradoEstudiosExists = await GradoEstudios.findOneBy({
+        uuid: gradoEstudiosUuid,
+      });
 
-            const alumno = new Alumno();
+      const alumno = new Alumno();
 
-            alumno.ape_materno = apeMaterno;
-            alumno.ape_paterno = apePaterno;
-            alumno.celular = celular!;
-            alumno.correo = correo!;
-            alumno.direccion = savedDireccion;
-            alumno.dni = dni;
-            alumno.edad = edad!;
-            alumno.grado_estudios = gradoEstudiosExists!;
-            alumno.lugar_residencia = lugarResidencia!;
-            alumno.nombres = nombres;
-            alumno.sexo = sexo;
-            alumno.uuid = uuid();
+      alumno.ape_materno = apeMaterno;
+      alumno.ape_paterno = apePaterno;
+      alumno.celular = celular!;
+      alumno.correo = correo!;
+      alumno.direccion = savedDireccion;
+      alumno.correo = dni;
+      alumno.edad = edad!;
+      alumno.grado_estudios = gradoEstudiosExists!;
+      alumno.lugar_residencia = lugarResidencia!;
+      alumno.nombres = nombres;
+      alumno.sexo = sexo;
+      alumno.uuid = uuid();
 
-            return await alumno.save();
-        } catch (error) {
-            throw error;
-        }
-    };
+      return await alumno.save();
+    } catch (error) {
+      throw error;
+    }
+  };
 
-    public listBySede = async (sedeUuid: string): Promise<Alumno[]> => {
-        try {
-            const sede = await Sede.createQueryBuilder("s")
-                .innerJoinAndSelect("s.matriculas", "m")
-                .innerJoinAndSelect("m.alumno", "a")
-                .where("s.uuid=:uuid", { uuid: sedeUuid })
-                .getOne();
+  public listBySede = async (sedeUuid: string): Promise<Alumno[]> => {
+    try {
+      const sede = await Sede.createQueryBuilder("s")
+        .innerJoinAndSelect("s.matriculas", "m")
+        .innerJoinAndSelect("m.alumno", "a")
+        .where("s.uuid=:uuid", { uuid: sedeUuid })
+        .getOne();
 
-            const alumnos = sede!.matriculas.map((m) => m.alumno);
+      const alumnos = sede!.matriculas.map((m) => m.alumno);
 
-            return alumnos;
-        } catch (error) {
-            throw error;
-        }
-    };
+      return alumnos;
+    } catch (error) {
+      throw error;
+    }
+  };
 
-    public createUser = async (uuid: string): Promise<Usuario> => {
-        try {
-            const alumno = await Alumno.findOneBy({ uuid });
-            const rolExists = await Rol.findOneBy({ nombre: "Alumno" });
-            if (!alumno || !rolExists) {
-                throw new DatabaseError(
-                    "No se puedo encontrar el registro en la base de datos",
-                    404,
-                    ""
-                );
-            }
+  public createUser = async (uuid: string): Promise<Usuario> => {
+    try {
+      const alumno = await Alumno.findOneBy({ uuid });
+      const rolExists = await Rol.findOneBy({ nombre: "Alumno" });
+      if (!alumno || !rolExists) {
+        throw new DatabaseError(
+          "No se puedo encontrar el registro en la base de datos",
+          404,
+          ""
+        );
+      }
 
-            const alumnoUsuario = new Usuario();
-            alumnoUsuario.usuario = alumno.dni;
-            alumnoUsuario.password = encryptPassword(alumno.dni);
-            alumnoUsuario.rol = rolExists;
+      const alumnoUsuario = new Usuario();
+      alumnoUsuario.usuario = alumno.correo;
+      alumnoUsuario.password = encryptPassword(alumno.correo);
+      alumnoUsuario.rol = rolExists;
 
-            return await alumnoUsuario.save();
-        } catch (error) {
-            throw error;
-        }
-    };
+      return await alumnoUsuario.save();
+    } catch (error) {
+      throw error;
+    }
+  };
 
-    public searchByUuid = async (uuid: string): Promise<Alumno> => {
-        try {
-            const alumno = await Alumno.findOneBy({ uuid });
-            if (!alumno) {
-                throw new DatabaseError(
-                    "No se puedo encontrar el registro",
-                    404,
-                    ""
-                );
-            }
-            return alumno;
-        } catch (error) {
-            throw error;
-        }
-    };
-    public searchByDni = async (dni: string): Promise<Alumno> => {
-        try {
-            const alumno = await Alumno.findOneBy({ dni });
-            if (!alumno) {
-                throw new DatabaseError(
-                    "No se puedo encontrar el registro",
-                    404,
-                    ""
-                );
-            }
-            return alumno;
-        } catch (error) {
-            throw error;
-        }
-    };
+  public searchByUuid = async (uuid: string): Promise<Alumno> => {
+    try {
+      const alumno = await Alumno.findOneBy({ uuid });
+      if (!alumno) {
+        throw new DatabaseError("No se puedo encontrar el registro", 404, "");
+      }
+      return alumno;
+    } catch (error) {
+      throw error;
+    }
+  };
+  public searchByDni = async (dni: string): Promise<Alumno> => {
+    try {
+      const alumno = await Alumno.findOneBy({ correo: dni });
+      if (!alumno) {
+        throw new DatabaseError("No se puedo encontrar el registro", 404, "");
+      }
+      return alumno;
+    } catch (error) {
+      throw error;
+    }
+  };
 
-    public searchByUser = async (usuario: Usuario) => {
-        try {
-            const studentExists = await Alumno.createQueryBuilder("a")
-                .innerJoinAndSelect("a.usuario", "u")
-                .innerJoinAndSelect("u.rol", "r")
-                .where("u.uuid= :id", { id: usuario.uuid })
-                .getOne();
+  public searchByUser = async (usuario: Usuario) => {
+    try {
+      const studentExists = await Alumno.createQueryBuilder("a")
+        .innerJoinAndSelect("a.usuario", "u")
+        .innerJoinAndSelect("u.rol", "r")
+        .where("u.uuid= :id", { id: usuario.uuid })
+        .getOne();
 
-            if (!studentExists)
-                throw new DatabaseError(
-                    "Student not found",
-                    500,
-                    "Interal server error"
-                );
-            return studentExists;
-        } catch (error) {
-            console.log(error);
-            throw error;
-        }
-    };
-    public updateInfo = async (
-        uuid: string,
-        data: Partial<StudentDTO>
-    ): Promise<Alumno> => {
-        try {
-            const alumno = await Alumno.findOneBy({ uuid });
-            if (!alumno) throw new DatabaseError("Alumno not found", 500, "");
+      if (!studentExists)
+        throw new DatabaseError(
+          "Student not found",
+          500,
+          "Interal server error"
+        );
+      return studentExists;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  };
+  public updateInfo = async (
+    uuid: string,
+    data: Partial<StudentDTO>
+  ): Promise<Alumno> => {
+    try {
+      const alumno = await Alumno.findOneBy({ uuid });
+      if (!alumno) throw new DatabaseError("Alumno not found", 500, "");
 
-            Object.assign(alumno, data);
-            await alumno.save();
-            await alumno.reload();
+      Object.assign(alumno, data);
+      await alumno.save();
+      await alumno.reload();
 
-            return alumno;
-        } catch (error) {
-            throw error;
-        }
-    };
+      return alumno;
+    } catch (error) {
+      throw error;
+    }
+  };
 }

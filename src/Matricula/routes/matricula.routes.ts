@@ -5,6 +5,10 @@ import { checkAuthRole } from "../../middlewares/checkAuthRole";
 import { MODALIDAD, ROLES, TIPO_MATRICULA } from "../../interfaces/enums";
 import { body, param } from "express-validator";
 import { validateFields } from "../../middlewares/validateFields";
+import {
+  isAlumnoCorreoValid,
+  isAlumnoDniValid,
+} from "../middlewares/validations";
 
 const router = Router();
 
@@ -153,10 +157,10 @@ router.post(
   [
     validateJWT,
     checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
-
     //Datos personales del alumno
     body("alumno").isObject(),
     body("alumno.dni").isString().isLength({ min: 8, max: 8 }),
+    body("alumno.dni").custom(isAlumnoDniValid),
     body("alumno.nombres").isString(),
     body("alumno.apePaterno").isString(),
     body("alumno.apeMaterno").isString(),
@@ -173,23 +177,21 @@ router.post(
     body("alumno.celular", "No es un numero de celular valido")
       .isString()
       .isLength({ min: 9, max: 9 }),
-      body("alumno.celularReferencia", "No es un numero de celular valido")
+    body("alumno.celularReferencia", "No es un numero de celular valido")
       .optional()
       .isString()
       .isLength({ min: 9, max: 9 }),
     body("alumno.correo", "No es un correo valido").isEmail(),
+    body("alumno.correo").custom(isAlumnoCorreoValid),
     body("alumno.direccion").isObject(),
     body("alumno.direccion.direccionExacta").isString(),
     body("alumno.direccion.distrito").isString(),
     body("alumno.direccion.provincia").isString(),
     body("alumno.direccion.departamento").isString(),
-
     //Datos academicos
     body("carreraUuid", "El valor debe ser un UUID valido").isUUID("4"),
     body("modulos", "Debe ser un array de UUIDS").optional().isArray(),
-    body("modulos.*", "El valor debe ser un UUID valido")
-      .optional()
-      .isObject(),
+    body("modulos.*", "El valor debe ser un UUID valido").optional().isObject(),
     //TODO: agregar middleware para ver si el horario pertenece a la carrera
     // body("horarioUuid", "El valor debe ser un UUID valido").optional().isUUID("4"),
     body(
@@ -200,7 +202,6 @@ router.post(
     body("sedeUuid").isUUID("4"),
     body("fechaInscripcion").isString(),
     body("fechaInicio").optional().isString(),
-
     //Pago de matricula(opcional)
     body("pagoMatricula").optional().isObject(),
     body("pagoMatricula.numComprobante").optional().isString(),
