@@ -8,33 +8,33 @@ import { Sede } from "../../Sede/entity";
 
 @Entity()
 export class Carrera extends EntityBase {
-    @Column()
-    num_modulos: number;
+  @Column()
+  num_modulos: number;
 
-    @Column()
-    nombre: string;
+  @Column()
+  nombre: string;
 
-    @Column()
-    duracion_meses: number;
+  @Column()
+  duracion_meses: number;
 
-    @OneToMany(() => Grupo, (grupo) => grupo.carrera, { nullable: true })
-    grupos: Grupo[];
+  @OneToMany(() => Grupo, (grupo) => grupo.carrera, { nullable: true })
+  grupos: Grupo[];
 
-    @ManyToMany(() => Modulo)
-    @JoinTable()
-    modulos: Modulo[];
+  @ManyToMany(() => Modulo)
+  @JoinTable()
+  modulos: Modulo[];
 
-    @OneToMany(() => Matricula, (matricula) => matricula.carrera, {
-        nullable: true,
-    })
-    matriculas: Matricula[];
+  @OneToMany(() => Matricula, (matricula) => matricula.carrera, {
+    nullable: true,
+  })
+  matriculas: Matricula[];
 
-    @Column()
-    tipo_carrera: TIPO_CARRERA;
+  @Column({ type: "varchar" })
+  tipo_carrera: TIPO_CARRERA;
 
-    @Column({ default: "activo" })
-    estado: string;
+  @Column({ default: "activo" })
+  estado: string;
 
-    @ManyToMany(() => Sede, (sede) => sede.carreras)
-    sedes: Sede[];
+  @ManyToMany(() => Sede, (sede) => sede.carreras)
+  sedes: Sede[];
 }
