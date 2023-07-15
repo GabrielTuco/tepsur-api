@@ -6,7 +6,7 @@ import { GradoEstudios } from "../../Matricula/entity";
 @Entity()
 export class Alumno extends EntityBase {
   @Column({ length: 8, unique: true })
-  correo: string;
+  dni: string;
 
   @Column()
   nombres: string;
