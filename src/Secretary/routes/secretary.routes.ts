@@ -1,13 +1,15 @@
 import { Router } from "express";
 import { SecretaryController } from "../controllers/secretary.controller";
-import { body, param } from "express-validator";
+import { body, param, query } from "express-validator";
 import { validateFields } from "../../middlewares/validateFields";
 import { ROLES } from "../../interfaces/enums";
 import { validateJWT } from "../../middlewares/validateJWT";
 import { checkAuthRole } from "../../middlewares/checkAuthRole";
+import { SecretaryService } from "../services/secretary.service";
 
 const router = Router();
-const secretaryController = new SecretaryController();
+const secretaryService = new SecretaryService();
+const secretaryController = new SecretaryController(secretaryService);
 
 /**
  * @swagger
@@ -83,21 +85,21 @@ const secretaryController = new SecretaryController();
  *
  */
 router.post(
-    "/",
-    [
-        validateJWT,
-        checkAuthRole([ROLES.ADMIN]),
-        body("dni", "Debe de contener 8 caracteres").isLength({
-            min: 8,
-            max: 8,
-        }),
-        body("nombres", "Este campo es obligatorio").isString(),
-        body("apePaterno", "Este campo es obligatorio").isString(),
-        body("apeMaterno", "Este campo es obligatorio").isString(),
-        body("codSede", "Este campo es obligatorio").isUUID("4"),
-        validateFields,
-    ],
-    secretaryController.postSecretary
+  "/",
+  [
+    validateJWT,
+    checkAuthRole([ROLES.ADMIN]),
+    body("dni", "Debe de contener 8 caracteres").isLength({
+      min: 8,
+      max: 8,
+    }),
+    body("nombres", "Este campo es obligatorio").isString(),
+    body("apePaterno", "Este campo es obligatorio").isString(),
+    body("apeMaterno", "Este campo es obligatorio").isString(),
+    body("codSede", "Este campo es obligatorio").isUUID("4"),
+    validateFields,
+  ],
+  secretaryController.postSecretary
 );
 
 /**
@@ -107,10 +109,10 @@ router.post(
  *      summary: Listado de secretarias registradas
  *      tags: [Secretary]
  *      parameters:
- *         - $ref: '#/components/parameters/token'
+ *          - $ref: '#/components/parameters/token'
  *      responses:
  *          200:
- *              description: La secretaria con su nuevo usuario creado
+ *              description: Retorna el listado general de secretarias registradas
  *              content:
  *                  application/json:
  *                      schema:
@@ -123,20 +125,131 @@ router.post(
  *
  */
 router.get(
-    "/",
-    [validateJWT, checkAuthRole([ROLES.ADMIN, ROLES.SECRE])],
-    secretaryController.getSecretaries
+  "/",
+  [validateJWT, checkAuthRole([ROLES.ADMIN, ROLES.SECRE])],
+  secretaryController.getSecretaries
 );
+
+/**
+ * @swagger
+ * /secretary/list-by-sede:
+ *  get:
+ *      summary: Listado de secretarias registradas dada una sede
+ *      tags: [Secretary]
+ *      parameters:
+ *         - $ref: '#/components/parameters/token'
+ *         - in: query
+ *           name: sede
+ *           schema:
+ *              type: string
+ *              format: uuid
+ *           required: true
+ *           description: El uuid de la sede
+ *      responses:
+ *          200:
+ *              description: Retorna el listado de secretarias de una determinada sede
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: array
+ *                          items:
+ *                              type: object
+ *                              $ref: '#/components/schemas/Secretary'
+ *          500:
+ *              description: Error de servidor
+ *
+ */
+router.get(
+  "/list-by-sede",
+  [
+    validateJWT,
+    checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+    query("sede", "Debe ser un uuuid valido").isUUID("4"),
+    validateFields,
+  ],
+  secretaryController.getSecretariesBySede
+);
+
+/**
+ * @swagger
+ * /secretary/{uuid}:
+ *  patch:
+ *      summary: Actualiza la informacion personal de una secretaria
+ *      tags: [Secretary]
+ *      parameters:
+ *         - $ref: '#/components/parameters/token'
+ *         - in: path
+ *           name: uuid
+ *           schema:
+ *              type: string
+ *              format: uuid
+ *           required: true
+ *           description: El uuid de la secretaria
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      $ref: '#/components/schemas/Secretary'
+ *      responses:
+ *          200:
+ *              description: Retorna la secretaria con sus datos actualizados
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          $ref: '#/components/schemas/Secretary'
+ *          500:
+ *              description: Error de servidor
+ *
+ */
 router.patch(
-    "/:id",
-    [
-        validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
-        param("id").exists(),
-        param("id").isString(),
-        validateFields,
-    ],
-    secretaryController.patchSecretary
+  "/:uuid",
+  [
+    validateJWT,
+    checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+    param("uuid").isUUID("4"),
+    validateFields,
+  ],
+  secretaryController.patchSecretary
+);
+
+/**
+ * @swagger
+ * /secretary/{uuid}:
+ *  delete:
+ *      summary: Elimina una secretaria(eliminacion logica)
+ *      tags: [Secretary]
+ *      parameters:
+ *         - $ref: '#/components/parameters/token'
+ *         - in: path
+ *           name: uuid
+ *           schema:
+ *              type: string
+ *              format: uuid
+ *           required: true
+ *           description: El uuid de la secretaria
+ *      responses:
+ *          200:
+ *              description: Retorna la secretaria eliminada
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          $ref: '#/components/schemas/Secretary'
+ *          500:
+ *              description: Error de servidor
+ *
+ */
+router.delete(
+  "/:uuid",
+  [
+    validateJWT,
+    checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+    param("uuid").isUUID("4"),
+    validateFields,
+  ],
+  secretaryController.deleteSecretary
 );
 
 export default router;

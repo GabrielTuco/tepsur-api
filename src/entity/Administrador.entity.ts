@@ -23,6 +23,9 @@ export class Administrador extends EntityBase {
   @Column({ nullable: true, unique: true })
   correo: string;
 
+  @Column({ nullable: true, default: true })
+  estado: boolean;
+
   @ManyToOne(() => Sede, (sede) => sede.administradores)
   sede: Sede;
 
