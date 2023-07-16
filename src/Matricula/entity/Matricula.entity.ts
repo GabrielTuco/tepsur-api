@@ -62,7 +62,7 @@ export class Matricula extends EntityBase {
   fecha_inicio: Date;
 
   @Column({ type: "varchar", nullable: true })
-  modaliad: MODALIDAD;
+  modalidad: MODALIDAD;
 
   @ManyToOne(() => Horario, (horario) => horario.matriculas, { nullable: true })
   horario: Horario;

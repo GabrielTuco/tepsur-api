@@ -9,6 +9,7 @@ import {
   Carrera,
   GradoEstudios,
   Grupo,
+  Horario,
   Matricula,
   MatriculaGruposGrupo,
   MetodoPago,
@@ -60,8 +61,10 @@ export class MatriculaService implements MatriculaRepository {
         secretariaUuid,
         sedeUuid,
         fechaInscripcion,
-        fechaInicio,
         tipoMatricula,
+        fechaInicio,
+        modalidad,
+        horarioUuid,
       } = data;
 
       //Registro de datos personales del estudiante
@@ -182,6 +185,14 @@ export class MatriculaService implements MatriculaRepository {
             await queryRunner.manager.save(matriculaModulo);
           });
         }
+      }
+
+      if (carrera?.tipo_carrera === TIPO_CARRERA.SEMESTRAL) {
+        const horario = await Horario.findOneBy({ uuid: horarioUuid });
+
+        newMatricula.fecha_inicio = fechaInicio;
+        newMatricula.modalidad = modalidad;
+        newMatricula.horario = horario!;
       }
 
       await queryRunner.manager.save(newMatricula);

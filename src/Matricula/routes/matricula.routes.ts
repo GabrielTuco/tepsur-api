@@ -81,7 +81,15 @@ const matriculaController = new MatriculaController();
  *              fechaInicio:
  *                  type: string
  *                  format: date-time
- *                  description:  Fecha de inicio de clases
+ *                  description:  Fecha de inicio de clases (en caso sea carrera semestral)
+ *              modalidad:
+ *                  type: string
+ *                  enum: [virtual,presencial]
+ *                  description: Modalidad en la que se matricula (en caso sea carrera semestral)
+ *              horarioUuid:
+ *                  type: string
+ *                  format: uuid
+ *                  description: Horario en el que se matricula (en caso sea carrera semestral)
  *      TrasladoMatricula:
  *          properties:
  *              alumno:

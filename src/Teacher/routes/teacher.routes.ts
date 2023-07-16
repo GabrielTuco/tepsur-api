@@ -1,14 +1,16 @@
 import { Router } from "express";
-import { body } from "express-validator";
+import { body, param, query } from "express-validator";
 import { validateFields } from "../../middlewares/validateFields";
 import { hasPermissionRole } from "../../middlewares/hasPermissionRole";
 import { TeacherController } from "../controllers/teacher.controller";
 import { ROLES } from "../../interfaces/enums";
 import { validateJWT } from "../../middlewares/validateJWT";
 import { checkAuthRole } from "../../middlewares/checkAuthRole";
+import { TeacherService } from "../services/teacher.service";
 
 const router = Router();
-const teacherController = new TeacherController();
+const teacherService = new TeacherService();
+const teacherController = new TeacherController(teacherService);
 /**
  * @swagger
  * components:
@@ -76,21 +78,21 @@ const teacherController = new TeacherController();
  *
  */
 router.post(
-    "/",
-    [
-        validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
-        body("dni", "El campo debe contener un numero de dni valido").isLength({
-            min: 8,
-            max: 8,
-        }),
-        body("nombres", "El campo es obligatorio").isString(),
-        body("apePaterno", "El campo es obligatorio").isString(),
-        body("apeMaterno", "El campo es obligatorio").isString(),
-        body("codSede", "El campo es obligatorio").isUUID("4"),
-        validateFields,
-    ],
-    teacherController.postRegister
+  "/",
+  [
+    validateJWT,
+    checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+    body("dni", "El campo debe contener un numero de dni valido").isLength({
+      min: 8,
+      max: 8,
+    }),
+    body("nombres", "El campo es obligatorio").isString(),
+    body("apePaterno", "El campo es obligatorio").isString(),
+    body("apeMaterno", "El campo es obligatorio").isString(),
+    body("codSede", "El campo es obligatorio").isUUID("4"),
+    validateFields,
+  ],
+  teacherController.postRegister
 );
 
 /**
@@ -114,15 +116,136 @@ router.post(
  *
  */
 router.get(
-    "/",
-    [validateJWT, checkAuthRole([ROLES.ADMIN, ROLES.SECRE])],
-    teacherController.getList
+  "/",
+  [validateJWT, checkAuthRole([ROLES.ADMIN, ROLES.SECRE])],
+  teacherController.getList
 );
 
+/**
+ * @swagger
+ * /teacher/find-by-sede:
+ *  get:
+ *      summary: Listado de docentes de una determinada sede
+ *      tags: [Teacher]
+ *      parameters:
+ *          - $ref: '#/components/parameters/token'
+ *          - in: query
+ *            name: sede
+ *            schema:
+ *              type: string
+ *              format: uuid
+ *            description: El uuid de la sede
+ *      responses:
+ *          200:
+ *              description: Retorna la lista de docentes de la sede
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: array
+ *                          description: Listado
+ *          500:
+ *              description: Error de servidor
+ *
+ */
 router.get(
-    "/:id",
-    [validateJWT, checkAuthRole([ROLES.ADMIN, ROLES.SECRE])],
-    teacherController.getOne
+  "/find-by-sede",
+  [
+    validateJWT,
+    checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+    query("sede").isUUID("4"),
+    validateFields,
+  ],
+  teacherController.getListBySede
+);
+
+/**
+ * @swagger
+ * /teacher/{uuid}:
+ *  patch:
+ *      summary: Actualizar la informacion personal de un docente
+ *      tags: [Teacher]
+ *      parameters:
+ *          - $ref: '#/components/parameters/token'
+ *          - in: path
+ *            name: uuid
+ *            schema:
+ *              type: string
+ *              format: uuid
+ *            description: El uuid del docente
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          nombres:
+ *                              type: string
+ *                          apePaterno:
+ *                              type: string
+ *                          apeMaterno:
+ *                              type: string
+ *      responses:
+ *          200:
+ *              description: Retorna el docente actualizado
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          description: Docente
+ *          500:
+ *              description: Error de servidor
+ *
+ */
+router.patch(
+  "/:uuid",
+  [
+    validateJWT,
+    checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+    param("uuid", "Debe ser un uuid valido").isUUID("4"),
+    body("nombres").optional().isString(),
+    body("apePaterno").optional().isString(),
+    body("apeMaterno").optional().isString(),
+    validateFields,
+  ],
+  teacherController.updateTeacher
+);
+
+/**
+ * @swagger
+ * /teacher/{uuid}:
+ *  delete:
+ *      summary: Eliminar un docente
+ *      tags: [Teacher]
+ *      parameters:
+ *          - $ref: '#/components/parameters/token'
+ *          - in: path
+ *            name: uuid
+ *            schema:
+ *              type: string
+ *              format: uuid
+ *            description: El uuid del docente
+ *      responses:
+ *          200:
+ *              description: Retorna el docente eliminado (eliminacion logica)
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          description: Docente
+ *          500:
+ *              description: Error de servidor
+ *
+ */
+router.delete(
+  "/:uuid",
+  [
+    validateJWT,
+    checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+    param("uuid").isUUID("4"),
+    validateFields,
+  ],
+  teacherController.deleteTeacher
 );
 
 export default router;
