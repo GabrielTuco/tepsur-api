@@ -433,6 +433,8 @@ router.patch(
  *                              type: string
  *                          duracion_semanas:
  *                              type: string
+ *                          orden:
+ *                              type: number
  *      responses:
  *          200:
  *              description: La carrera actualizada

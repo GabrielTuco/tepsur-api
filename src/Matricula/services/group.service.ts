@@ -7,6 +7,8 @@ import { DatabaseError } from "../../errors/DatabaseError";
 import { Docente } from "../../Teacher/entity/Docente.entity";
 import { Secretaria } from "../../Secretary/entity/Secretaria.entity";
 import { Sede } from "../../Sede/entity";
+import { MatriculaModulosModulo } from "../entity/MatriculaModulosModulo";
+import { CONDICION_ALUMNO, TIPO_CARRERA } from "../../interfaces/enums";
 
 export class GroupService implements GroupRepository {
     /**
@@ -118,18 +120,34 @@ export class GroupService implements GroupRepository {
                 where: { uuid: matriculaUuid },
                 relations: { carrera: true },
             });
+            const carrera = student?.carrera;
             const grupo = await Grupo.findOne({ where: { uuid: grupoUuid } });
 
             if (!student || !grupo)
                 throw new DatabaseError(
-                    "Student or grupo not found",
+                    "El estudiante o el grupo no existe",
                     404,
-                    "Database error"
+                    "Not found error"
                 );
 
             const newMatriculaGrupo = new MatriculaGruposGrupo();
             newMatriculaGrupo.matricula = student;
             newMatriculaGrupo.grupo = grupo;
+
+            if (carrera?.tipo_carrera === TIPO_CARRERA.MODULAR) {
+                const [previousModules, count] =
+                    await MatriculaModulosModulo.createQueryBuilder("mm")
+                        .innerJoinAndSelect("mm.matricula", "m")
+                        .where("m.uuid=:uuid", { uuid: matriculaUuid })
+                        .getManyAndCount();
+
+                if (count < 1)
+                    newMatriculaGrupo.condicion = CONDICION_ALUMNO.NUEVO;
+                //si no es nuevo ver que horarios y modulos ha llevado establecer si continua o es cambio de horario
+                else {
+                    newMatriculaGrupo.condicion = CONDICION_ALUMNO.CONTINUA;
+                }
+            }
 
             await newMatriculaGrupo.save();
 
