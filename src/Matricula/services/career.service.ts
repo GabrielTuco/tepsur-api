@@ -7,7 +7,7 @@ import { AppDataSource } from "../../db/dataSource";
 import { Sede } from "../../Sede/entity/Sede.entity";
 
 export class CareerService implements CareerRepository {
-    public async listAll(sedeUuid: string): Promise<any[]> {
+    public listBySede = async (sedeUuid: string): Promise<any[]> => {
         try {
             const sede = await Sede.find({ where: { uuid: sedeUuid } });
 
@@ -19,7 +19,7 @@ export class CareerService implements CareerRepository {
 
             if (!sedeExists)
                 throw new DatabaseError(
-                    "Sede not found",
+                    "La sede no existe",
                     404,
                     "Not found error"
                 );
@@ -33,9 +33,19 @@ export class CareerService implements CareerRepository {
         } catch (error) {
             throw error;
         }
-    }
+    };
 
-    public async register(data: CareerDTO): Promise<Carrera> {
+    public listAll = async (): Promise<Carrera[]> => {
+        try {
+            console.log("list all");
+            const carreras = await Carrera.createQueryBuilder("c").getMany();
+
+            return carreras;
+        } catch (error) {
+            throw error;
+        }
+    };
+    public register = async (data: CareerDTO): Promise<Carrera> => {
         const queryRunner = AppDataSource.createQueryRunner();
         await queryRunner.connect();
         await queryRunner.startTransaction();
@@ -96,9 +106,9 @@ export class CareerService implements CareerRepository {
         } finally {
             await queryRunner.release();
         }
-    }
+    };
 
-    public async listModules(uuid: string): Promise<Modulo[]> {
+    public listModules = async (uuid: string): Promise<Modulo[]> => {
         try {
             const data = await Carrera.createQueryBuilder("c")
                 .leftJoinAndSelect("c.modulos", "modulo")
@@ -115,10 +125,10 @@ export class CareerService implements CareerRepository {
         } catch (error) {
             throw error;
         }
-    }
+    };
 
     //TODO: armar nueva query dependiendo del tipo de carrera retornar los horarios
-    public async listHorarios(_uuid: string): Promise<Horario[]> {
+    public listHorarios = async (_uuid: string): Promise<Horario[]> => {
         try {
             const horarios = await Horario.find();
 
@@ -126,9 +136,9 @@ export class CareerService implements CareerRepository {
         } catch (error) {
             throw error;
         }
-    }
+    };
 
-    public async findByUuid(uuid: string): Promise<Carrera> {
+    public findByUuid = async (uuid: string): Promise<Carrera> => {
         try {
             const data = await Carrera.findOneBy({ uuid, estado: "activo" });
             if (!data) {
@@ -138,8 +148,8 @@ export class CareerService implements CareerRepository {
         } catch (error) {
             throw error;
         }
-    }
-    public async findByName(name: string): Promise<Carrera> {
+    };
+    public findByName = async (name: string): Promise<Carrera> => {
         try {
             const data = await Carrera.findOneBy({
                 nombre: name,
@@ -152,14 +162,19 @@ export class CareerService implements CareerRepository {
         } catch (error) {
             throw error;
         }
-    }
-    public async update(
+    };
+    public update = async (
         uuid: string,
         data: Partial<Carrera>
-    ): Promise<Carrera> {
+    ): Promise<Carrera> => {
         try {
             const career = await Carrera.findOneBy({ uuid });
-            if (!career) throw new DatabaseError("Career not found", 404, "");
+            if (!career)
+                throw new DatabaseError(
+                    "La carrera no existe",
+                    404,
+                    "Not found error"
+                );
 
             await Carrera.update({ uuid }, data);
             await career.reload();
@@ -167,17 +182,22 @@ export class CareerService implements CareerRepository {
         } catch (error) {
             throw error;
         }
-    }
-    public async addModule(
+    };
+    public addModule = async (
         careerUuid: string,
         moduleData: Partial<Modulo>
-    ): Promise<Carrera> {
+    ): Promise<Carrera> => {
         try {
             const career = await Carrera.findOne({
                 relations: { modulos: true },
                 where: { uuid: careerUuid, estado: "activo" },
             });
-            if (!career) throw new DatabaseError("Career not found", 500, "");
+            if (!career)
+                throw new DatabaseError(
+                    "La carrera no existe",
+                    404,
+                    "Not found error"
+                );
 
             const module = career.modulos.find(
                 (m) => m.nombre === moduleData.nombre
@@ -185,7 +205,7 @@ export class CareerService implements CareerRepository {
             if (module)
                 throw new DatabaseError(
                     "El modulo ya esta registrado en la carrera",
-                    500,
+                    400,
                     ""
                 );
 
@@ -201,6 +221,7 @@ export class CareerService implements CareerRepository {
                 newModuleToCareer.nombre = moduleData.nombre!;
                 newModuleToCareer.duracion_semanas =
                     moduleData.duracion_semanas!;
+                newModuleToCareer.orden = moduleData.orden!;
                 await newModuleToCareer.save();
                 career.modulos.push(newModuleToCareer);
             }
@@ -211,24 +232,29 @@ export class CareerService implements CareerRepository {
         } catch (error) {
             throw error;
         }
-    }
-    public async removeModule(
+    };
+    public removeModule = async (
         careerUuid: string,
         moduleUuid: string
-    ): Promise<Carrera> {
+    ): Promise<Carrera> => {
         try {
             const career = await Carrera.findOne({
                 relations: { modulos: true },
                 where: { uuid: careerUuid, estado: "activo" },
             });
-            if (!career) throw new DatabaseError("Career not found", 500, "");
+            if (!career)
+                throw new DatabaseError(
+                    "La carrera no exise",
+                    404,
+                    "Not found error"
+                );
 
             const module = career.modulos.find((m) => m.uuid === moduleUuid);
             if (!module)
                 throw new DatabaseError(
                     "El modulo no esta registrado en la carrera",
-                    500,
-                    ""
+                    404,
+                    "Not found error"
                 );
 
             career.modulos = career.modulos.filter(
@@ -242,14 +268,14 @@ export class CareerService implements CareerRepository {
         } catch (error) {
             throw error;
         }
-    }
+    };
 
-    public async delete(uuid: string): Promise<Carrera> {
+    public delete = async (uuid: string): Promise<Carrera> => {
         try {
             const carrera = await Carrera.findOne({ where: { uuid } });
             if (!carrera)
                 throw new DatabaseError(
-                    "Carrera not found",
+                    "La carrera no exste",
                     404,
                     "Not found error"
                 );
@@ -261,5 +287,5 @@ export class CareerService implements CareerRepository {
         } catch (error) {
             throw error;
         }
-    }
+    };
 }

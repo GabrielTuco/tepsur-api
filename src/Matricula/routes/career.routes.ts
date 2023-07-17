@@ -138,7 +138,35 @@ router.post(
  * @swagger
  * /career:
  *  get:
- *      summary: Listado de carreras
+ *      summary: Listado de carreras general
+ *      tags: [Career]
+ *      parameters:
+ *         - $ref: '#/components/parameters/token'
+ *      responses:
+ *          200:
+ *              description: El listado de carreras
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: array
+ *                          items:
+ *                              type: object
+ *                              $ref: '#/components/schemas/CareerResponse'
+ *          500:
+ *              description: Error de servidor
+ *
+ */
+router.get(
+    "/",
+    [validateJWT, checkAuthRole([ROLES.ADMIN, ROLES.SECRE])],
+    careerController.getCareers
+);
+
+/**
+ * @swagger
+ * /career/list-by-sede:
+ *  get:
+ *      summary: Listado de carreras por sede
  *      tags: [Career]
  *      parameters:
  *         - $ref: '#/components/parameters/token'
@@ -163,13 +191,13 @@ router.post(
  *
  */
 router.get(
-    "/",
+    "/list-by-sede",
     [
         validateJWT,
         checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
         query("sede").isUUID("4"),
     ],
-    careerController.getCareers
+    careerController.getCareersBySede
 );
 
 /**

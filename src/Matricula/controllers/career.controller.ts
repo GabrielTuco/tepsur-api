@@ -5,10 +5,27 @@ import { DatabaseError } from "../../errors/DatabaseError";
 const careerService = new CareerService();
 
 export class CareerController {
-    public async getCareers(req: Request, res: Response) {
+    public async getCareers(_req: Request, res: Response) {
+        try {
+            const carreras = await careerService.listAll();
+            return res.json(carreras);
+        } catch (error) {
+            console.log(error);
+            if (error instanceof DatabaseError) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                });
+            }
+            return res.status(500).json({
+                msg: "Internal Server Error",
+            });
+        }
+    }
+
+    public async getCareersBySede(req: Request, res: Response) {
         try {
             const { sede } = req.query;
-            const carreras = await careerService.listAll(String(sede));
+            const carreras = await careerService.listBySede(String(sede));
             return res.json(carreras);
         } catch (error) {
             if (error instanceof DatabaseError) {
