@@ -6,7 +6,7 @@ import { Carrera } from "./Carrera.entity";
 
 @Entity()
 export class Modulo extends EntityBase {
-    @Column({ unique: true })
+    @Column()
     nombre: string;
 
     @Column()

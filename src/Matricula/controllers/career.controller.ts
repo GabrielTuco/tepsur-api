@@ -138,6 +138,7 @@ export class CareerController {
     public async updateCareer(req: Request, res: Response) {
         try {
             const { uuid } = req.params;
+            console.log(uuid);
             const career = await careerService.update(uuid, req.body);
 
             return res.json(career);

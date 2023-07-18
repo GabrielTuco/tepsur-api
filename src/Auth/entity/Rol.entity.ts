@@ -3,14 +3,11 @@ import {
     Column,
     CreateDateColumn,
     Entity,
-    JoinTable,
-    ManyToMany,
     OneToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from "typeorm";
 import { Usuario } from "./Usuario.entity";
-import { Permiso } from "./Permiso.entity";
 
 @Entity()
 export class Rol extends BaseEntity {
@@ -25,10 +22,6 @@ export class Rol extends BaseEntity {
 
     @OneToMany(() => Usuario, (usuario) => usuario.rol)
     usuarios: Usuario[];
-
-    @ManyToMany(() => Permiso)
-    @JoinTable()
-    permisos: Permiso[];
 
     @CreateDateColumn({ select: false })
     createdAt: Date;

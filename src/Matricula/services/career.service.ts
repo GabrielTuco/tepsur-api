@@ -45,6 +45,7 @@ export class CareerService implements CareerRepository {
             throw error;
         }
     };
+
     public register = async (data: CareerDTO): Promise<Carrera> => {
         const queryRunner = AppDataSource.createQueryRunner();
         await queryRunner.connect();
@@ -125,14 +126,22 @@ export class CareerService implements CareerRepository {
     public listHorarios = async (uuid: string): Promise<Horario[]> => {
         try {
             const carrera = await Carrera.createQueryBuilder("c")
-                .innerJoinAndSelect("c.grupos", "g")
-                .innerJoinAndSelect("g.horario", "h")
-                .where(`c.uuid=:uuid and g.estado='${ESTADO_GRUPO.EN_CURSO}'`, {
+                .leftJoinAndSelect("c.grupos", "g")
+                .leftJoinAndSelect("g.horario", "h")
+                .where(`c.uuid=:uuid`, {
                     uuid,
                 })
                 .getOne();
+            if (!carrera)
+                throw new DatabaseError(
+                    "La carrera no existe o no tiene grupos registrados",
+                    404,
+                    "Not found error"
+                );
 
+            console.log(carrera);
             const horarios = carrera?.grupos.map((g) => g.horario);
+
             return horarios!;
         } catch (error) {
             throw error;
@@ -150,6 +159,7 @@ export class CareerService implements CareerRepository {
             throw error;
         }
     };
+
     public findByName = async (name: string): Promise<Carrera> => {
         try {
             const data = await Carrera.findOneBy({
@@ -164,6 +174,7 @@ export class CareerService implements CareerRepository {
             throw error;
         }
     };
+
     public update = async (
         uuid: string,
         data: Partial<Carrera>
@@ -179,11 +190,13 @@ export class CareerService implements CareerRepository {
 
             await Carrera.update({ uuid }, data);
             await career.reload();
+
             return career;
         } catch (error) {
             throw error;
         }
     };
+
     public addModule = async (
         careerUuid: string,
         moduleData: Partial<Modulo>
@@ -193,6 +206,7 @@ export class CareerService implements CareerRepository {
                 relations: { modulos: true },
                 where: { uuid: careerUuid, estado: "activo" },
             });
+
             if (!career)
                 throw new DatabaseError(
                     "La carrera no existe",
@@ -207,25 +221,18 @@ export class CareerService implements CareerRepository {
                 throw new DatabaseError(
                     "El modulo ya esta registrado en la carrera",
                     400,
-                    ""
+                    "Duplicated register error"
                 );
 
-            const moduloExists = await Modulo.findOneBy({
-                nombre: moduleData.nombre,
-            });
+            const newModuleToCareer = new Modulo();
+            newModuleToCareer.uuid = uuid();
+            newModuleToCareer.nombre = moduleData.nombre!;
+            newModuleToCareer.duracion_semanas = moduleData.duracion_semanas!;
+            newModuleToCareer.orden = moduleData.orden!;
 
-            if (moduloExists) {
-                career.modulos.push(moduloExists);
-            } else {
-                const newModuleToCareer = new Modulo();
-                newModuleToCareer.uuid = uuid();
-                newModuleToCareer.nombre = moduleData.nombre!;
-                newModuleToCareer.duracion_semanas =
-                    moduleData.duracion_semanas!;
-                newModuleToCareer.orden = moduleData.orden!;
-                await newModuleToCareer.save();
-                career.modulos.push(newModuleToCareer);
-            }
+            await newModuleToCareer.save();
+            career.modulos.push(newModuleToCareer);
+
             await career.save();
             await career.reload();
 
@@ -234,6 +241,7 @@ export class CareerService implements CareerRepository {
             throw error;
         }
     };
+
     public removeModule = async (
         careerUuid: string,
         moduleUuid: string

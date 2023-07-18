@@ -14,9 +14,6 @@ const careerController = new CareerController();
  *  schemas:
  *      Career:
  *          properties:
- *              numModulos:
- *                  type: number
- *                  description: El numero de modulos con los que cuenta la carrera
  *              nombre:
  *                  type: string
  *              duracionMeses:
@@ -44,7 +41,6 @@ const careerController = new CareerController();
  *                              type: number
  *                              description: El orden en el que se lleva el modulo
  *          required:
- *              - numModulos
  *              - nombre
  *              - duracionMeses
  *              - tipoCarrera
@@ -61,9 +57,11 @@ const careerController = new CareerController();
  *              nombre:
  *                  type: string
  *                  description: Nombre de la carrera
+ *                  example: "Operacion de maquinaria pesada"
  *              modalidad:
  *                  type: string
  *                  description: Modalida de la carrera
+ *                  example: "presencial"
  *              modulos:
  *                  type: array
  *                  items:
@@ -71,6 +69,7 @@ const careerController = new CareerController();
  *                      properties:
  *                          nombre:
  *                              type: string
+ *                              example: "Cargador frontal"
  *                          duracionSemanas:
  *                              type: string
  *                              example: "4 semanas"
@@ -118,16 +117,15 @@ router.post(
         validateJWT,
         checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
         body("nombre").isString(),
-        body("numModulos").isNumeric(),
         body("modulos").isArray(),
         body("modulos.*.nombre").isString(),
         body("modulos.*.duracionSemanas").isString(),
         body("modulos.*.orden").isNumeric(),
         body("sedeUuid", "Debe ser un uuid valido").isUUID("4"),
-        body("tipoCarrera", "").isIn([
-            TIPO_CARRERA.MODULAR,
-            TIPO_CARRERA.SEMESTRAL,
-        ]),
+        body(
+            "tipoCarrera",
+            "Los valores aceptados son modular | semestral"
+        ).isIn([TIPO_CARRERA.MODULAR, TIPO_CARRERA.SEMESTRAL]),
         body("duracionMeses").isNumeric(),
         validateFields,
     ],
@@ -348,6 +346,7 @@ router.get(
  *                          type: array
  *                          items:
  *                              type: object
+ *                              $ref: '#/components/schemas/ScheduleResponse'
  *          500:
  *              description: Error de servidor
  *
@@ -365,14 +364,14 @@ router.get(
 
 /**
  * @swagger
- * /career/{id}:
+ * /career/{uuid}:
  *  patch:
  *      summary: Modificar una carrera
  *      tags: [Career]
  *      parameters:
  *          - $ref: '#/components/parameters/token'
  *          - in: path
- *            name: id
+ *            name: uuid
  *            schema:
  *                 type: string
  *                 format: uuid
@@ -397,11 +396,11 @@ router.get(
  *
  */
 router.patch(
-    "/:id",
+    "/:uuid",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN]),
-        param("id").isUUID("4"),
+        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        param("uuid").isUUID("4"),
         validateFields,
     ],
     careerController.updateCareer

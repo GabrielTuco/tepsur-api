@@ -7,7 +7,6 @@ import { Docente } from "../Teacher/entity/Docente.entity";
 import { Usuario } from "../Auth/entity/Usuario.entity";
 import { Rol } from "../Auth/entity/Rol.entity";
 import { Sede } from "../Sede/entity/Sede.entity";
-import { Permiso } from "../Auth/entity/Permiso.entity";
 import { Administrador } from "../entity/Administrador.entity";
 import { Alumno } from "../Student/entity/Alumno.entity";
 import {
@@ -39,7 +38,6 @@ export const AppDataSource = new DataSource({
         Docente,
         Usuario,
         Rol,
-        Permiso,
         Direccion,
         Sede,
         Carrera,

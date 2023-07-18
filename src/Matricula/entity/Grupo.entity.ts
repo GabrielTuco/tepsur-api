@@ -23,7 +23,7 @@ export class Grupo extends EntityBase {
     @Column({ nullable: true, default: 60 })
     cupos_maximos: number;
 
-    @Column({ type: "varchar" })
+    @Column({ type: "varchar", default: MODALIDAD.PRESENCIAL })
     modalidad: MODALIDAD;
 
     @ManyToOne(() => Horario, (horario) => horario.grupos)
