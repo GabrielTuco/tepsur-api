@@ -12,7 +12,6 @@ export enum TIPO_MATRICULA {
 }
 
 export enum ESTADO_GRUPO {
-    ABIERTO = "abierto",
     EN_CURSO = "en_curso",
     CERRADO = "cerrado",
 }

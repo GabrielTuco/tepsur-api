@@ -1,7 +1,8 @@
-import { Column, Entity, OneToMany } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany } from "typeorm";
 import { EntityBase } from "../../entity";
 import { Grupo } from "./Grupo.entity";
 import { MatriculaModulosModulo } from "./MatriculaModulosModulo";
+import { Carrera } from "./Carrera.entity";
 
 @Entity()
 export class Modulo extends EntityBase {
@@ -16,6 +17,9 @@ export class Modulo extends EntityBase {
 
     @OneToMany(() => Grupo, (grupo) => grupo.modulo)
     grupos: Grupo[];
+
+    @ManyToOne(() => Carrera, (carrera) => carrera.modulos)
+    carrera: Carrera;
 
     @OneToMany(
         () => MatriculaModulosModulo,

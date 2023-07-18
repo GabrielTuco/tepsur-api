@@ -5,6 +5,7 @@ import { CareerDTO } from "../interfaces/dtos";
 import { CareerRepository } from "../interfaces/repositories";
 import { AppDataSource } from "../../db/dataSource";
 import { Sede } from "../../Sede/entity/Sede.entity";
+import { ESTADO_GRUPO } from "../../interfaces/enums";
 
 export class CareerService implements CareerRepository {
     public listBySede = async (sedeUuid: string): Promise<any[]> => {
@@ -37,7 +38,6 @@ export class CareerService implements CareerRepository {
 
     public listAll = async (): Promise<Carrera[]> => {
         try {
-            console.log("list all");
             const carreras = await Carrera.createQueryBuilder("c").getMany();
 
             return carreras;
@@ -50,31 +50,18 @@ export class CareerService implements CareerRepository {
         await queryRunner.connect();
         await queryRunner.startTransaction();
 
-        const {
-            numModulos,
-            nombre,
-            modulos,
-            duracionMeses,
-            tipoCarrera,
-            sedeUuid,
-        } = data;
+        const { nombre, modulos, duracionMeses, tipoCarrera, sedeUuid } = data;
         try {
             const modulosExists: Modulo[] = await Promise.all(
                 modulos.map(async (moduloData) => {
-                    const modulo = await Modulo.findOneBy({
-                        nombre: moduloData.nombre,
-                    });
-                    if (modulo) return modulo;
-                    else {
-                        const newModulo = new Modulo();
-                        newModulo.uuid = uuid();
-                        newModulo.nombre = moduloData.nombre;
-                        newModulo.duracion_semanas = moduloData.duracionSemanas;
-                        newModulo.orden = moduloData.orden;
+                    const newModulo = new Modulo();
+                    newModulo.uuid = uuid();
+                    newModulo.nombre = moduloData.nombre;
+                    newModulo.duracion_semanas = moduloData.duracionSemanas;
+                    newModulo.orden = moduloData.orden;
 
-                        await queryRunner.manager.save(newModulo);
-                        return newModulo;
-                    }
+                    await queryRunner.manager.save(newModulo);
+                    return newModulo;
                 })
             );
             const sede = await Sede.findOne({
@@ -82,11 +69,16 @@ export class CareerService implements CareerRepository {
                 relations: { carreras: true },
             });
 
-            if (!sede) throw new DatabaseError("Sede not found", 404, "");
+            if (!sede)
+                throw new DatabaseError(
+                    "La sede no existe",
+                    404,
+                    "Not found error"
+                );
 
             const newCareer = new Carrera();
             newCareer.uuid = uuid();
-            newCareer.num_modulos = numModulos;
+            newCareer.num_modulos = modulosExists.length;
             newCareer.nombre = nombre;
             newCareer.duracion_meses = duracionMeses;
             newCareer.modulos = modulosExists;
@@ -110,16 +102,19 @@ export class CareerService implements CareerRepository {
 
     public listModules = async (uuid: string): Promise<Modulo[]> => {
         try {
-            const data = await Carrera.createQueryBuilder("c")
-                .leftJoinAndSelect("c.modulos", "modulo")
+            const carrera = await Carrera.createQueryBuilder("c")
+                .innerJoinAndSelect("c.modulos", "m")
                 .where("c.uuid = :uuid and c.estado='activo'", { uuid })
                 .getOne();
 
-            if (!data) {
-                throw new DatabaseError("No se econtro los registros", 404, "");
-            }
+            if (!carrera)
+                throw new DatabaseError(
+                    "No se encontro los registros",
+                    404,
+                    "Not found error"
+                );
 
-            const modules = data!.modulos;
+            const modules = carrera.modulos;
 
             return modules;
         } catch (error) {
@@ -127,12 +122,18 @@ export class CareerService implements CareerRepository {
         }
     };
 
-    //TODO: armar nueva query dependiendo del tipo de carrera retornar los horarios
-    public listHorarios = async (_uuid: string): Promise<Horario[]> => {
+    public listHorarios = async (uuid: string): Promise<Horario[]> => {
         try {
-            const horarios = await Horario.find();
+            const carrera = await Carrera.createQueryBuilder("c")
+                .innerJoinAndSelect("c.grupos", "g")
+                .innerJoinAndSelect("g.horario", "h")
+                .where(`c.uuid=:uuid and g.estado='${ESTADO_GRUPO.EN_CURSO}'`, {
+                    uuid,
+                })
+                .getOne();
 
-            return horarios;
+            const horarios = carrera?.grupos.map((g) => g.horario);
+            return horarios!;
         } catch (error) {
             throw error;
         }

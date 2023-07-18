@@ -11,42 +11,42 @@ import { Sede } from "../../Sede/entity";
 
 @Entity()
 export class Grupo extends EntityBase {
-  @Column()
-  nombre: string;
+    @Column()
+    nombre: string;
 
-  @Column()
-  fecha_inicio: Date;
+    @Column()
+    fecha_inicio: Date;
 
-  @Column({ type: "varchar", default: ESTADO_GRUPO.ABIERTO })
-  estado: ESTADO_GRUPO;
+    @Column({ type: "varchar", default: ESTADO_GRUPO.EN_CURSO })
+    estado: ESTADO_GRUPO;
 
-  @Column({ nullable: true, default: 60 })
-  cupos_maximos: number;
+    @Column({ nullable: true, default: 60 })
+    cupos_maximos: number;
 
-  @Column({ type: "varchar" })
-  modalidad: MODALIDAD;
+    @Column({ type: "varchar" })
+    modalidad: MODALIDAD;
 
-  @ManyToOne(() => Horario, (horario) => horario.grupos)
-  horario: Horario;
+    @ManyToOne(() => Horario, (horario) => horario.grupos)
+    horario: Horario;
 
-  @ManyToOne(() => Carrera, (carrera) => carrera.grupos)
-  carrera: Carrera;
+    @ManyToOne(() => Carrera, (carrera) => carrera.grupos)
+    carrera: Carrera;
 
-  @ManyToOne(() => Docente, (docente) => docente.grupos)
-  docente: Docente;
+    @ManyToOne(() => Docente, (docente) => docente.grupos)
+    docente: Docente;
 
-  @ManyToOne(() => Modulo, (modulo) => modulo.grupos)
-  modulo: Modulo;
+    @ManyToOne(() => Modulo, (modulo) => modulo.grupos)
+    modulo: Modulo;
 
-  @ManyToOne(() => Secretaria, (secretaria) => secretaria.grupos)
-  secretaria: Secretaria;
+    @ManyToOne(() => Secretaria, (secretaria) => secretaria.grupos)
+    secretaria: Secretaria;
 
-  @ManyToOne(() => Sede, (sede) => sede.grupos)
-  sede: Sede;
+    @ManyToOne(() => Sede, (sede) => sede.grupos)
+    sede: Sede;
 
-  @OneToMany(
-    () => MatriculaGruposGrupo,
-    (matriculaGruposGrupo) => matriculaGruposGrupo.matricula
-  )
-  matriculaGruposGrupo: MatriculaGruposGrupo[];
+    @OneToMany(
+        () => MatriculaGruposGrupo,
+        (matriculaGruposGrupo) => matriculaGruposGrupo.matricula
+    )
+    matriculaGruposGrupo: MatriculaGruposGrupo[];
 }
