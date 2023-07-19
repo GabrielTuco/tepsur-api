@@ -21,7 +21,7 @@ export class ScheduleService implements ScheduleRepository {
     }
     public async listAll(): Promise<Horario[]> {
         try {
-            const horarios = await Horario.find();
+            const horarios = await Horario.find({ where: { estado: true } });
 
             return horarios;
         } catch (error) {
@@ -31,7 +31,12 @@ export class ScheduleService implements ScheduleRepository {
     public async findByUuid(uuid: string): Promise<Horario> {
         try {
             const horario = await Horario.findOneBy({ uuid });
-            if (!horario) throw new DatabaseError("Horario not found", 404, "");
+            if (!horario)
+                throw new DatabaseError(
+                    "El horario no existe",
+                    404,
+                    "Not found error"
+                );
 
             return horario;
         } catch (error) {
@@ -46,7 +51,12 @@ export class ScheduleService implements ScheduleRepository {
         try {
             console.log(uuid);
             const horario = await Horario.findOneBy({ uuid });
-            if (!horario) throw new DatabaseError("Horario not found", 404, "");
+            if (!horario)
+                throw new DatabaseError(
+                    "El horario no existe",
+                    404,
+                    "Not found error"
+                );
 
             await Horario.update({ uuid }, data);
 
@@ -57,13 +67,19 @@ export class ScheduleService implements ScheduleRepository {
         }
     }
 
-    public async delete(uuid: string): Promise<void> {
+    public async delete(uuid: string): Promise<Horario> {
         try {
             const horario = await Horario.findOneBy({ uuid });
-            if (!horario) throw new DatabaseError("Horario not found", 404, "");
+            if (!horario)
+                throw new DatabaseError(
+                    "El horario no existe",
+                    404,
+                    "Not found error"
+                );
             horario.estado = false;
             await horario.save();
-            return;
+            await horario.reload();
+            return horario;
         } catch (error) {
             throw error;
         }

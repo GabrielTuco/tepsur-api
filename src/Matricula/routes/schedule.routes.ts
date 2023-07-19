@@ -30,14 +30,14 @@ const scheduleController = new ScheduleController();
  *              horaFin: "11:00"
  *      ScheduleResponse:
  *          properties:
- *              id:
- *                  type: number
- *                  description : El id autogenerado del horario
  *              uuid:
  *                  type: string
  *                  format: uuid
  *              dias:
- *                  type: string
+ *                  type: array
+ *                  items:
+ *                      type: string
+ *                      example: "Lun"
  *                  description: Los dias que esta asignado el horario
  *              hora_inicio:
  *                  type: string

@@ -6,8 +6,8 @@ import { MODALIDAD, ROLES, TIPO_MATRICULA } from "../../interfaces/enums";
 import { body, param } from "express-validator";
 import { validateFields } from "../../middlewares/validateFields";
 import {
-  isAlumnoCorreoValid,
-  isAlumnoDniValid,
+    isAlumnoCorreoValid,
+    isAlumnoDniValid,
 } from "../middlewares/validations";
 
 const router = Router();
@@ -57,6 +57,9 @@ const matriculaController = new MatriculaController();
  *                              type: string
  *                              format: date-time
  *                              description: La fecha de inicio del modulo
+ *                          horarioUuid:
+ *                              type: string
+ *                              format: uuid
  *              secretariaUuid:
  *                  type: string
  *                  format: uuid
@@ -81,15 +84,7 @@ const matriculaController = new MatriculaController();
  *              fechaInicio:
  *                  type: string
  *                  format: date-time
- *                  description:  Fecha de inicio de clases (en caso sea carrera semestral)
- *              modalidad:
- *                  type: string
- *                  enum: [virtual,presencial]
- *                  description: Modalidad en la que se matricula (en caso sea carrera semestral)
- *              horarioUuid:
- *                  type: string
- *                  format: uuid
- *                  description: Horario en el que se matricula (en caso sea carrera semestral)
+ *                  description:  Fecha de inicio de clases
  *      TrasladoMatricula:
  *          properties:
  *              alumno:
@@ -161,63 +156,65 @@ const matriculaController = new MatriculaController();
  *
  */
 router.post(
-  "/",
-  [
-    validateJWT,
-    checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
-    //Datos personales del alumno
-    body("alumno").isObject(),
-    body("alumno.dni").isString().isLength({ min: 8, max: 8 }),
-    body("alumno.dni").custom(isAlumnoDniValid),
-    body("alumno.nombres").isString(),
-    body("alumno.apePaterno").isString(),
-    body("alumno.apeMaterno").isString(),
-    body("alumno.sexo", "Los valores permitidos son: 'm'|'f' ").isIn([
-      "m",
-      "f",
-    ]),
-    body("alumno.edad").isNumeric(),
-    body(
-      "alumno.gradoEstudiosUuid",
-      "El valor debe ser un UUID valido"
-    ).isNumeric(),
-    body("alumno.lugarNacimiento").isString(),
-    body("alumno.celular", "No es un numero de celular valido")
-      .isString()
-      .isLength({ min: 9, max: 9 }),
-    body("alumno.celularReferencia", "No es un numero de celular valido")
-      .optional()
-      .isString()
-      .isLength({ min: 9, max: 9 }),
-    body("alumno.correo", "No es un correo valido").isEmail(),
-    body("alumno.correo").custom(isAlumnoCorreoValid),
-    body("alumno.direccion").isObject(),
-    body("alumno.direccion.direccionExacta").isString(),
-    body("alumno.direccion.distrito").isString(),
-    body("alumno.direccion.provincia").isString(),
-    body("alumno.direccion.departamento").isString(),
-    //Datos academicos
-    body("carreraUuid", "El valor debe ser un UUID valido").isUUID("4"),
-    body("modulos", "Debe ser un array de UUIDS").optional().isArray(),
-    body("modulos.*", "El valor debe ser un UUID valido").optional().isObject(),
-    //TODO: agregar middleware para ver si el horario pertenece a la carrera
-    // body("horarioUuid", "El valor debe ser un UUID valido").optional().isUUID("4"),
-    body(
-      "tipoMatricula",
-      "Los valores aceptados son: 'nuevo'|'reingreso'"
-    ).isIn([TIPO_MATRICULA.NUEVO, TIPO_MATRICULA.REINGRESO]),
-    body("secretariaUuid", "El valor debe ser un UUID valido").isUUID("4"),
-    body("sedeUuid").isUUID("4"),
-    body("fechaInscripcion").isString(),
-    body("fechaInicio").optional().isString(),
-    //Pago de matricula(opcional)
-    body("pagoMatricula").optional().isObject(),
-    body("pagoMatricula.numComprobante").optional().isString(),
-    body("pagoMatricula.formaPagoUuid").optional().isNumeric(),
-    body("pagoMatricula.monto").optional().isNumeric(),
-    validateFields,
-  ],
-  matriculaController.postMatricula
+    "/",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        //Datos personales del alumno
+        body("alumno").isObject(),
+        body("alumno.dni").isString().isLength({ min: 8, max: 8 }),
+        body("alumno.dni").custom(isAlumnoDniValid),
+        body("alumno.nombres").isString(),
+        body("alumno.apePaterno").isString(),
+        body("alumno.apeMaterno").isString(),
+        body("alumno.sexo", "Los valores permitidos son: 'm'|'f' ").isIn([
+            "m",
+            "f",
+        ]),
+        body("alumno.edad").isNumeric(),
+        body(
+            "alumno.gradoEstudiosUuid",
+            "El valor debe ser un UUID valido"
+        ).isNumeric(),
+        body("alumno.lugarNacimiento").isString(),
+        body("alumno.celular", "No es un numero de celular valido")
+            .isString()
+            .isLength({ min: 9, max: 9 }),
+        body("alumno.celularReferencia", "No es un numero de celular valido")
+            .optional()
+            .isString()
+            .isLength({ min: 9, max: 9 }),
+        body("alumno.correo", "No es un correo valido").isEmail(),
+        body("alumno.correo").custom(isAlumnoCorreoValid),
+        body("alumno.direccion").isObject(),
+        body("alumno.direccion.direccionExacta").isString(),
+        body("alumno.direccion.distrito").isString(),
+        body("alumno.direccion.provincia").isString(),
+        body("alumno.direccion.departamento").isString(),
+        //Datos academicos
+        body("carreraUuid", "El valor debe ser un UUID valido").isUUID("4"),
+        body("modulos", "Debe ser un array de UUIDS").optional().isArray(),
+        body("modulos.*", "El valor debe ser un UUID valido")
+            .optional()
+            .isObject(),
+        //TODO: agregar middleware para ver si el horario pertenece a la carrera
+        // body("horarioUuid", "El valor debe ser un UUID valido").optional().isUUID("4"),
+        body(
+            "tipoMatricula",
+            "Los valores aceptados son: 'nuevo'|'reingreso'"
+        ).isIn([TIPO_MATRICULA.NUEVO, TIPO_MATRICULA.REINGRESO]),
+        body("secretariaUuid", "El valor debe ser un UUID valido").isUUID("4"),
+        body("sedeUuid").isUUID("4"),
+        body("fechaInscripcion").isString(),
+        body("fechaInicio").optional().isString(),
+        //Pago de matricula(opcional)
+        body("pagoMatricula").optional().isObject(),
+        body("pagoMatricula.numComprobante").optional().isString(),
+        body("pagoMatricula.formaPagoUuid").optional().isNumeric(),
+        body("pagoMatricula.monto").optional().isNumeric(),
+        validateFields,
+    ],
+    matriculaController.postMatricula
 );
 
 /**
@@ -247,59 +244,59 @@ router.post(
  *
  */
 router.post(
-  "/traslado",
-  [
-    validateJWT,
-    checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+    "/traslado",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
 
-    //Datos personales del alumno
-    body("alumno").isObject(),
-    body("alumno.dni").isString().isLength({ min: 8, max: 8 }),
-    body("alumno.nombres").isString(),
-    body("alumno.apePaterno").isString(),
-    body("alumno.apeMaterno").isString(),
-    body("alumno.sexo", "Los valores permitidos son: 'm'|'f' ").isIn([
-      "m",
-      "f",
-    ]),
-    body("alumno.edad").isNumeric(),
-    body(
-      "alumno.gradoEstudiosUuid",
-      "El valor debe ser un UUID valido"
-    ).isNumeric(),
-    body("alumno.lugarNacimiento").isString(),
-    body("alumno.celular", "No es un numero de celular valido")
-      .isString()
-      .isLength({ min: 9, max: 9 }),
-    body("alumno.correo", "No es un correo valido").isEmail(),
-    body("alumno.direccion").isObject(),
-    body("alumno.direccion.direccionExacta").isString(),
-    body("alumno.direccion.distrito").isString(),
-    body("alumno.direccion.provincia").isString(),
-    body("alumno.direccion.departamento").isString(),
+        //Datos personales del alumno
+        body("alumno").isObject(),
+        body("alumno.dni").isString().isLength({ min: 8, max: 8 }),
+        body("alumno.nombres").isString(),
+        body("alumno.apePaterno").isString(),
+        body("alumno.apeMaterno").isString(),
+        body("alumno.sexo", "Los valores permitidos son: 'm'|'f' ").isIn([
+            "m",
+            "f",
+        ]),
+        body("alumno.edad").isNumeric(),
+        body(
+            "alumno.gradoEstudiosUuid",
+            "El valor debe ser un UUID valido"
+        ).isNumeric(),
+        body("alumno.lugarNacimiento").isString(),
+        body("alumno.celular", "No es un numero de celular valido")
+            .isString()
+            .isLength({ min: 9, max: 9 }),
+        body("alumno.correo", "No es un correo valido").isEmail(),
+        body("alumno.direccion").isObject(),
+        body("alumno.direccion.direccionExacta").isString(),
+        body("alumno.direccion.distrito").isString(),
+        body("alumno.direccion.provincia").isString(),
+        body("alumno.direccion.departamento").isString(),
 
-    //Datos academicos
-    body("carreraUuid", "El valor debe ser un UUID valido").isUUID("4"),
-    body("grupoUuid", "El valor debe ser un UUID valido").isUUID("4"),
-    body("moduloActualUuid", "El valor debe ser un UUID valido")
-      .optional()
-      .isUUID("4"),
-    body("modulosCompletados", "Debe ser un array de UUIDS").isArray(),
-    body("modulosCompletados.*", "El valor debe ser un UUID valido")
-      .optional()
-      .isUUID("4"),
-    body("secretariaUuid", "El valor debe ser un UUID valido").isUUID("4"),
-    body("sedeUuid").isUUID("4"),
-    body("fechaInicio").isString(),
+        //Datos academicos
+        body("carreraUuid", "El valor debe ser un UUID valido").isUUID("4"),
+        body("grupoUuid", "El valor debe ser un UUID valido").isUUID("4"),
+        body("moduloActualUuid", "El valor debe ser un UUID valido")
+            .optional()
+            .isUUID("4"),
+        body("modulosCompletados", "Debe ser un array de UUIDS").isArray(),
+        body("modulosCompletados.*", "El valor debe ser un UUID valido")
+            .optional()
+            .isUUID("4"),
+        body("secretariaUuid", "El valor debe ser un UUID valido").isUUID("4"),
+        body("sedeUuid").isUUID("4"),
+        body("fechaInicio").isString(),
 
-    //Pago de matricula
-    body("pagoMatricula").isObject(),
-    body("pagoMatricula.numComprobante").isString(),
-    body("pagoMatricula.formaPagoUuid").isNumeric(),
-    body("pagoMatricula.monto").isNumeric(),
-    validateFields,
-  ],
-  matriculaController.postTrasladoMatricula
+        //Pago de matricula
+        body("pagoMatricula").isObject(),
+        body("pagoMatricula.numComprobante").isString(),
+        body("pagoMatricula.formaPagoUuid").isNumeric(),
+        body("pagoMatricula.monto").isNumeric(),
+        validateFields,
+    ],
+    matriculaController.postTrasladoMatricula
 );
 
 /**
@@ -339,13 +336,13 @@ router.post(
  *
  */
 router.post(
-  "/upload-payment-document/:id",
-  [
-    validateJWT,
-    checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
-    param("id").isUUID("4"),
-  ],
-  matriculaController.patchUploadPaidDocument
+    "/upload-payment-document/:id",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        param("id").isUUID("4"),
+    ],
+    matriculaController.patchUploadPaidDocument
 );
 
 /**
@@ -380,17 +377,17 @@ router.post(
  *
  */
 router.patch(
-  "/update-pago/:id",
-  [
-    validateJWT,
-    checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
-    param("id", "Debe ser un ID valido").isUUID("4"),
-    body("numComprobante").isString(),
-    body("formaPagoUuid").isUUID("4"),
-    body("monto").isNumeric(),
-    validateFields,
-  ],
-  matriculaController.patchPagoMatricula
+    "/update-pago/:id",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        param("id", "Debe ser un ID valido").isUUID("4"),
+        body("numComprobante").isString(),
+        body("formaPagoUuid").isUUID("4"),
+        body("monto").isNumeric(),
+        validateFields,
+    ],
+    matriculaController.patchPagoMatricula
 );
 
 /**
@@ -425,14 +422,14 @@ router.patch(
  *
  */
 router.post(
-  "/grado-estudio",
-  [
-    validateJWT,
-    checkAuthRole([ROLES.ADMIN]),
-    body("descripcion").exists(),
-    validateFields,
-  ],
-  matriculaController.postGradoEstudio
+    "/grado-estudio",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ADMIN]),
+        body("descripcion").exists(),
+        validateFields,
+    ],
+    matriculaController.postGradoEstudio
 );
 
 /**
@@ -487,22 +484,22 @@ router.post(
  *
  */
 router.put(
-  "/set-modules-to-matricula/:matriculaUuid",
-  [
-    validateJWT,
-    checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
-    param("matriculaUuid").isUUID("4"),
-    body("modulosMatricula").isArray(),
-    body("modulosMatricula.*").isObject(),
-    body("modulosMatricula.*.uuid").isUUID("4"),
-    body("modulosMatricula.*.modalidad").isIn([
-      MODALIDAD.VIRTUAL,
-      MODALIDAD.PRESENCIAL,
-    ]),
-    body("moudlosMatricula.*.fechaInicio").isString(),
-    validateFields,
-  ],
-  matriculaController.putSetModulesToMatricula
+    "/set-modules-to-matricula/:matriculaUuid",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        param("matriculaUuid").isUUID("4"),
+        body("modulosMatricula").isArray(),
+        body("modulosMatricula.*").isObject(),
+        body("modulosMatricula.*.uuid").isUUID("4"),
+        body("modulosMatricula.*.modalidad").isIn([
+            MODALIDAD.VIRTUAL,
+            MODALIDAD.PRESENCIAL,
+        ]),
+        body("moudlosMatricula.*.fechaInicio").isString(),
+        validateFields,
+    ],
+    matriculaController.putSetModulesToMatricula
 );
 
 /**
@@ -535,15 +532,15 @@ router.put(
  *
  */
 router.get(
-  "/validate-dni-1/:dni",
-  [
-    validateJWT,
-    checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
-    param("dni", "Debe ser un DNI valido")
-      .isString()
-      .isLength({ min: 8, max: 8 }),
-  ],
-  matriculaController.getValidateDniBasic
+    "/validate-dni-1/:dni",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        param("dni", "Debe ser un DNI valido")
+            .isString()
+            .isLength({ min: 8, max: 8 }),
+    ],
+    matriculaController.getValidateDniBasic
 );
 
 /**
@@ -576,9 +573,9 @@ router.get(
  *
  */
 router.get(
-  "/grado-estudio",
-  [validateJWT],
-  matriculaController.getGradosEstudio
+    "/grado-estudio",
+    [validateJWT],
+    matriculaController.getGradosEstudio
 );
 
 /**
@@ -608,14 +605,14 @@ router.get(
  *
  */
 router.get(
-  "/generate-pdf/:id",
-  [
-    //validateJWT,
-    //checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
-    param("id", "Debe ser un ID valido").isUUID("4"),
-    validateFields,
-  ],
-  matriculaController.getGeneratedPDF
+    "/generate-pdf/:id",
+    [
+        //validateJWT,
+        //checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        param("id", "Debe ser un ID valido").isUUID("4"),
+        validateFields,
+    ],
+    matriculaController.getGeneratedPDF
 );
 
 /**
@@ -653,15 +650,15 @@ router.get(
  *
  */
 router.get(
-  "/",
-  [
-    //validateJWT,
-    //checkAuthRole([ROLES.ADMIN,ROLES.SECRE]),
-    //param("year").isNumeric(),
-    //param("month").optional().isNumeric(),
-    validateFields,
-  ],
-  matriculaController.getList
+    "/",
+    [
+        //validateJWT,
+        //checkAuthRole([ROLES.ADMIN,ROLES.SECRE]),
+        //param("year").isNumeric(),
+        //param("month").optional().isNumeric(),
+        validateFields,
+    ],
+    matriculaController.getList
 );
 
 /**
@@ -693,9 +690,9 @@ router.get(
  *
  */
 router.get(
-  "/utilidades/departamentos",
-  [validateJWT],
-  matriculaController.getDepartments
+    "/utilidades/departamentos",
+    [validateJWT],
+    matriculaController.getDepartments
 );
 
 /**
@@ -733,9 +730,9 @@ router.get(
  *
  */
 router.get(
-  "/utilidades/provincias/:departamentoId",
-  [validateJWT, param("departamentoId").exists(), validateFields],
-  matriculaController.getProvinces
+    "/utilidades/provincias/:departamentoId",
+    [validateJWT, param("departamentoId").exists(), validateFields],
+    matriculaController.getProvinces
 );
 
 /**
@@ -779,14 +776,14 @@ router.get(
  *
  */
 router.get(
-  "/utilidades/distritos/:departamentoId/:provinciaId",
-  [
-    validateJWT,
-    param("departamentoId").exists(),
-    param("provinciaId").exists(),
-    validateFields,
-  ],
-  matriculaController.getDistricts
+    "/utilidades/distritos/:departamentoId/:provinciaId",
+    [
+        validateJWT,
+        param("departamentoId").exists(),
+        param("provinciaId").exists(),
+        validateFields,
+    ],
+    matriculaController.getDistricts
 );
 
 /**

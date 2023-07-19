@@ -1,6 +1,6 @@
 import { v4 as uuid } from "uuid";
 import { Carrera, Grupo, Matricula, MatriculaGruposGrupo } from "../entity";
-import { GroupDTO } from "../interfaces/dtos";
+import { GroupDTO, GrupoWithStudents } from "../interfaces/dtos";
 import { GroupRepository } from "../interfaces/repositories";
 import { Horario } from "../entity/Horario.entity";
 import { DatabaseError } from "../../errors/DatabaseError";
@@ -191,16 +191,17 @@ export class GroupService implements GroupRepository {
             const grupo = await Grupo.findOneBy({ uuid });
             if (!grupo) throw new DatabaseError("Grupo no encontrado", 404, "");
 
-            const studentsByGrupo = await MatriculaGruposGrupo.find({
-                where: {
-                    grupoUuid: grupo.uuid,
-                },
-                relations: { matricula: true },
-            });
+            const studentsByGrupo =
+                await MatriculaGruposGrupo.createQueryBuilder("mg")
+                    .innerJoinAndSelect("mg.matricula", "m")
+                    .innerJoinAndSelect("m.alumno", "a")
+                    .where("mg.grupoUuid=:uuid", { uuid })
+                    .getMany();
 
             const students = studentsByGrupo.map(
                 (student) => student.matricula
             );
+            console.log(students);
 
             return students;
         } catch (error) {
@@ -208,7 +209,7 @@ export class GroupService implements GroupRepository {
         }
     };
 
-    public findByUuid = async (uuid: string): Promise<Grupo> => {
+    public findByUuid = async (uuid: string): Promise<GrupoWithStudents> => {
         try {
             const group = await Grupo.createQueryBuilder("g")
                 .innerJoinAndSelect("g.docente", "d")
@@ -223,7 +224,8 @@ export class GroupService implements GroupRepository {
 
             if (!group) throw new DatabaseError("Grupo no encontrado", 404, "");
 
-            return group;
+            const students = await this.listEstudents(group.uuid);
+            return { ...group, students };
         } catch (error) {
             throw error;
         }

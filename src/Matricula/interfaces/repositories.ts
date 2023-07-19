@@ -14,6 +14,7 @@ import {
     AlumnoData,
     CareerDTO,
     GroupDTO,
+    GrupoWithStudents,
     MatriculaDTO,
     ModuleDTO,
     ModuloMatriculaDTO,
@@ -50,8 +51,8 @@ export interface GroupRepository {
     register(data: GroupDTO): Promise<Grupo>;
     addStudent(matriculaUuid: string, grupoUuid: string): Promise<Grupo>;
     listGroups(): Promise<Grupo[]>;
-    listEstudents(uuid: string): Promise<any>; //TODO Debe retornar un arreglo de matriculas o alumnos
-    findByUuid(uuid: string): Promise<Grupo>;
+    listEstudents(uuid: string): Promise<Matricula[]>; //TODO Debe retornar un arreglo de matriculas o alumnos
+    findByUuid(uuid: string): Promise<GrupoWithStudents>;
     findByName(name: string): Promise<Grupo>;
 }
 
@@ -60,7 +61,7 @@ export interface ScheduleRepository {
     listAll(): Promise<Horario[]>;
     findByUuid(uuid: string): Promise<Horario>;
     update(uuid: string, data: Partial<Horario>): Promise<Horario>;
-    delete(uuid: string): Promise<void>;
+    delete(uuid: string): Promise<Horario>;
     //listPerCareer(carreraUuid: string): Promise<Horario[]>;
 }
 

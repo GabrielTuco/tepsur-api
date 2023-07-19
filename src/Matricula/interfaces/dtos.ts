@@ -4,6 +4,7 @@ import {
     TIPO_CARRERA,
     TIPO_MATRICULA,
 } from "../../interfaces/enums";
+import { Grupo, Horario, Matricula } from "../entity";
 
 export interface ModuleDTO {
     nombre: string;
@@ -37,6 +38,9 @@ export interface GroupDTO {
     moduloUuid: string;
     responsableUuid: string;
 }
+export interface GrupoWithStudents extends Partial<Grupo> {
+    students: Matricula[];
+}
 
 export interface ScheduleDTO {
     // turno: Turno;
@@ -55,7 +59,12 @@ export interface ModuloMatriculaDTO {
 export interface MatriculaDTO {
     alumno: AlumnoData;
     carreraUuid: string;
-    modulos: { uuid: string; modalidad: MODALIDAD; fechaInicio: Date }[];
+    modulos: {
+        uuid: string;
+        modalidad: MODALIDAD;
+        fechaInicio: Date;
+        horarioUuid: string;
+    }[];
     secretariaUuid: string;
     sedeUuid: string;
     pagoMatricula: PagoMatriculaData;
@@ -63,7 +72,6 @@ export interface MatriculaDTO {
     tipoMatricula: TIPO_MATRICULA;
     fechaInicio: Date;
     modalidad: MODALIDAD;
-    horarioUuid: string;
 }
 
 export interface TrasladoMatriculaDTO {
