@@ -605,6 +605,17 @@ router.get(
  *
  */
 router.get(
+    "/generate-ficha/:id",
+    [
+        //validateJWT,
+        //checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        param("id", "Debe ser un ID valido").isUUID("4"),
+        validateFields,
+    ],
+    matriculaController.getGenerateFichaMatricula
+);
+
+router.get(
     "/generate-pdf/:id",
     [
         //validateJWT,
@@ -612,7 +623,7 @@ router.get(
         param("id", "Debe ser un ID valido").isUUID("4"),
         validateFields,
     ],
-    matriculaController.getGeneratedPDF
+    matriculaController.getGenerateFichaMatriculaPDF
 );
 
 /**

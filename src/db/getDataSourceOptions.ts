@@ -1,7 +1,7 @@
 import yargs from "yargs";
 
 //Yargs config
-const argv = yargs(process.argv.slice(2))
+export const argv = yargs(process.argv.slice(2))
     .options({
         develop: { type: "boolean" },
     })

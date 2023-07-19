@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>TEst</title>
+        <link rel="stylesheet" href="/css/main.css" />
+    </head>
+    <body>
+        <div class="container">
+            <div class="logo-container">
+                <img src="/imgs/logo_tepsur.png" alt="logo_tepsur" />
+            </div>
+            <div class="title"><h2>FICHA DE MATRICULA</h2></div>
+            <div class="foto">
+                <span>FOTO</span>
+            </div>
+            <!-- Datos del estudiante -->
+            <div>
+                <span id="year"></span>
+            </div>
+            <table border="1">
+                <tr>
+                    <td><b>Apellido Paterno</b></td>
+                    <td><b>Apellido Materno</b></td>
+                    <td><b>Nombres</b></td>
+                    <td colspan="2"><b>Sexo</b></td>
+                </tr>
+                <tr>
+                    <td><%= alumno.ape_paterno %></td>
+                    <td><%= alumno.ape_materno %></td>
+                    <td><%= alumno.nombres %></td>
+                    <td><%= alumno.sexo.toUpperCase() %></td>
+                </tr>
+                <tr>
+                    <td><b>Direccion: (Av,Jr,Calle)</b></td>
+                    <td colspan="3">
+                        <%= alumno.direccion.direccion_exacta %>
+                    </td>
+                </tr>
+                <tr>
+                    <td><b>Distrito</b></td>
+                    <td><b>Provincia</b></td>
+                    <td colspan="2"><b>Departamento</b></td>
+                </tr>
+                <tr>
+                    <td><%= alumno.direccion.distrito %></td>
+                    <td><%= alumno.direccion.provincia %></td>
+                    <td colspan="3"><%= alumno.direccion.departamento %></td>
+                </tr>
+            </table>
+            <table border="1">
+                <tr>
+                    <td><b>Edad</b></td>
+                    <td><b>Grado instruccion</b></td>
+                    <td><b>Documento de identidad</b></td>
+                </tr>
+                <tr>
+                    <td><%= alumno.edad %></td>
+                    <td><%= alumno.grado_estudios.descripcion %></td>
+                    <td><%= alumno.dni %></td>
+                </tr>
+                <tr>
+                    <td><b>Lugar de residencia</b></td>
+                    <td><b>Celular</b></td>
+                    <td><b>Correo</b></td>
+                </tr>
+                <tr>
+                    <td>Arequipa(falta)</td>
+                    <td><%= alumno.celular %></td>
+                    <td><%= alumno.correo %></td>
+                </tr>
+            </table>
+
+            <table border="1">
+                <tr>
+                    <td><b>Carrera</b></td>
+                    <td colspan="3"><%= carrera.nombre %></td>
+                </tr>
+                <tr>
+                    <td><b>Sede</b></td>
+                    <td colspan="3"><%= sede.nombre %></td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <table border="1">
+                            <tr>
+                                <td><b>Modulo</b></td>
+                                <td><b>Modalidad</b></td>
+                                <td><b>Horario</b></td>
+                                <td><b>Fecha inicio</b></td>
+                            </tr>
+                            <% matriculaModulosModulo.forEach(e => { %>
+                            <tr>
+                                <td><%= e.modulo.nombre %></td>
+                                <td><%= e.modalidad %></td>
+                                <td>
+                                    <%= e.horario.hora_inicio + " " +
+                                    e.horario.hora_fin %>
+                                </td>
+                                <td>
+                                    <%= new
+                                    Date(e.fecha_inicio).toLocaleString().split(",")[0]
+                                    %>
+                                </td>
+                            </tr>
+                            <% }) %>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4"><b>Pago de matricula</b></td>
+                </tr>
+                <tr>
+                    <td><b>Nro comprobante</b></td>
+                    <td><b>Forma de pago</b></td>
+                    <td><b>Monto</b></td>
+                    <td><b>Hora</b></td>
+                </tr>
+                <tr>
+                    <td><%= pagoMatricula.num_comprobante %></td>
+                    <td><%= pagoMatricula.forma_pago.description %></td>
+                    <td>S/. <%= pagoMatricula.monto %></td>
+                    <td>13:50(Falta)</td>
+                </tr>
+            </table>
+            <div class="firma-container">
+                <div class="firma">Estudiante</div>
+                <div class="firma">Director</div>
+                <div class="firma">Coordinador</div>
+            </div>
+        </div>
+        <script>
+            const anio = document.getElementById("year");
+            year.innerText = `Año: ${new Date().getFullYear()}`;
+        </script>
+    </body>
+</html>

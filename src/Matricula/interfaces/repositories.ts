@@ -88,11 +88,11 @@ export interface MatriculaRepository {
         newDireccionAlumno: Direccion,
         newUserAlumno: Usuario
     ): Promise<Alumno>;
-    generatePDF(
+    matriculaDataForPDF(
         uuid: string,
         doc: PDFKit.PDFDocument,
         stream: Response<any, Record<string, any>>
-    ): Promise<any>;
+    ): Promise<Matricula>;
     updatePagoMatricula(
         uuid: string,
         data: PagoMatriculaData

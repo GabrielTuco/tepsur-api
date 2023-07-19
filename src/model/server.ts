@@ -87,6 +87,8 @@ class Server implements ServerBase {
 
         //this.connectDB();
         this.middlewares();
+
+        //Routes
         this.routes();
     }
     get getApp() {
@@ -117,6 +119,7 @@ class Server implements ServerBase {
         this.app.use(express.json());
 
         //Public folder
+        this.app.set("view engine", "ejs");
         this.app.use(express.static("public"));
 
         this.app.use(morgan("dev"));

@@ -1,0 +1,74 @@
+* {
+    font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+        "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+}
+
+.container {
+    width: 700px;
+}
+
+.logo-container img {
+    width: 250px;
+}
+
+.title {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.foto {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    border: 0.5px solid gray;
+    width: 100px;
+    height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+table tr td {
+    padding: 5px 8px;
+    font-size: 15px;
+}
+
+table tr {
+    height: 30px;
+}
+
+table tr td table {
+    margin: 10px 0;
+}
+
+.firma-container {
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-around;
+    height: 120px;
+    padding: 10px;
+    margin-top: 50px;
+}
+.firma-container .firma {
+    width: 180px;
+    height: 30px;
+    border-top: 2px solid black;
+    display: flex;
+    justify-content: center;
+}
+
+.firma:nth-child(2) {
+    margin-top: 50px;
+}

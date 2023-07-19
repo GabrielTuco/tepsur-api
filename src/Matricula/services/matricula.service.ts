@@ -720,31 +720,35 @@ export class MatriculaService implements MatriculaRepository {
         }
     };
 
-    public generatePDF = async (
-        uuid: string,
-        doc: PDF,
-        stream: Response<any, Record<string, any>>
-    ): Promise<any> => {
+    public matriculaDataForPDF = async (uuid: string): Promise<any> => {
         try {
             const data = await Matricula.createQueryBuilder("m")
                 .innerJoinAndSelect("m.carrera", "c")
-                .innerJoinAndSelect("m.modulo", "mo")
                 .innerJoinAndSelect("m.alumno", "a")
                 .innerJoinAndSelect("a.direccion", "d")
                 .innerJoinAndSelect("a.grado_estudios", "ge")
-                .innerJoinAndSelect("m.grupo", "g")
-                .innerJoinAndSelect("g.horario", "h")
                 .innerJoinAndSelect("m.sede", "s")
                 .leftJoinAndSelect("m.pagoMatricula", "p")
                 .innerJoinAndSelect("p.forma_pago", "f")
                 .where(`m.uuid= :uuid`, { uuid })
                 .getOne();
-            if (!data) throw new DatabaseError("Matricula not found", 500, "");
 
-            doc.on("data", (data) => stream.write(data));
-            doc.on("end", () => stream.end());
+            const matriculaModulosModulo =
+                await MatriculaModulosModulo.createQueryBuilder("mm")
+                    .innerJoinAndSelect("mm.modulo", "mo")
+                    .innerJoin("mm.matricula", "ma")
+                    .innerJoinAndSelect("mm.horario", "h")
+                    .where("ma.uuid=:uuid", { uuid: data?.uuid })
+                    .getMany();
 
-            await generateFichaMatricula(data, doc);
+            if (!data)
+                throw new DatabaseError(
+                    "La matricula no existe",
+                    404,
+                    "Not found error"
+                );
+
+            return { ...data, matriculaModulosModulo };
         } catch (error) {
             throw error;
         }
