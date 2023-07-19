@@ -5,7 +5,6 @@ import { CareerDTO } from "../interfaces/dtos";
 import { CareerRepository } from "../interfaces/repositories";
 import { AppDataSource } from "../../db/dataSource";
 import { Sede } from "../../Sede/entity/Sede.entity";
-import { ESTADO_GRUPO } from "../../interfaces/enums";
 
 export class CareerService implements CareerRepository {
     public listBySede = async (sedeUuid: string): Promise<any[]> => {
@@ -13,8 +12,8 @@ export class CareerService implements CareerRepository {
             const sede = await Sede.find({ where: { uuid: sedeUuid } });
 
             const sedeExists = await Sede.createQueryBuilder("s")
-                .innerJoinAndSelect("s.carreras", "c")
-                .innerJoinAndSelect("c.modulos", "m")
+                .leftJoinAndSelect("s.carreras", "c")
+                .leftJoinAndSelect("c.modulos", "m")
                 .where("s.uuid=:uuid", { uuid: sedeUuid })
                 .getOne();
 

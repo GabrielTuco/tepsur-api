@@ -86,7 +86,7 @@ router.post(
         validateJWT,
         checkAuthRole([ROLES.ADMIN]),
         body(["dias"], "Este campo es obligatorio").isArray(),
-        body(["horaInicio", "horaFin"], "Debe ser un numero").isString(),
+        body(["horaInicio", "horaFin"], "Debe ser un string").isString(),
         validateFields,
     ],
     scheduleController.postSchedule
@@ -116,7 +116,7 @@ router.post(
  */
 router.get(
     "/",
-    [validateJWT, checkAuthRole([ROLES.ADMIN])],
+    [validateJWT, checkAuthRole([ROLES.ADMIN, ROLES.SECRE])],
     scheduleController.getAll
 );
 
