@@ -42,7 +42,7 @@ const studentController = new StudentController(studentService);
  *              gradoEstudiosUuid:
  *                  type: number
  *                  description: Grado de estudios del almuno
- *              lugarNacimiento:
+ *              lugarResidencia:
  *                  type: string
  *                  description: Lugar de nacimiento
  *              celular:

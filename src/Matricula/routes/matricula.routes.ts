@@ -176,7 +176,7 @@ router.post(
             "alumno.gradoEstudiosUuid",
             "El valor debe ser un UUID valido"
         ).isNumeric(),
-        body("alumno.lugarNacimiento").isString(),
+        body("alumno.lugarResidencia").isString(),
         body("alumno.celular", "No es un numero de celular valido")
             .isString()
             .isLength({ min: 9, max: 9 }),
