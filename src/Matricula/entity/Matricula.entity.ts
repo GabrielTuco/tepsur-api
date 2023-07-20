@@ -1,10 +1,10 @@
 import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-  OneToOne,
+    Column,
+    Entity,
+    JoinColumn,
+    ManyToOne,
+    OneToMany,
+    OneToOne,
 } from "typeorm";
 import { EntityBase } from "../../entity";
 import { Carrera } from "./Carrera.entity";
@@ -20,50 +20,46 @@ import { Horario } from "./Horario.entity";
 
 @Entity()
 export class Matricula extends EntityBase {
-  @ManyToOne(() => Carrera, (carrera) => carrera.matriculas)
-  carrera: Carrera;
+    @ManyToOne(() => Carrera, (carrera) => carrera.matriculas)
+    carrera: Carrera;
 
-  @OneToOne(() => Alumno)
-  @JoinColumn()
-  alumno: Alumno;
+    @ManyToOne(() => Alumno, (alumno) => alumno.matriculas)
+    alumno: Alumno;
 
-  @OneToMany(
-    () => MatriculaGruposGrupo,
-    (matriculaGruposGrupo) => matriculaGruposGrupo.matricula
-  )
-  matriculaGruposGrupo: MatriculaGruposGrupo[];
+    @OneToMany(
+        () => MatriculaGruposGrupo,
+        (matriculaGruposGrupo) => matriculaGruposGrupo.matricula
+    )
+    matriculaGruposGrupo: MatriculaGruposGrupo[];
 
-  @OneToMany(
-    () => MatriculaModulosModulo,
-    (matriculaModulosModulo) => matriculaModulosModulo.matricula
-  )
-  matriculaModulosModulo: MatriculaModulosModulo[];
+    @OneToMany(
+        () => MatriculaModulosModulo,
+        (matriculaModulosModulo) => matriculaModulosModulo.matricula
+    )
+    matriculaModulosModulo: MatriculaModulosModulo[];
 
-  @ManyToOne(() => Secretaria, (secretaria) => secretaria.matriculas)
-  secretaria: Secretaria;
+    @ManyToOne(() => Secretaria, (secretaria) => secretaria.matriculas)
+    secretaria: Secretaria;
 
-  @ManyToOne(() => Sede, (sede) => sede.matriculas)
-  sede: Sede;
+    @ManyToOne(() => Sede, (sede) => sede.matriculas)
+    sede: Sede;
 
-  @OneToOne(() => PagoMatricula, { nullable: true })
-  @JoinColumn()
-  pagoMatricula: PagoMatricula;
+    @OneToOne(() => PagoMatricula, { nullable: true })
+    @JoinColumn()
+    pagoMatricula: PagoMatricula;
 
-  @OneToMany(() => Pension, (pension) => pension.matricula)
-  pensiones: Pension[];
+    @OneToMany(() => Pension, (pension) => pension.matricula)
+    pensiones: Pension[];
 
-  @Column()
-  fecha_inscripcion: Date;
+    @Column()
+    fecha_inscripcion: Date;
 
-  @Column({ type: "varchar", nullable: true })
-  tipo_matricula: TIPO_MATRICULA;
+    @Column({ type: "varchar", nullable: true })
+    tipo_matricula: TIPO_MATRICULA;
 
-  @Column({ nullable: true })
-  fecha_inicio: Date;
+    @Column({ nullable: true })
+    fecha_inicio: Date;
 
-  @Column({ type: "varchar", nullable: true })
-  modalidad: MODALIDAD;
-
-  @ManyToOne(() => Horario, (horario) => horario.matriculas, { nullable: true })
-  horario: Horario;
+    @Column({ type: "varchar", nullable: true })
+    modalidad: MODALIDAD;
 }

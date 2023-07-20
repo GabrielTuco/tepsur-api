@@ -13,6 +13,7 @@ import { Docente } from "../../Teacher/entity/Docente.entity";
 import { Secretaria } from "../../Secretary/entity/Secretaria.entity";
 import { Carrera, Grupo, Matricula } from "../../Matricula/entity";
 import { Administrador } from "../../entity";
+import { MatriculaEspecializacion } from "../../Especializacion/entity/MatriculaEspecializacion.entity";
 
 @Entity()
 export class Sede extends EntityBase {
@@ -44,4 +45,10 @@ export class Sede extends EntityBase {
 
     @OneToMany(() => Matricula, (matricula) => matricula.sede)
     matriculas: Matricula[];
+
+    @OneToMany(
+        () => MatriculaEspecializacion,
+        (matriculaEspe) => matriculaEspe.sede
+    )
+    matriculas_especializacion: MatriculaEspecializacion[];
 }
