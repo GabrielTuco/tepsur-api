@@ -21,6 +21,7 @@ import adminRoutes from "../routes/admin.routes";
 import userRoutes from "../Auth/routes/user.routes";
 import sedeRoutes from "../Sede/routes/sede.routes";
 import studentRoutes from "../Student/routes/student.routes";
+import especializacionRoutes from "../Especializacion/routes/especializacion.routes";
 import {
     careerRoutes,
     groupRoutes,
@@ -48,6 +49,7 @@ interface Paths {
     schedule: string;
     group: string;
     matricula: string;
+    especializacion: string;
     metodoPago: string;
     tarifaPension: string;
 }
@@ -74,6 +76,7 @@ class Server implements ServerBase {
             schedule: "/api/schedule",
             group: "/api/group",
             matricula: "/api/matricula",
+            especializacion: "/api/especializacion",
             metodoPago: "/api/metodo-pago",
             tarifaPension: "/api/tarifa-pension",
         }
@@ -156,6 +159,7 @@ class Server implements ServerBase {
         this.app.use(this.paths.schedule, scheduleRoutes);
         this.app.use(this.paths.group, groupRoutes);
         this.app.use(this.paths.matricula, matriculaRoutes);
+        this.app.use(this.paths.especializacion, especializacionRoutes);
         this.app.use(this.paths.metodoPago, metodoPagoRoutes);
         this.app.use(this.paths.student, studentRoutes);
         this.app.use(this.paths.tarifaPension, tarifaPensionCarreraRoutes);

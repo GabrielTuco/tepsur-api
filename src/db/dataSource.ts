@@ -49,6 +49,7 @@ export const AppDataSource = new DataSource({
         Especializacion,
         MatriculaGruposGrupo,
         MatriculaModulosModulo,
+        Especializacion,
         PagoMatricula,
         MetodoPago,
         Pension,

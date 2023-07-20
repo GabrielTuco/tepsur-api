@@ -1,9 +1,6 @@
-import { Response } from "express";
 import { v4 as uuid } from "uuid";
-import PDF from "pdfkit-table";
 import fileUpload from "express-fileupload";
 import moment from "moment";
-
 import { Alumno } from "../../Student/entity/Alumno.entity";
 import {
     Carrera,
@@ -281,7 +278,6 @@ export class MatriculaService implements MatriculaRepository {
     public trasladoAlumno = async (
         data: TrasladoMatriculaDTO
     ): Promise<Matricula> => {
-        //todo: ver como registrar el modulo que va a llevar el causa
         const queryRunner = AppDataSource.createQueryRunner();
         await queryRunner.connect();
         await queryRunner.startTransaction();

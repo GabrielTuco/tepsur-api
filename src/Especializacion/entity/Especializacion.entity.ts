@@ -1,28 +1,17 @@
-import { Column, Entity, OneToOne } from "typeorm";
+import { Column, Entity } from "typeorm";
 import { EntityBase } from "../../entity";
-import { Alumno } from "../../Student/entity/Alumno.entity";
-import { Docente } from "../../Teacher/entity/Docente.entity";
-import { Horario, Modulo } from "../../Matricula/entity";
 
 @Entity()
 export class Especializacion extends EntityBase {
+    @Column()
+    nombre: string;
 
-  @OneToOne(() => Alumno)
-  alumno: Alumno;
+    @Column()
+    duracion_semanas: number;
 
-  @OneToOne(() => Docente)
-  docente: Docente;
+    @Column()
+    precio: number;
 
-  @OneToOne(() => Modulo)
-  modulo: Modulo;
-
-  @OneToOne(() => Horario)
-  horario: Horario;
-
-  @Column()
-  fecha_inicio: Date;
-
-  @Column({ default: 'activo' }) //activo | iniciado | terminado
-  estado: string;
-
+    @Column({ default: true })
+    estado: boolean;
 }
