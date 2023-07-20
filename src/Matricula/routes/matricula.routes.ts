@@ -3,7 +3,7 @@ import { MatriculaController } from "../controllers/matricula.controller";
 import { validateJWT } from "../../middlewares/validateJWT";
 import { checkAuthRole } from "../../middlewares/checkAuthRole";
 import { MODALIDAD, ROLES, TIPO_MATRICULA } from "../../interfaces/enums";
-import { body, param } from "express-validator";
+import { body, param, query } from "express-validator";
 import { validateFields } from "../../middlewares/validateFields";
 import {
     isAlumnoCorreoValid,
@@ -580,7 +580,7 @@ router.get(
 
 /**
  * @swagger
- * /matricula/generate-pdf/{id}:
+ * /matricula/generate-ficha/{id}:
  *  get:
  *      summary: PDF de ficha de matricula
  *      tags: [Matricula]
@@ -663,10 +663,10 @@ router.get(
 router.get(
     "/",
     [
-        //validateJWT,
-        //checkAuthRole([ROLES.ADMIN,ROLES.SECRE]),
-        //param("year").isNumeric(),
-        //param("month").optional().isNumeric(),
+        validateJWT,
+        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        query("year").isNumeric(),
+        query("month").optional().isNumeric(),
         validateFields,
     ],
     matriculaController.getList
