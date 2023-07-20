@@ -1,17 +1,44 @@
-import puppeteer from "puppeteer";
+import puppeteer, { Browser } from "puppeteer";
+import yargs from "yargs";
+
+export const argv = yargs(process.argv.slice(2))
+    .options({
+        develop: { type: "boolean" },
+    })
+    .parseSync();
 
 export async function generatePDF({ url }: { url: string }) {
-    const browser = await puppeteer.launch({
-        headless: "new",
-        defaultViewport: {
-            width: 500,
-            height: 750,
-            deviceScaleFactor: 1,
-            isMobile: true,
-            hasTouch: false,
-            isLandscape: false,
-        },
-    });
+    let browser: Browser;
+
+    if (!!argv.develop) {
+        console.log("dev");
+        browser = await puppeteer.launch({
+            headless: "new",
+            defaultViewport: {
+                width: 500,
+                height: 750,
+                deviceScaleFactor: 1,
+                isMobile: true,
+                hasTouch: false,
+                isLandscape: false,
+            },
+        });
+    } else {
+        console.log("prod");
+        browser = await puppeteer.connect({
+            browserWSEndpoint:
+                "wss://browserless-production-3059.up.railway.app",
+            // headless: "new",
+            defaultViewport: {
+                width: 500,
+                height: 750,
+                deviceScaleFactor: 1,
+                isMobile: true,
+                hasTouch: false,
+                isLandscape: false,
+            },
+        });
+    }
 
     const page = await browser.newPage();
 
