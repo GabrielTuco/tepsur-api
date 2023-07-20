@@ -33,7 +33,6 @@ import { Secretaria } from "../../Secretary/entity/Secretaria.entity";
 import { Sede } from "../../Sede/entity/Sede.entity";
 import { DatabaseError } from "../../errors/DatabaseError";
 import { uploadImage } from "../../helpers/uploadImage";
-import { generateFichaMatricula } from "../helpers/generateFichaMatricula";
 import { AppDataSource } from "../../db/dataSource";
 import { PensionService } from "../../Pension/services/pension.service";
 import { MatriculaModulosModulo } from "../entity/MatriculaModulosModulo";
