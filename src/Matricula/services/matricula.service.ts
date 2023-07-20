@@ -546,6 +546,7 @@ export class MatriculaService implements MatriculaRepository {
                 .innerJoinAndSelect("m.alumno", "a")
                 .innerJoinAndSelect("m.matriculaModulosModulo", "mm")
                 .innerJoinAndSelect("mm.modulo", "mo")
+                .innerJoinAndSelect("mm.horario", "h")
                 .innerJoinAndSelect("a.grado_estudios", "ge")
                 .innerJoinAndSelect("m.secretaria", "sc")
                 .innerJoinAndSelect("a.direccion", "d")
