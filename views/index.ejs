@@ -108,6 +108,7 @@
                         </table>
                     </td>
                 </tr>
+                <% if (pagoMatricula) { %>
                 <tr>
                     <td colspan="4"><b>Pago de matricula</b></td>
                 </tr>
@@ -123,6 +124,7 @@
                     <td>S/. <%= pagoMatricula.monto %></td>
                     <td>13:50(Falta)</td>
                 </tr>
+                <% } %>
             </table>
             <div class="firma-container">
                 <div class="firma">Estudiante</div>
