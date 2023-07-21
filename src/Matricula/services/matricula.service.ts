@@ -1,10 +1,8 @@
 import { v4 as uuid } from "uuid";
 import fileUpload from "express-fileupload";
 import moment from "moment";
-import { Alumno } from "../../Student/entity/Alumno.entity";
 import {
     Carrera,
-    GradoEstudios,
     Grupo,
     Horario,
     Matricula,
@@ -16,16 +14,11 @@ import {
 } from "../entity";
 import {
     MatriculaDTO,
-    AlumnoData,
     PagoMatriculaData,
     ModuloMatriculaDTO,
-    DireccionDto,
     TrasladoMatriculaDTO,
 } from "../interfaces/dtos";
 import { MatriculaRepository } from "../interfaces/repositories";
-import { Direccion } from "../../entity";
-import { Rol, Usuario } from "../../Auth/entity";
-import { encryptPassword } from "../../helpers/encryptPassword";
 import { Secretaria } from "../../Secretary/entity/Secretaria.entity";
 import { Sede } from "../../Sede/entity/Sede.entity";
 import { DatabaseError } from "../../errors/DatabaseError";
@@ -40,8 +33,10 @@ import {
     TIPO_CARRERA,
     TIPO_MATRICULA,
 } from "../../interfaces/enums";
+import { StudentService } from "../../Student/services/student.service";
 
 const pensionService = new PensionService();
+const studentService = new StudentService();
 export class MatriculaService implements MatriculaRepository {
     public register = async (data: MatriculaDTO): Promise<Matricula> => {
         const queryRunner = AppDataSource.createQueryRunner();
@@ -62,15 +57,17 @@ export class MatriculaService implements MatriculaRepository {
             } = data;
 
             //Registro de datos personales del estudiante
-            const newDireccion = await this.registerAddressStudent(
+            const newDireccion = await studentService.registerAddressStudent(
                 alumno.direccion
             );
             await queryRunner.manager.save(newDireccion);
 
-            const newUser = await this.registerUserStudent(alumno.dni);
+            const newUser = await studentService.registerUserStudent(
+                alumno.dni
+            );
             await queryRunner.manager.save(newUser);
 
-            const newAlumno = await this.registerStudent(
+            const newAlumno = await studentService.registerStudent(
                 alumno,
                 newDireccion,
                 newUser
@@ -295,15 +292,17 @@ export class MatriculaService implements MatriculaRepository {
             } = data;
 
             //Registro de datos personales del estudiante
-            const newDireccion = await this.registerAddressStudent(
+            const newDireccion = await studentService.registerAddressStudent(
                 alumno.direccion
             );
             await queryRunner.manager.save(newDireccion);
 
-            const newUser = await this.registerUserStudent(alumno.dni);
+            const newUser = await studentService.registerUserStudent(
+                alumno.dni
+            );
             await queryRunner.manager.save(newUser);
 
-            const newAlumno = await this.registerStudent(
+            const newAlumno = await studentService.registerStudent(
                 alumno,
                 newDireccion,
                 newUser
@@ -636,71 +635,6 @@ export class MatriculaService implements MatriculaRepository {
             await newPagoMatricula.save();
 
             return newPagoMatricula;
-        } catch (error) {
-            throw error;
-        }
-    };
-
-    public registerAddressStudent = async (
-        direccion: DireccionDto
-    ): Promise<Direccion> => {
-        try {
-            const newDireccionAlumno = new Direccion();
-            newDireccionAlumno.uuid = uuid();
-            newDireccionAlumno.direccion_exacta = direccion.direccionExacta;
-            newDireccionAlumno.distrito = direccion.distrito;
-            newDireccionAlumno.provincia = direccion.provincia;
-            newDireccionAlumno.departamento = direccion.departamento;
-
-            return newDireccionAlumno;
-        } catch (error) {
-            throw error;
-        }
-    };
-
-    public registerUserStudent = async (dni: string): Promise<Usuario> => {
-        try {
-            const rol = await Rol.findOneBy({ nombre: "Alumno" });
-
-            const newUserAlumno = new Usuario();
-            newUserAlumno.uuid = uuid();
-            newUserAlumno.usuario = dni;
-            newUserAlumno.password = encryptPassword(dni);
-            newUserAlumno.rol = rol!;
-
-            return newUserAlumno;
-        } catch (error) {
-            throw error;
-        }
-    };
-
-    public registerStudent = async (
-        alumno: AlumnoData,
-        newDireccionAlumno: Direccion,
-        newUserAlumno: Usuario
-    ) => {
-        try {
-            const gradoEstudios = await GradoEstudios.findOneBy({
-                uuid: alumno.gradoEstudiosUuid,
-            });
-
-            const newAlumno = new Alumno();
-            newAlumno.uuid = uuid();
-            newAlumno.dni = alumno.dni;
-            newAlumno.nombres = alumno.nombres;
-            newAlumno.ape_materno = alumno.apeMaterno;
-            newAlumno.ape_paterno = alumno.apePaterno;
-            newAlumno.edad = alumno.edad;
-            newAlumno.sexo = alumno.sexo;
-            newAlumno.lugar_residencia = alumno.lugarResidencia;
-            newAlumno.celular = alumno.celular;
-            newAlumno.celular_referencia = alumno.celularReferencia;
-            newAlumno.correo = alumno.correo;
-            newAlumno.direccion = newDireccionAlumno;
-            newAlumno.grado_estudios = gradoEstudios!;
-            newAlumno.usuario = newUserAlumno;
-
-            return newAlumno;
         } catch (error) {
             throw error;
         }

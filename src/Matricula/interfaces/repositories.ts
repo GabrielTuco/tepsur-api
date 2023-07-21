@@ -83,11 +83,6 @@ export interface MatriculaRepository {
     ): Promise<Matricula[]>;
     findByStudent(uuid: number): Promise<Matricula>;
     findByUuid(uuid: number): Promise<Matricula>;
-    registerStudent(
-        data: AlumnoData,
-        newDireccionAlumno: Direccion,
-        newUserAlumno: Usuario
-    ): Promise<Alumno>;
     matriculaDataForPDF(uuid: string): Promise<any>;
     updatePagoMatricula(
         uuid: string,

@@ -3,8 +3,9 @@ import { EntityBase } from "../../entity";
 import { Alumno } from "../../Student/entity";
 import { Especializacion } from "./Especializacion.entity";
 import { Sede } from "../../Sede/entity";
-import { Horario } from "../../Matricula/entity";
+import { Horario, PagoMatricula } from "../../Matricula/entity";
 import { Docente } from "../../Teacher/entity";
+import { Secretaria } from "../../Secretary/entity";
 
 @Entity()
 export class MatriculaEspecializacion extends EntityBase {
@@ -28,6 +29,19 @@ export class MatriculaEspecializacion extends EntityBase {
         nullable: true,
     })
     docente: Docente;
+
+    @ManyToOne(
+        () => Secretaria,
+        (secretaria) => secretaria.matriculas_especializacion
+    )
+    secretaria: Secretaria;
+
+    @OneToOne(() => PagoMatricula, { nullable: true })
+    @JoinColumn()
+    pagoMatricula: PagoMatricula;
+
+    @Column()
+    fecha_inscripcion: Date;
 
     @Column()
     fecha_inicio: Date;

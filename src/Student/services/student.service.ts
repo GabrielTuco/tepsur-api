@@ -9,6 +9,7 @@ import { StudentRepository } from "../interfaces/repositories";
 import { encryptPassword } from "../../helpers/encryptPassword";
 import { GradoEstudios, Matricula } from "../../Matricula/entity";
 import { Sede } from "../../Sede/entity";
+import { AlumnoData, DireccionDto } from "../../Matricula/interfaces/dtos";
 
 export class StudentService implements StudentRepository {
     public register = async (data: StudentDTO): Promise<Alumno> => {
@@ -165,6 +166,71 @@ export class StudentService implements StudentRepository {
             await alumno.reload();
 
             return alumno;
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    public registerAddressStudent = async (
+        direccion: DireccionDto
+    ): Promise<Direccion> => {
+        try {
+            const newDireccionAlumno = new Direccion();
+            newDireccionAlumno.uuid = uuid();
+            newDireccionAlumno.direccion_exacta = direccion.direccionExacta;
+            newDireccionAlumno.distrito = direccion.distrito;
+            newDireccionAlumno.provincia = direccion.provincia;
+            newDireccionAlumno.departamento = direccion.departamento;
+
+            return newDireccionAlumno;
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    public registerUserStudent = async (dni: string): Promise<Usuario> => {
+        try {
+            const rol = await Rol.findOneBy({ nombre: "Alumno" });
+
+            const newUserAlumno = new Usuario();
+            newUserAlumno.uuid = uuid();
+            newUserAlumno.usuario = dni;
+            newUserAlumno.password = encryptPassword(dni);
+            newUserAlumno.rol = rol!;
+
+            return newUserAlumno;
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    public registerStudent = async (
+        alumno: AlumnoData,
+        newDireccionAlumno: Direccion,
+        newUserAlumno: Usuario
+    ) => {
+        try {
+            const gradoEstudios = await GradoEstudios.findOneBy({
+                uuid: alumno.gradoEstudiosUuid,
+            });
+
+            const newAlumno = new Alumno();
+            newAlumno.uuid = uuid();
+            newAlumno.dni = alumno.dni;
+            newAlumno.nombres = alumno.nombres;
+            newAlumno.ape_materno = alumno.apeMaterno;
+            newAlumno.ape_paterno = alumno.apePaterno;
+            newAlumno.edad = alumno.edad;
+            newAlumno.sexo = alumno.sexo;
+            newAlumno.lugar_residencia = alumno.lugarResidencia;
+            newAlumno.celular = alumno.celular;
+            newAlumno.celular_referencia = alumno.celularReferencia;
+            newAlumno.correo = alumno.correo;
+            newAlumno.direccion = newDireccionAlumno;
+            newAlumno.grado_estudios = gradoEstudios!;
+            newAlumno.usuario = newUserAlumno;
+
+            return newAlumno;
         } catch (error) {
             throw error;
         }
