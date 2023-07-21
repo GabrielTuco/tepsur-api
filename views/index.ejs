@@ -108,7 +108,6 @@
                         </table>
                     </td>
                 </tr>
-                <% if (pagoMatricula) { %>
                 <tr>
                     <td colspan="4"><b>Pago de matricula</b></td>
                 </tr>
@@ -118,11 +117,19 @@
                     <td><b>Monto</b></td>
                     <td><b>Hora</b></td>
                 </tr>
+                <% if (pagoMatricula) { %>
                 <tr>
                     <td><%= pagoMatricula.num_comprobante %></td>
                     <td><%= pagoMatricula.forma_pago.description %></td>
                     <td>S/. <%= pagoMatricula.monto %></td>
                     <td>13:50(Falta)</td>
+                </tr>
+                <% } else {%>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
                 </tr>
                 <% } %>
             </table>
