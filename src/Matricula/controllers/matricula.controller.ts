@@ -7,6 +7,7 @@ import { ValidateDniService } from "../services/validateDNI.service";
 import { UbigeoService } from "../services/ubigeo.service";
 import { generatePDF } from "../helpers/generatePDF";
 import yargs, { argv } from "yargs";
+import { Alumno } from "../../Student/entity";
 
 const gradoEstudioService = new GradoEstudiosService();
 const matriculaService = new MatriculaService();
@@ -163,6 +164,9 @@ export class MatriculaController {
                 req.params.dni
             );
 
+            if (data instanceof Alumno) {
+                return res.json(data);
+            }
             return res.json({
                 tipoDocumento: data.tipoDocumento,
                 numeroDocumento: data.numeroDocumento,

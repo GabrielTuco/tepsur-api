@@ -5,13 +5,13 @@ import {
     ScheduleDTO,
 } from "../../Matricula/interfaces/dtos";
 
-export interface EspecializacionDTO {
+export class EspecializacionDTO {
     nombre: string;
     duracionSemanas: number;
     precio: number;
 }
 
-export interface MatEspeDTO {
+export class MatEspeDTO {
     alumno: AlumnoData;
     secretariaUuid: string;
     especializacionUuid: string;

@@ -43,7 +43,6 @@ export interface GrupoWithStudents extends Partial<Grupo> {
 }
 
 export interface ScheduleDTO {
-    // turno: Turno;
     dias: DIAS[];
     horaInicio: string;
     horaFin: string;

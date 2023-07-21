@@ -34,6 +34,7 @@ import {
     TIPO_MATRICULA,
 } from "../../interfaces/enums";
 import { StudentService } from "../../Student/services/student.service";
+import { Alumno } from "../../Student/entity";
 
 const pensionService = new PensionService();
 const studentService = new StudentService();
@@ -55,24 +56,33 @@ export class MatriculaService implements MatriculaRepository {
                 sedeUuid,
                 tipoMatricula,
             } = data;
+            let newAlumno: Alumno;
 
-            //Registro de datos personales del estudiante
-            const newDireccion = await studentService.registerAddressStudent(
-                alumno.direccion
-            );
-            await queryRunner.manager.save(newDireccion);
+            const alumnoAlreadyExists = await Alumno.findOneBy({
+                dni: alumno.dni,
+            });
+            if (!alumnoAlreadyExists) {
+                //Registro de datos personales del estudiante
+                const newDireccion =
+                    await studentService.registerAddressStudent(
+                        alumno.direccion
+                    );
+                await queryRunner.manager.save(newDireccion);
 
-            const newUser = await studentService.registerUserStudent(
-                alumno.dni
-            );
-            await queryRunner.manager.save(newUser);
+                const newUser = await studentService.registerUserStudent(
+                    alumno.dni
+                );
+                await queryRunner.manager.save(newUser);
 
-            const newAlumno = await studentService.registerStudent(
-                alumno,
-                newDireccion,
-                newUser
-            );
-            await queryRunner.manager.save(newAlumno);
+                newAlumno = await studentService.registerStudent(
+                    alumno,
+                    newDireccion,
+                    newUser
+                );
+                await queryRunner.manager.save(newAlumno);
+            } else {
+                newAlumno = alumnoAlreadyExists;
+            }
 
             //Registro de datos academicos del estudiante
             const secretaria = await Secretaria.findOneBy({
@@ -659,7 +669,7 @@ export class MatriculaService implements MatriculaRepository {
                 .innerJoinAndSelect("a.grado_estudios", "ge")
                 .innerJoinAndSelect("m.sede", "s")
                 .leftJoinAndSelect("m.pagoMatricula", "p")
-                .innerJoinAndSelect("p.forma_pago", "f")
+                .leftJoinAndSelect("p.forma_pago", "f")
                 .where(`m.uuid= :uuid`, { uuid })
                 .getOne();
 

@@ -65,6 +65,7 @@ export class MatriculaEspecilizacionService
             });
 
             const newHorario = new Horario();
+            newHorario.uuid = uuid();
             newHorario.hora_inicio = horario.horaInicio;
             newHorario.hora_fin = horario.horaFin;
             newHorario.dias = horario.dias;
@@ -115,10 +116,11 @@ export class MatriculaEspecilizacionService
                 await MatriculaEspecializacion.createQueryBuilder("m")
                     .innerJoinAndSelect("m.alumno", "a")
                     .innerJoinAndSelect("a.direccion", "dir")
+                    .innerJoinAndSelect("a.grado_estudios", "ge")
                     .innerJoinAndSelect("m.secretaria", "s")
                     .innerJoinAndSelect("m.especializacion", "e")
                     .innerJoinAndSelect("m.horario", "h")
-                    .leftJoinAndSelect("h.docente", "d")
+                    .leftJoinAndSelect("m.docente", "d")
                     .leftJoinAndSelect("m.pagoMatricula", "pm")
                     .leftJoinAndSelect("pm.forma_pago", "fp")
                     .innerJoinAndSelect("m.sede", "se")
@@ -138,10 +140,11 @@ export class MatriculaEspecilizacionService
             )
                 .innerJoinAndSelect("m.alumno", "a")
                 .innerJoinAndSelect("a.direccion", "dir")
+                .innerJoinAndSelect("a.grado_estudios", "ge")
                 .innerJoinAndSelect("m.secretaria", "s")
                 .innerJoinAndSelect("m.especializacion", "e")
                 .innerJoinAndSelect("m.horario", "h")
-                .leftJoinAndSelect("h.docente", "d")
+                .leftJoinAndSelect("m.docente", "d")
                 .leftJoinAndSelect("m.pagoMatricula", "pm")
                 .leftJoinAndSelect("pm.forma_pago", "fp")
                 .innerJoinAndSelect("m.sede", "se")

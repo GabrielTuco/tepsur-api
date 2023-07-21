@@ -16,7 +16,6 @@ import { Pension } from "../../Pension/entity/Pension.entity";
 import { MODALIDAD, TIPO_MATRICULA } from "../../interfaces/enums";
 import { MatriculaGruposGrupo } from "./MatriculaGruposGrupo.entity";
 import { MatriculaModulosModulo } from "./MatriculaModulosModulo";
-import { Horario } from "./Horario.entity";
 
 @Entity()
 export class Matricula extends EntityBase {

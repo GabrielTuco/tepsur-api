@@ -16,7 +16,10 @@ const scheduleController = new ScheduleController();
  *      Schedule:
  *          properties:
  *              dias:
- *                  type: string
+ *                  type: array
+ *                  items:
+ *                      type: string
+ *                      example: "Lun"
  *                  description: Los dias que esta asignado el horario
  *              horaInicio:
  *                  type: string
