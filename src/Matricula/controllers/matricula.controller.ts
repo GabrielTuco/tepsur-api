@@ -220,8 +220,6 @@ export class MatriculaController {
                 req.params.id
             );
 
-            console.log(data);
-
             res.render("index", data);
         } catch (error) {
             console.log(error);
