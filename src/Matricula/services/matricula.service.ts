@@ -267,8 +267,8 @@ export class MatriculaService implements MatriculaRepository {
 
             await queryRunner.manager.save(newMatricula);
 
-            //! Registrar pensiones por cada modulo matriculado
-            //await this.registerPensiones(newMatricula, carreraUuid);
+            //Registrar pensiones por cada modulo matriculado
+            await this.registerPensiones(newMatricula, carreraUuid);
 
             await queryRunner.commitTransaction();
 
@@ -401,20 +401,38 @@ export class MatriculaService implements MatriculaRepository {
         try {
             const fechaInicio = new Date(matricula.fecha_inicio);
             const mesInicio = fechaInicio.getMonth() + 1;
-            const duracionCarrera = matricula.carrera.duracion_meses;
-            const fechaFin = moment().add(duracionCarrera, "M").toDate();
+            let numeroDePensiones = matricula.carrera.duracion_meses;
+            const fechaFin = moment().add(numeroDePensiones, "M").toDate();
             const meses: { mes: number; fechaLimite: Date }[] = [];
+            const modulosMatriculadosLength =
+                matricula.matriculaModulosModulo.length;
 
             const tarifa = await TarifaPensionCarrera.createQueryBuilder("t")
                 .innerJoinAndSelect("t.carrera", "c")
                 .where("c.uuid=:uuid", { uuid: carreraUuid })
                 .getOne();
-            if (!tarifa) throw new DatabaseError("Tarifa not found", 500, "");
+            if (!tarifa)
+                throw new DatabaseError(
+                    "No existe una tarifa registrada para esta carrera",
+                    404,
+                    "Not found error"
+                );
             const tarifaPension = tarifa.tarifa;
 
             const yearDifference =
                 fechaFin.getFullYear() - fechaInicio.getFullYear();
-            for (let i = 0; i < duracionCarrera; i++) {
+
+            //Registro de pension de los modulos matriculados
+            for (let i = 1; i <= modulosMatriculadosLength; i++) {
+                meses.push({
+                    mes: mesInicio,
+                    fechaLimite: new Date(),
+                });
+            }
+            //Reducimos el numero de pensiones de acuerdo a los modulos ya matriculados para el primer mes
+            numeroDePensiones = numeroDePensiones - modulosMatriculadosLength;
+
+            for (let i = 1; i < numeroDePensiones; i++) {
                 if (mesInicio + i > 12)
                     meses.push({
                         mes: mesInicio + i - 12 * yearDifference,
@@ -428,8 +446,8 @@ export class MatriculaService implements MatriculaRepository {
                 const pension = await pensionService.register({
                     matricula,
                     mes,
+                    fechaLimite,
                     monto: tarifaPension,
-                    fechaLimite: fechaLimite,
                 });
                 return pension;
             });
