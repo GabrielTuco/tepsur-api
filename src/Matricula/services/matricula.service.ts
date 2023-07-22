@@ -432,7 +432,7 @@ export class MatriculaService implements MatriculaRepository {
             //Reducimos el numero de pensiones de acuerdo a los modulos ya matriculados para el primer mes
             numeroDePensiones = numeroDePensiones - modulosMatriculadosLength;
 
-            for (let i = 1; i < numeroDePensiones; i++) {
+            for (let i = 1; i <= numeroDePensiones; i++) {
                 if (mesInicio + i > 12)
                     meses.push({
                         mes: mesInicio + i - 12 * yearDifference,
