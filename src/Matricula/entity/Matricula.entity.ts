@@ -13,9 +13,10 @@ import { Secretaria } from "../../Secretary/entity/Secretaria.entity";
 import { Sede } from "../../Sede/entity/Sede.entity";
 import { PagoMatricula } from "./PagoMatricula.entity";
 import { Pension } from "../../Pension/entity/Pension.entity";
-import { MODALIDAD, TIPO_MATRICULA } from "../../interfaces/enums";
+import { TIPO_MATRICULA } from "../../interfaces/enums";
 import { MatriculaGruposGrupo } from "./MatriculaGruposGrupo.entity";
 import { MatriculaModulosModulo } from "./MatriculaModulosModulo";
+import { Grupo } from "./Grupo.entity";
 
 @Entity()
 export class Matricula extends EntityBase {
@@ -59,6 +60,6 @@ export class Matricula extends EntityBase {
     @Column({ nullable: true })
     fecha_inicio: Date;
 
-    @Column({ type: "varchar", nullable: true })
-    modalidad: MODALIDAD;
+    @ManyToOne(() => Grupo, (grupo) => grupo.matriculas, { nullable: true })
+    ultimo_grupo: Grupo;
 }

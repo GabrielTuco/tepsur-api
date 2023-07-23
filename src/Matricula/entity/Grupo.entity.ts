@@ -8,6 +8,7 @@ import { MatriculaGruposGrupo } from "./MatriculaGruposGrupo.entity";
 import { Modulo } from "./Modulo.entity";
 import { Secretaria } from "../../Secretary/entity/Secretaria.entity";
 import { Sede } from "../../Sede/entity";
+import { Matricula } from "./Matricula.entity";
 
 @Entity()
 export class Grupo extends EntityBase {
@@ -49,4 +50,7 @@ export class Grupo extends EntityBase {
         (matriculaGruposGrupo) => matriculaGruposGrupo.matricula
     )
     matriculaGruposGrupo: MatriculaGruposGrupo[];
+
+    @OneToMany(() => Matricula, (matricula) => matricula.ultimo_grupo)
+    matriculas: [];
 }

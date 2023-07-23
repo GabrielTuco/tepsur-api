@@ -120,7 +120,6 @@ export class GroupService implements GroupRepository {
                 where: { uuid: matriculaUuid },
                 relations: { carrera: true },
             });
-            const carrera = student?.carrera;
             const grupo = await Grupo.findOne({ where: { uuid: grupoUuid } });
 
             if (!student || !grupo)
@@ -134,22 +133,22 @@ export class GroupService implements GroupRepository {
             newMatriculaGrupo.matricula = student;
             newMatriculaGrupo.grupo = grupo;
 
-            if (carrera?.tipo_carrera === TIPO_CARRERA.MODULAR) {
-                const [previousModules, count] =
-                    await MatriculaModulosModulo.createQueryBuilder("mm")
-                        .innerJoinAndSelect("mm.matricula", "m")
-                        .where("m.uuid=:uuid", { uuid: matriculaUuid })
-                        .getManyAndCount();
-
-                if (count < 1)
-                    newMatriculaGrupo.condicion = CONDICION_ALUMNO.NUEVO;
+            if (!student.ultimo_grupo) {
+                student.ultimo_grupo = grupo;
+                newMatriculaGrupo.condicion = CONDICION_ALUMNO.NUEVO;
+            } else {
                 //si no es nuevo ver que horarios y modulos ha llevado establecer si continua o es cambio de horario
-                else {
+                if (student.ultimo_grupo.horario.uuid === grupo.horario.uuid) {
                     newMatriculaGrupo.condicion = CONDICION_ALUMNO.CONTINUA;
+                } else {
+                    newMatriculaGrupo.condicion =
+                        CONDICION_ALUMNO.CAMBIO_HORARIO;
                 }
+                student.ultimo_grupo = grupo;
             }
 
             await newMatriculaGrupo.save();
+            await student.save();
 
             await grupo.save();
             await grupo.reload();
