@@ -348,9 +348,18 @@ router.post(
 /**
  * @swagger
  * /matricula/update-pago/{uuid}:
- *  post:
+ *  patch:
  *      summary: Registrar los datos del pago de una matricula
  *      tags: [Matricula]
+ *      parameters:
+ *          - $ref: '#/components/parameters/token'
+ *          - in: path
+ *            name: uuid
+ *            required: true
+ *            schema:
+ *              type: string
+ *              format: uuid
+ *            description: uuid de la matricula
  *      requestBody:
  *          required: true
  *          content:
@@ -361,8 +370,7 @@ router.post(
  *                          numComprobante:
  *                              type: string
  *                          formaPagoUuid:
- *                              type: string
- *                              format: uuid
+ *                              type: number
  *                          monto:
  *                              type: number
  *      responses:
@@ -383,7 +391,7 @@ router.patch(
         checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
         param("id", "Debe ser un ID valido").isUUID("4"),
         body("numComprobante").isString(),
-        body("formaPagoUuid").isUUID("4"),
+        body("formaPagoUuid").isNumeric(),
         body("monto").isNumeric(),
         validateFields,
     ],

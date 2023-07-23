@@ -642,14 +642,18 @@ export class MatriculaService implements MatriculaRepository {
         data: PagoMatriculaData
     ): Promise<PagoMatricula> => {
         try {
-            const matricula = await Matricula.findOneBy({
-                uuid: matriculaUuid,
+            const matricula = await Matricula.findOne({
+                where: {
+                    uuid: matriculaUuid,
+                },
+                relations: { pagoMatricula: true },
             });
+
             if (!matricula)
                 throw new DatabaseError(
-                    "Matricula not found",
-                    500,
-                    "Internal server error"
+                    "La matricula no existe",
+                    404,
+                    "Not found error"
                 );
 
             const newPagoMatricula = new PagoMatricula();
@@ -662,6 +666,9 @@ export class MatriculaService implements MatriculaRepository {
             newPagoMatricula.monto = data.monto;
             await newPagoMatricula.save();
 
+            matricula.pagoMatricula = newPagoMatricula;
+
+            await matricula.save();
             return newPagoMatricula;
         } catch (error) {
             throw error;
