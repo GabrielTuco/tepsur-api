@@ -267,6 +267,42 @@ export class MatriculaController {
         }
     }
 
+    public async getFindByQuery(req: Request, res: Response) {
+        try {
+            const { query } = req.query;
+            const matriculas = await matriculaService.findByQuery(
+                String(query)
+            );
+
+            const data = matriculas.map((m) => ({
+                dni: m.alumno.dni,
+                nombres: m.alumno.nombres,
+                ape_paterno: m.alumno.ape_paterno,
+                ape_materno: m.alumno.ape_materno,
+                pago_matricula: m.pagoMatricula,
+            }));
+            return res.json(data);
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: "Internal server error",
+            });
+        }
+    }
+
+    public async getFindByUuid(req: Request, res: Response) {
+        try {
+            const { uuid } = req.params;
+            const matricula = await matriculaService.findByUuid(uuid);
+            return res.json(matricula);
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: "Internal server error",
+            });
+        }
+    }
+
     //----------------------------Utitilies------------------------------------
     public async getDepartments(_req: Request, res: Response) {
         try {

@@ -682,6 +682,93 @@ router.get(
 
 /**
  * @swagger
+ * /matricula/find-alumnos:
+ *  get:
+ *      summary: Busqueda de un alumno por query
+ *      tags: [Matricula]
+ *      parameters:
+ *          - $ref: '#/components/parameters/token'
+ *          - in: query
+ *            name: query
+ *            schema:
+ *              type: string
+ *            required: true
+ *            description: Query de busqueda de alumno(dni o nombre o algun apellido)
+ *      responses:
+ *          200:
+ *              description: Listado de matriculas
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: array
+ *                          properties:
+ *                              dni:
+ *                                  type: string
+ *                              nombres:
+ *                                  type: string
+ *                              ape_paterno:
+ *                                  type: string
+ *                              ape_materno:
+ *                                  type: string
+ *                              pago_matricula:
+ *                                  type: object
+ *
+ *          500:
+ *              description: Error de servidor
+ *
+ */
+router.get(
+    "/find-alumnos",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        query("query").isString(),
+        validateFields,
+    ],
+    matriculaController.getFindByQuery
+);
+
+/**
+ * @swagger
+ * /matricula/{uuid}:
+ *  get:
+ *      summary: Busqueda de un alumno por uuid
+ *      tags: [Matricula]
+ *      parameters:
+ *          - $ref: '#/components/parameters/token'
+ *          - in: path
+ *            name: uuid
+ *            schema:
+ *              type: string
+ *              format: uuid
+ *            required: true
+ *            description: El uuid de la matricula
+ *      responses:
+ *          200:
+ *              description: La matricula buscada
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          $ref: '#/components/schemas/Matricula'
+ *
+ *          500:
+ *              description: Error de servidor
+ *
+ */
+router.get(
+    "/:uuid",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        param("uuid").isUUID(4),
+        validateFields,
+    ],
+    matriculaController.getFindByUuid
+);
+
+/**
+ * @swagger
  * /matricula/utilidades/departamentos:
  *  get:
  *      summary: Listado de departamentos del peru

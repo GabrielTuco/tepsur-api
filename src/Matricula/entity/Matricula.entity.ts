@@ -62,4 +62,7 @@ export class Matricula extends EntityBase {
 
     @ManyToOne(() => Grupo, (grupo) => grupo.matriculas, { nullable: true })
     ultimo_grupo: Grupo;
+
+    @Column({ default: true })
+    estado: boolean;
 }

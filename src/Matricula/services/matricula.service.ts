@@ -727,12 +727,60 @@ export class MatriculaService implements MatriculaRepository {
         throw new Error("Method not implemented.");
     };
 
+    public findByQuery = async (query: string): Promise<Matricula[]> => {
+        try {
+            const matriculas = await Matricula.createQueryBuilder("m")
+                .innerJoinAndSelect("m.alumno", "a")
+                .leftJoinAndSelect("m.pagoMatricula", "pm")
+                .leftJoinAndSelect("pm.forma_pago", "fp")
+                .where(
+                    `LOWER(a.dni) LIKE '%' || :query || '%'
+                    OR LOWER(a.nombres) LIKE '%' || :query || '%'
+                    OR LOWER(a.ape_paterno) LIKE '%' || :query || '%'
+                    OR LOWER(a.ape_materno) LIKE '%' || :query || '%'
+                    AND m.estado='true'`,
+                    { query: query.toLowerCase() }
+                )
+                .getMany();
+
+            return matriculas;
+        } catch (error) {
+            throw error;
+        }
+    };
+
     public findByStudent = async (_uuid: number): Promise<Matricula> => {
         throw new Error("Method not implemented.");
     };
 
-    public findByUuid = async (_uuid: number): Promise<Matricula> => {
-        throw new Error("Method not implemented.");
+    public findByUuid = async (uuid: string): Promise<Matricula> => {
+        try {
+            const matricula = await Matricula.createQueryBuilder("m")
+                .innerJoinAndSelect("m.carrera", "c")
+                .innerJoinAndSelect("m.alumno", "a")
+                .leftJoinAndSelect("m.matriculaModulosModulo", "mm")
+                .leftJoinAndSelect("mm.modulo", "mo")
+                .leftJoinAndSelect("mm.horario", "h")
+                .innerJoinAndSelect("a.grado_estudios", "ge")
+                .innerJoinAndSelect("m.secretaria", "sc")
+                .innerJoinAndSelect("a.direccion", "d")
+                .innerJoinAndSelect("m.sede", "s")
+                .leftJoinAndSelect("m.pagoMatricula", "p")
+                .leftJoinAndSelect("p.forma_pago", "fp")
+                .where("m.uuid=:uuid", { uuid })
+                .getOne();
+
+            if (!matricula)
+                throw new DatabaseError(
+                    "La matricula no existe",
+                    404,
+                    "Not found error"
+                );
+
+            return matricula;
+        } catch (error) {
+            throw error;
+        }
     };
 
     public delete = async (_uuid: string): Promise<Matricula> => {
