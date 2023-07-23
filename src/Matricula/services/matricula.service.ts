@@ -571,9 +571,9 @@ export class MatriculaService implements MatriculaRepository {
             const matriculas = await Matricula.createQueryBuilder("m")
                 .innerJoinAndSelect("m.carrera", "c")
                 .innerJoinAndSelect("m.alumno", "a")
-                .innerJoinAndSelect("m.matriculaModulosModulo", "mm")
-                .innerJoinAndSelect("mm.modulo", "mo")
-                .innerJoinAndSelect("mm.horario", "h")
+                .leftJoinAndSelect("m.matriculaModulosModulo", "mm")
+                .leftJoinAndSelect("mm.modulo", "mo")
+                .leftJoinAndSelect("mm.horario", "h")
                 .innerJoinAndSelect("a.grado_estudios", "ge")
                 .innerJoinAndSelect("m.secretaria", "sc")
                 .innerJoinAndSelect("a.direccion", "d")
@@ -585,7 +585,8 @@ export class MatriculaService implements MatriculaRepository {
                         month
                             ? "and EXTRACT(MONTH from m.fecha_inscripcion)=:month "
                             : ""
-                    } and mm.estado='matriculado'`,
+                    }`,
+                    // and mm.estado='matriculado
                     { year, month }
                 )
                 .getMany();
