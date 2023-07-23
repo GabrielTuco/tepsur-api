@@ -27,6 +27,7 @@ import { Response } from "express";
 import { MODALIDAD } from "../../interfaces/enums";
 import { Direccion } from "../../entity";
 import { Usuario } from "../../Auth/entity";
+import { MatriculaEspecializacion } from "../../Especializacion/entity/MatriculaEspecializacion.entity";
 
 export interface ModuleRepository {
     register(data: ModuleDTO): Promise<Modulo>;
@@ -76,7 +77,7 @@ export interface MatriculaRepository {
     uploadPaidDocument(
         uuid: string,
         image: fileUpload.UploadedFile
-    ): Promise<Matricula>;
+    ): Promise<Matricula | MatriculaEspecializacion>;
     getAll(
         year: string | undefined,
         month: string | undefined

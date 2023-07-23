@@ -4,7 +4,7 @@ import { MatriculaEspecilizacionService } from "../services/matriculaEspecializa
 import { validateJWT } from "../../middlewares/validateJWT";
 import { checkAuthRole } from "../../middlewares/checkAuthRole";
 import { ROLES } from "../../interfaces/enums";
-import { body, param } from "express-validator";
+import { body, param, query } from "express-validator";
 import { validateFields } from "../../middlewares/validateFields";
 import {
     isAlumnoCorreoValid,
@@ -145,10 +145,22 @@ router.post(
  * @swagger
  * /matricula-especializacion:
  *  get:
- *      summary: Listado de matriculas de especializacion
+ *      summary: Listado de matriculas de especializacion por año y mes(opcional)
  *      tags: [MatriculaEspecializacion]
  *      parameters:
  *          - $ref: '#/components/parameters/token'
+ *          - in: query
+ *            name: year
+ *            schema:
+ *              type: number
+ *            required: true
+ *            description: Año de filtrado
+ *          - in: query
+ *            name: month
+ *            schema:
+ *              type: number
+ *            required: false
+ *            description: Mes de filtrado
  *      responses:
  *          200:
  *              description: El listado de matriculas
@@ -164,7 +176,12 @@ router.post(
  */
 router.get(
     "/",
-    [validateJWT, checkAuthRole([ROLES.ADMIN, ROLES.SECRE])],
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        query("year").isNumeric(),
+        query("month").optional().isNumeric(),
+    ],
     matriculaEspeController.getList
 );
 

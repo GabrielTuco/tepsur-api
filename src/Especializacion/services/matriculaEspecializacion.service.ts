@@ -110,7 +110,10 @@ export class MatriculaEspecilizacionService
             await queryRunner.release();
         }
     };
-    public listAll = async (): Promise<MatriculaEspecializacion[]> => {
+    public listAll = async (
+        year: string | undefined,
+        month: string | undefined
+    ): Promise<MatriculaEspecializacion[]> => {
         try {
             const matriculas =
                 await MatriculaEspecializacion.createQueryBuilder("m")
@@ -124,6 +127,15 @@ export class MatriculaEspecilizacionService
                     .leftJoinAndSelect("m.pagoMatricula", "pm")
                     .leftJoinAndSelect("pm.forma_pago", "fp")
                     .innerJoinAndSelect("m.sede", "se")
+                    .where(
+                        `EXTRACT(YEAR from m.fecha_inscripcion)=:year ${
+                            month
+                                ? "and EXTRACT(MONTH from m.fecha_inscripcion)=:month "
+                                : ""
+                        }`,
+                        // and mm.estado='matriculado
+                        { year, month }
+                    )
                     .getMany();
 
             return matriculas;

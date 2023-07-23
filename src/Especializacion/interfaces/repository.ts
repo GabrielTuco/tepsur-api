@@ -15,7 +15,7 @@ export interface EspecializacionRepository {
 
 export interface MatriculaEspecializacionRepository {
     register(data: MatEspeDTO): Promise<MatriculaEspecializacion>;
-    listAll(): Promise<MatriculaEspecializacion[]>;
+    listAll(year: string, month: string): Promise<MatriculaEspecializacion[]>;
     findByUuid(uuid: string): Promise<MatriculaEspecializacion>;
     update(
         uuid: string,

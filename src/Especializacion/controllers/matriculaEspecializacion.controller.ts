@@ -28,9 +28,13 @@ export class MatriculaEspecializacionController {
         }
     };
 
-    public getList = async (_req: Request, res: Response) => {
+    public getList = async (req: Request, res: Response) => {
         try {
-            const matriculas = await this.matriculaEspeService.listAll();
+            const { year, month } = req.query;
+            const matriculas = await this.matriculaEspeService.listAll(
+                year?.toString(),
+                month?.toString()
+            );
 
             return res.json(matriculas);
         } catch (error) {

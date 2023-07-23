@@ -35,6 +35,7 @@ import {
 } from "../../interfaces/enums";
 import { StudentService } from "../../Student/services/student.service";
 import { Alumno } from "../../Student/entity";
+import { MatriculaEspecializacion } from "../../Especializacion/entity/MatriculaEspecializacion.entity";
 
 const pensionService = new PensionService();
 const studentService = new StudentService();
@@ -601,28 +602,31 @@ export class MatriculaService implements MatriculaRepository {
     public uploadPaidDocument = async (
         uuid: string,
         image: fileUpload.UploadedFile
-    ): Promise<Matricula> => {
+    ): Promise<Matricula | MatriculaEspecializacion> => {
         try {
-            const matricula = await Matricula.createQueryBuilder("m")
+            let pagoMatricula: PagoMatricula;
+            let matricula: Matricula | MatriculaEspecializacion | null;
+
+            matricula = await Matricula.createQueryBuilder("m")
                 .innerJoinAndSelect("m.pagoMatricula", "p")
                 .where("m.uuid=:uuid", { uuid })
                 .getOne();
-            if (!matricula)
-                throw new DatabaseError(
-                    "Matricula not found",
-                    500,
-                    "Database error"
-                );
+            if (!matricula) {
+                matricula = await MatriculaEspecializacion.createQueryBuilder(
+                    "m"
+                )
+                    .innerJoinAndSelect("m.pagoMatricula", "p")
+                    .where("m.uuid=:uuid", { uuid })
+                    .getOne();
+                if (!matricula)
+                    throw new DatabaseError(
+                        "La matricula no existe",
+                        404,
+                        "Not found error"
+                    );
+            }
 
-            const pagoMatricula = await PagoMatricula.findOneBy({
-                uuid: matricula.pagoMatricula.uuid,
-            });
-            if (!pagoMatricula)
-                throw new DatabaseError(
-                    "Pago Matricula not found",
-                    500,
-                    "Database error"
-                );
+            pagoMatricula = matricula.pagoMatricula;
 
             pagoMatricula.foto_comprobante = await uploadImage(
                 pagoMatricula.foto_comprobante,

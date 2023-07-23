@@ -14,6 +14,7 @@ export class EspecializacionController {
 
             return res.json(especializaciones);
         } catch (error) {
+            console.log(error);
             if (error instanceof DatabaseError) {
                 return res.status(error.codeStatus).json({
                     msg: error.message,
@@ -33,6 +34,7 @@ export class EspecializacionController {
 
             return res.json(especializacion);
         } catch (error) {
+            console.log(error);
             if (error instanceof DatabaseError) {
                 return res.status(error.codeStatus).json({
                     msg: error.message,
@@ -52,6 +54,7 @@ export class EspecializacionController {
 
             return res.json(especializacion);
         } catch (error) {
+            console.log(error);
             if (error instanceof DatabaseError) {
                 return res.status(error.codeStatus).json({
                     msg: error.message,
@@ -74,6 +77,7 @@ export class EspecializacionController {
 
             return res.json(especializacion);
         } catch (error) {
+            console.log(error);
             if (error instanceof DatabaseError) {
                 return res.status(error.codeStatus).json({
                     msg: error.message,
@@ -93,6 +97,7 @@ export class EspecializacionController {
             );
             return res.json(especializacion);
         } catch (error) {
+            console.log(error);
             if (error instanceof DatabaseError) {
                 return res.status(error.codeStatus).json({
                     msg: error.message,
