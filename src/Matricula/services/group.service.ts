@@ -112,46 +112,59 @@ export class GroupService implements GroupRepository {
      * @returns {Promise<Grupo>}
      */
     public addStudent = async (
-        matriculaUuid: string,
+        matriculasUuid: string[],
         grupoUuid: string
     ): Promise<Grupo> => {
         try {
-            const student = await Matricula.findOne({
-                where: { uuid: matriculaUuid },
-                relations: { carrera: true },
-            });
+            const students = await Promise.all(
+                matriculasUuid.map((uuid) =>
+                    Matricula.findOne({
+                        where: { uuid },
+                        relations: { carrera: true },
+                    })
+                )
+            );
+
             const grupo = await Grupo.findOne({ where: { uuid: grupoUuid } });
 
-            if (!student || !grupo)
+            if (!grupo)
                 throw new DatabaseError(
-                    "El estudiante o el grupo no existe",
+                    "grupo no existe",
                     404,
                     "Not found error"
                 );
+            const studentsArray = students!.filter(
+                (element): element is Matricula => element !== undefined
+            );
 
-            const newMatriculaGrupo = new MatriculaGruposGrupo();
-            newMatriculaGrupo.matricula = student;
-            newMatriculaGrupo.grupo = grupo;
+            studentsArray.map(async (student) => {
+                const newMatriculaGrupo = new MatriculaGruposGrupo();
+                newMatriculaGrupo.matricula = student;
+                newMatriculaGrupo.grupo = grupo;
 
-            if (!student.ultimo_grupo) {
-                student.ultimo_grupo = grupo;
-                newMatriculaGrupo.condicion = CONDICION_ALUMNO.NUEVO;
-            } else {
-                //si no es nuevo ver que horarios y modulos ha llevado establecer si continua o es cambio de horario
-                if (student.ultimo_grupo.horario.uuid === grupo.horario.uuid) {
-                    newMatriculaGrupo.condicion = CONDICION_ALUMNO.CONTINUA;
+                if (!student.ultimo_grupo) {
+                    student.ultimo_grupo = grupo;
+                    newMatriculaGrupo.condicion = CONDICION_ALUMNO.NUEVO;
                 } else {
-                    newMatriculaGrupo.condicion =
-                        CONDICION_ALUMNO.CAMBIO_HORARIO;
+                    //si no es nuevo ver que horarios y modulos ha llevado establecer si continua o es cambio de horario
+                    if (
+                        student.ultimo_grupo.horario.uuid === grupo.horario.uuid
+                    ) {
+                        newMatriculaGrupo.condicion = CONDICION_ALUMNO.CONTINUA;
+                    } else {
+                        newMatriculaGrupo.condicion =
+                            CONDICION_ALUMNO.CAMBIO_HORARIO;
+                    }
+                    student.ultimo_grupo = grupo;
                 }
-                student.ultimo_grupo = grupo;
-            }
 
-            await newMatriculaGrupo.save();
-            await student.save();
+                await newMatriculaGrupo.save();
+                await student.save();
 
-            await grupo.save();
-            await grupo.reload();
+                await grupo.save();
+                await grupo.reload();
+            });
+
             return grupo;
         } catch (error) {
             console.log(error);

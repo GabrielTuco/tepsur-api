@@ -26,9 +26,9 @@ export class GroupController {
 
     public async patchAddStudent(req: Request, res: Response) {
         try {
-            const { matriculaUuid, grupoUuid } = req.body;
+            const { matriculasUuid, grupoUuid } = req.body;
             const grupo = await groupService.addStudent(
-                matriculaUuid,
+                matriculasUuid,
                 grupoUuid
             );
 

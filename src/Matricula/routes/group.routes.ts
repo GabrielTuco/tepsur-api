@@ -217,9 +217,11 @@ router.post(
  *                  schema:
  *                      type: object
  *                      properties:
- *                          matriculaUuid:
- *                              type: string
- *                              format: uuid
+ *                          matriculasUuid:
+ *                              type: array
+ *                              items:
+ *                                  type: string
+ *                                  format: uuid
  *                          grupoUuid:
  *                              type: string
  *                              format: uuid
@@ -240,7 +242,8 @@ router.patch(
     [
         validateJWT,
         checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
-        body("matriculaUuid").isUUID("4"),
+        body("matriculasUuid").isArray(),
+        body("matriculasUuid.*").isUUID(4),
         body("grupoUuid").isUUID("4"),
         validateFields,
     ],

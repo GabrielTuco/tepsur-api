@@ -49,7 +49,7 @@ export interface CareerRepository {
 
 export interface GroupRepository {
     register(data: GroupDTO): Promise<Grupo>;
-    addStudent(matriculaUuid: string, grupoUuid: string): Promise<Grupo>;
+    addStudent(matriculasUuid: string[], grupoUuid: string): Promise<Grupo>;
     listGroups(): Promise<Grupo[]>;
     listEstudents(uuid: string): Promise<Matricula[]>; //TODO Debe retornar un arreglo de matriculas o alumnos
     findByUuid(uuid: string): Promise<GrupoWithStudents>;
