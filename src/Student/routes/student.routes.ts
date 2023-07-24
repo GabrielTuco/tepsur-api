@@ -119,6 +119,53 @@ router.get(
     studentController.getListBySede
 );
 
+/**
+ * @swagger
+ * /student/check-email:
+ *  get:
+ *      summary: Validar que el correo de un nuevo estudiante sea valido
+ *      tags: [Student]
+ *      parameters:
+ *          - $ref: '#/components/parameters/token'
+ *          - in: query
+ *            name: correo
+ *            schema:
+ *              type: string
+ *              format: email
+ *            required: true
+ *            description: El correo a verificar
+ *      responses:
+ *          200:
+ *              description: Mensaje de verificacion
+ *              content:
+ *                  application/json:
+ *                       schema:
+ *                          type: object
+ *                          properties:
+ *                              msg:
+ *                                  type: string
+ *          403:
+ *              description: Mensaje de error
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              msg:
+ *                                  type: string
+ *                              name:
+ *                                  type: string
+ *          500:
+ *              description: Error de servidor
+ *
+ */
+router.get("/check-email", [
+    validateJWT,
+    checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+    query("correo").isEmail(),
+    studentController.getIsValidEmail,
+]);
+
 router.patch(
     "/update-info/:id",
     [

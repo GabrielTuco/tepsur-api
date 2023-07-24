@@ -153,6 +153,15 @@ export class StudentService implements StudentRepository {
             throw error;
         }
     };
+
+    public searchByEmail = async (correo: string) => {
+        try {
+            return Alumno.findOneBy({ correo });
+        } catch (error) {
+            throw error;
+        }
+    };
+
     public updateInfo = async (
         uuid: string,
         data: Partial<StudentDTO>
