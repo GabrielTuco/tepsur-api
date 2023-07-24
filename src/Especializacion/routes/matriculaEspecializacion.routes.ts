@@ -3,7 +3,7 @@ import { MatriculaEspecializacionController } from "../controllers/matriculaEspe
 import { MatriculaEspecilizacionService } from "../services/matriculaEspecializacion.service";
 import { validateJWT } from "../../middlewares/validateJWT";
 import { checkAuthRole } from "../../middlewares/checkAuthRole";
-import { ROLES } from "../../interfaces/enums";
+import { MODALIDAD, ROLES } from "../../interfaces/enums";
 import { body, param, query } from "express-validator";
 import { validateFields } from "../../middlewares/validateFields";
 import {
@@ -45,6 +45,8 @@ const matriculaEspeController = new MatriculaEspecializacionController(
  *              horario:
  *                  type: object
  *                  $ref: '#/components/schemas/Schedule'
+ *              modalidad:
+ *                  type: string
  *              fechaInscripcion:
  *                  type: string
  *                  format: date-time
@@ -131,6 +133,7 @@ router.post(
         body("horario.horaFin").isString(),
         body("fechaInscripcion").isString(),
         body("fechaInicio").isString(),
+        body("modalidad").isIn([MODALIDAD.PRESENCIAL, MODALIDAD.VIRTUAL]),
         //Pago de matricula(opcional)
         body("pagoMatricula").optional().isObject(),
         body("pagoMatricula.numComprobante").optional().isString(),

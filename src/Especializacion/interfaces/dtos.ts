@@ -4,6 +4,7 @@ import {
     PagoMatriculaData,
     ScheduleDTO,
 } from "../../Matricula/interfaces/dtos";
+import { MODALIDAD } from "../../interfaces/enums";
 
 export class EspecializacionDTO {
     nombre: string;
@@ -20,4 +21,5 @@ export class MatEspeDTO {
     fechaInscripcion: Date;
     fechaInicio: Date;
     pagoMatricula: PagoMatriculaData;
+    modalidad: MODALIDAD;
 }

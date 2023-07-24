@@ -24,13 +24,14 @@ export class MatriculaEspecilizacionService
         try {
             const {
                 alumno,
+                especializacionUuid,
+                fechaInicio,
+                fechaInscripcion,
+                horario,
+                modalidad,
+                pagoMatricula,
                 secretariaUuid,
                 sedeUuid,
-                especializacionUuid,
-                fechaInscripcion,
-                fechaInicio,
-                horario,
-                pagoMatricula,
             } = data;
 
             //Registro de datos personales del estudiante
@@ -81,6 +82,7 @@ export class MatriculaEspecilizacionService
             newMatricula.fecha_inscripcion = fechaInscripcion;
             newMatricula.fecha_inicio = fechaInicio;
             newMatricula.horario = newHorario;
+            newMatricula.modalidad = modalidad;
 
             await queryRunner.manager.save(newMatricula);
 

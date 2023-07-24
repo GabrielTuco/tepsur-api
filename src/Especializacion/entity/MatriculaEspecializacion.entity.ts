@@ -6,6 +6,7 @@ import { Sede } from "../../Sede/entity";
 import { Horario, PagoMatricula } from "../../Matricula/entity";
 import { Docente } from "../../Teacher/entity";
 import { Secretaria } from "../../Secretary/entity";
+import { MODALIDAD } from "../../interfaces/enums";
 
 @Entity()
 export class MatriculaEspecializacion extends EntityBase {
@@ -39,6 +40,9 @@ export class MatriculaEspecializacion extends EntityBase {
     @OneToOne(() => PagoMatricula, { nullable: true })
     @JoinColumn()
     pagoMatricula: PagoMatricula;
+
+    @Column({ type: "varchar" })
+    modalidad: MODALIDAD;
 
     @Column()
     fecha_inscripcion: Date;
