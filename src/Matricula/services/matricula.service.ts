@@ -404,7 +404,9 @@ export class MatriculaService implements MatriculaRepository {
             const fechaInicio = new Date(matricula.fecha_inicio);
             const mesInicio = fechaInicio.getMonth() + 1;
             let numeroDePensiones = matricula.carrera.duracion_meses;
-            const fechaFin = moment().add(numeroDePensiones, "M").toDate();
+            const fechaFin = moment(fechaInicio)
+                .add(numeroDePensiones, "M")
+                .toDate();
             const meses: { mes: number; fechaLimite: Date }[] = [];
             const modulosMatriculadosLength =
                 matricula.matriculaModulosModulo.length;
@@ -424,24 +426,43 @@ export class MatriculaService implements MatriculaRepository {
             const yearDifference =
                 fechaFin.getFullYear() - fechaInicio.getFullYear();
 
-            //Registro de pension de los modulos matriculados
-            for (let i = 1; i <= modulosMatriculadosLength; i++) {
-                meses.push({
-                    mes: mesInicio,
-                    fechaLimite: new Date(),
-                });
-            }
-            //Reducimos el numero de pensiones de acuerdo a los modulos ya matriculados para el primer mes
-            numeroDePensiones = numeroDePensiones - modulosMatriculadosLength;
-
-            for (let i = 1; i <= numeroDePensiones; i++) {
-                if (mesInicio + i > 12)
+            if (modulosMatriculadosLength > 0) {
+                //Registro de pension de los modulos matriculados
+                for (let i = 1; i <= modulosMatriculadosLength; i++) {
                     meses.push({
-                        mes: mesInicio + i - 12 * yearDifference,
+                        mes: mesInicio,
                         fechaLimite: new Date(),
                     });
-                else
-                    meses.push({ mes: mesInicio + i, fechaLimite: new Date() });
+                }
+                //Reducimos el numero de pensiones de acuerdo a los modulos ya matriculados para el primer mes
+                numeroDePensiones =
+                    numeroDePensiones - modulosMatriculadosLength;
+
+                for (let i = 1; i <= numeroDePensiones; i++) {
+                    if (mesInicio + i > 12)
+                        meses.push({
+                            mes: mesInicio + i - 12 * yearDifference,
+                            fechaLimite: new Date(),
+                        });
+                    else
+                        meses.push({
+                            mes: mesInicio + i,
+                            fechaLimite: new Date(),
+                        });
+                }
+            } else {
+                for (let i = 0; i <= numeroDePensiones; i++) {
+                    if (mesInicio + i > 12)
+                        meses.push({
+                            mes: mesInicio + i - 12 * yearDifference,
+                            fechaLimite: new Date(),
+                        });
+                    else
+                        meses.push({
+                            mes: mesInicio + i,
+                            fechaLimite: new Date(),
+                        });
+                }
             }
 
             meses.map(async ({ mes, fechaLimite }) => {
