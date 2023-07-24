@@ -36,6 +36,7 @@ import {
 import { StudentService } from "../../Student/services/student.service";
 import { Alumno } from "../../Student/entity";
 import { MatriculaEspecializacion } from "../../Especializacion/entity/MatriculaEspecializacion.entity";
+import { Pension } from "../../Pension/entity";
 
 const pensionService = new PensionService();
 const studentService = new StudentService();
@@ -757,7 +758,9 @@ export class MatriculaService implements MatriculaRepository {
         throw new Error("Method not implemented.");
     };
 
-    public findByUuid = async (uuid: string): Promise<Matricula> => {
+    public findByUuid = async (
+        uuid: string
+    ): Promise<{ matricula: Matricula; pensiones: Pension[] }> => {
         try {
             const matricula = await Matricula.createQueryBuilder("m")
                 .innerJoinAndSelect("m.carrera", "c")
@@ -781,7 +784,11 @@ export class MatriculaService implements MatriculaRepository {
                     "Not found error"
                 );
 
-            return matricula;
+            const { pensiones } = await pensionService.listPensionByDni(
+                matricula.alumno.dni
+            );
+
+            return { matricula, pensiones };
         } catch (error) {
             throw error;
         }

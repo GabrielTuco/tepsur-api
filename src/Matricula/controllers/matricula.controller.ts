@@ -293,8 +293,8 @@ export class MatriculaController {
     public async getFindByUuid(req: Request, res: Response) {
         try {
             const { uuid } = req.params;
-            const matricula = await matriculaService.findByUuid(uuid);
-            return res.json(matricula);
+            const data = await matriculaService.findByUuid(uuid);
+            return res.json(data);
         } catch (error) {
             console.log(error);
             return res.status(500).json({

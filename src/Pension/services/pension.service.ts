@@ -3,6 +3,7 @@ import { Pension } from "../entity/Pension.entity";
 import { RegisterPensionDTO } from "../interfaces/dtos";
 import { PensionRepository } from "../interfaces/repositories";
 import { DatabaseError } from "../../errors/DatabaseError";
+import { Alumno } from "../../Student/entity";
 
 export class PensionService implements PensionRepository {
     public async register(data: RegisterPensionDTO): Promise<Pension> {
@@ -37,8 +38,17 @@ export class PensionService implements PensionRepository {
         }
     }
 
-    public async listPensionByDni(dni: string): Promise<Pension[]> {
+    public async listPensionByDni(
+        dni: string
+    ): Promise<{ alumno: Alumno; pensiones: Pension[] }> {
         try {
+            const alumno = await Alumno.findOneBy({ dni });
+            if (!alumno)
+                throw new DatabaseError(
+                    "El alumno no existe",
+                    404,
+                    "Not found error"
+                );
             const pensiones = await Pension.createQueryBuilder("p")
                 .innerJoin("p.matricula", "m")
                 .innerJoin("m.alumno", "a")
@@ -46,7 +56,7 @@ export class PensionService implements PensionRepository {
                 .where("a.dni=:dni and m.estado='true'", { dni })
                 .getMany();
 
-            return pensiones;
+            return { alumno, pensiones };
         } catch (error) {
             throw error;
         }

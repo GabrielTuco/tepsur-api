@@ -7,9 +7,12 @@ export class PensionController {
     public getByDni = async (req: Request, res: Response) => {
         try {
             const { dni } = req.params;
-            const pensiones = await this.pensionService.listPensionByDni(dni);
+            const { alumno, pensiones } =
+                await this.pensionService.listPensionByDni(dni);
 
-            return res.json(pensiones);
+            const data = pensiones.filter((p) => p.pago_pension === null);
+
+            return res.json({ alumno, pensiones: data });
         } catch (error) {
             return res.status(500).json({
                 msg: "Internal server error",
