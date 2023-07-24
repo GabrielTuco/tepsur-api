@@ -32,6 +32,7 @@ import {
     metodoPagoRoutes,
     tarifaPensionCarreraRoutes,
 } from "../Matricula/routes";
+import pensionRoutes from "../Pension/routes/pension.routes";
 import { swaggerCustomCss } from "../swagger-custom-styles";
 import { DataSource } from "typeorm";
 
@@ -54,6 +55,7 @@ interface Paths {
     matriculaEspe: string;
     metodoPago: string;
     tarifaPension: string;
+    pension: string;
 }
 
 class Server implements ServerBase {
@@ -82,6 +84,7 @@ class Server implements ServerBase {
             matriculaEspe: "/api/matricula-especializacion",
             metodoPago: "/api/metodo-pago",
             tarifaPension: "/api/tarifa-pension",
+            pension: "/api/pensiones",
         }
     ) {
         //Cloudinary config
@@ -167,6 +170,7 @@ class Server implements ServerBase {
         this.app.use(this.paths.metodoPago, metodoPagoRoutes);
         this.app.use(this.paths.student, studentRoutes);
         this.app.use(this.paths.tarifaPension, tarifaPensionCarreraRoutes);
+        this.app.use(this.paths.pension, pensionRoutes);
     }
 
     listen() {

@@ -36,14 +36,30 @@ export class PensionService implements PensionRepository {
             throw error;
         }
     }
+
+    public async listPensionByDni(dni: string): Promise<Pension[]> {
+        try {
+            const pensiones = await Pension.createQueryBuilder("p")
+                .innerJoin("p.matricula", "m")
+                .innerJoin("m.alumno", "a")
+                .leftJoinAndSelect("p.pago_pension", "pp")
+                .where("a.dni=:dni and m.estado='true'", { dni })
+                .getMany();
+
+            return pensiones;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     public async findByUuid(uuid: string): Promise<Pension> {
         try {
             const pension = await Pension.findOneBy({ uuid });
             if (!pension)
                 throw new DatabaseError(
-                    "Pension not found",
-                    500,
-                    "Database Error"
+                    "La pension no existe",
+                    404,
+                    "Not found error"
                 );
 
             return pension;

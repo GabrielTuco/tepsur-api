@@ -11,7 +11,7 @@ enum EstadoPagoPension {
 
 @Entity()
 export class PagoPension extends EntityBase {
-    @OneToOne(() => Pension)
+    @OneToOne(() => Pension, (pension) => pension.pago_pension)
     @JoinColumn()
     pension: Pension;
 
