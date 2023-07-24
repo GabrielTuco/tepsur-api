@@ -730,7 +730,7 @@ router.get(
 
 /**
  * @swagger
- * /matricula/{uuid}:
+ * /matricula/find/{uuid}:
  *  get:
  *      summary: Busqueda de un alumno por uuid
  *      tags: [Matricula]
@@ -757,7 +757,7 @@ router.get(
  *
  */
 router.get(
-    "/:uuid",
+    "/find/:uuid",
     [
         validateJWT,
         checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
