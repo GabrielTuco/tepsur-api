@@ -56,7 +56,6 @@ export class PensionService implements PensionRepository {
             pagoPension.fecha = data.fecha;
             pagoPension.monto = pension!.monto;
             pagoPension.num_comprobante = data.numComprobante;
-            pagoPension.entidad_bancaria = data.entidadBancaria;
             await pagoPension.save();
 
             return pagoPension;

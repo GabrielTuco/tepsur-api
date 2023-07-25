@@ -22,9 +22,6 @@ export class PagoPension extends EntityBase {
     @Column()
     num_comprobante: string;
 
-    @Column()
-    entidad_bancaria: string;
-
     @Column({ type: "varchar", default: EstadoPagoPension.COMPLETO })
     estado: EstadoPagoPension;
 

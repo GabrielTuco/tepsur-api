@@ -27,8 +27,6 @@ const pensionController = new PensionController(pensionService);
  *              numComprobante:
  *                  type: string
  *                  description: Numero de comprobante
- *              entidadBancaria:
- *                  type: string
  */
 
 /**

@@ -23,7 +23,8 @@ export class MatriculaGruposGrupo extends BaseEntity {
 
     @ManyToOne(
         () => Secretaria,
-        (secretaria) => secretaria.matricula_grupos_grupo
+        (secretaria) => secretaria.matricula_grupos_grupo,
+        { nullable: true }
     )
     responsable: Secretaria;
 }

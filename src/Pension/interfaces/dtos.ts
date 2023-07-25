@@ -11,6 +11,5 @@ export class RegisterPagoPensionDto {
     formaPagoUuid: number;
     fecha: Date;
     numComprobante: string;
-    entidadBancaria: string;
     // estado: EstadoPagoPension;
 }
