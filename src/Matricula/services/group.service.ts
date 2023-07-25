@@ -198,7 +198,7 @@ export class GroupService implements GroupRepository {
      * @param {string} uuid Uuid del grupo
      * @returns {Promise<Matricula[]>} Listado de matriculados en el grupo
      */
-    public listEstudents = async (uuid: string): Promise<Matricula[]> => {
+    public listEstudents = async (uuid: string): Promise<any[]> => {
         try {
             const grupo = await Grupo.findOneBy({ uuid });
             if (!grupo) throw new DatabaseError("Grupo no encontrado", 404, "");
@@ -210,12 +210,11 @@ export class GroupService implements GroupRepository {
                     .where("mg.grupoUuid=:uuid", { uuid })
                     .getMany();
 
-            const students = studentsByGrupo.map(
-                (student) => student.matricula
-            );
-            console.log(students);
+            // const students = studentsByGrupo.map(
+            //     (student) => student.matricula
+            // );
 
-            return students;
+            return studentsByGrupo;
         } catch (error) {
             throw error;
         }
