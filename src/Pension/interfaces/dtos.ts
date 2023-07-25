@@ -10,6 +10,7 @@ export class RegisterPensionDTO {
 export class RegisterPagoPensionDto {
     formaPagoUuid: number;
     fecha: Date;
+    hora: string;
     numComprobante: string;
     // estado: EstadoPagoPension;
 }

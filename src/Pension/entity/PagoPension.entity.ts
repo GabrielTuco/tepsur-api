@@ -17,6 +17,9 @@ export class PagoPension extends EntityBase {
     fecha: Date;
 
     @Column()
+    hora: string;
+
+    @Column()
     monto: number;
 
     @Column()

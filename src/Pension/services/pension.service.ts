@@ -54,6 +54,7 @@ export class PensionService implements PensionRepository {
             pagoPension.pension = pension!;
             pagoPension.forma_pago = formaPago!;
             pagoPension.fecha = data.fecha;
+            pagoPension.hora = data.hora;
             pagoPension.monto = pension!.monto;
             pagoPension.num_comprobante = data.numComprobante;
             await pagoPension.save();

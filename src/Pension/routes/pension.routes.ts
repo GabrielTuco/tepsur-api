@@ -24,6 +24,8 @@ const pensionController = new PensionController(pensionService);
  *              fecha:
  *                  type: string
  *                  format: date-time
+ *              hora:
+ *                  type: string
  *              numComprobante:
  *                  type: string
  *                  description: Numero de comprobante
@@ -81,7 +83,7 @@ router.post("/pagar/:uuid", [
     checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
     param("uuid").isUUID(4),
     body("formaPagoUuid").isUUID(4),
-    body(["fecha", "numComprobante", "entidadBancaria"]).isString(),
+    body(["fecha", "hora", "numComprobante", "entidadBancaria"]).isString(),
     validateFields,
 ]);
 
