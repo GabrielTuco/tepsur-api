@@ -115,7 +115,7 @@ export class GroupService implements GroupRepository {
         matriculasUuid: string[],
         grupoUuid: string,
         secretariaUuid: string
-    ): Promise<Grupo> => {
+    ): Promise<any> => {
         try {
             const students = await Promise.all(
                 matriculasUuid.map((uuid) =>
@@ -179,7 +179,9 @@ export class GroupService implements GroupRepository {
                 await grupo.reload();
             });
 
-            return grupo;
+            const studentsGrupo = await this.listEstudents(grupoUuid);
+
+            return studentsGrupo;
         } catch (error) {
             console.log(error);
             throw error;
