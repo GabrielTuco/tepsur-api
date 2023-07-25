@@ -613,6 +613,7 @@ export class MatriculaService implements MatriculaRepository {
                     // and mm.estado='matriculado
                     { year, month }
                 )
+                .orderBy("m.fecha_inscripcion", "DESC")
                 .getMany();
 
             return matriculas;
