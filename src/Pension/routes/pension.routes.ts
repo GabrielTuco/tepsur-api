@@ -82,8 +82,8 @@ router.post("/pagar/:uuid", [
     validateJWT,
     checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
     param("uuid").isUUID(4),
-    body("formaPagoUuid").isUUID(4),
-    body(["fecha", "hora", "numComprobante", "entidadBancaria"]).isString(),
+    body("formaPagoUuid").isNumeric(),
+    body(["fecha", "hora", "numComprobante"]).isString(),
     validateFields,
 ]);
 
