@@ -169,15 +169,17 @@ export class GroupService implements GroupRepository {
                         newMatriculaGrupo.condicion =
                             CONDICION_ALUMNO.CAMBIO_HORARIO;
                     }
+
                     student.ultimo_grupo = grupo;
                 }
 
                 await newMatriculaGrupo.save();
+                student.matriculaGruposGrupo.push(newMatriculaGrupo);
                 await student.save();
-
-                await grupo.save();
-                await grupo.reload();
             });
+
+            await grupo.save();
+            await grupo.reload();
 
             const studentsGrupo = await this.listEstudents(grupoUuid);
 
