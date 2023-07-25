@@ -6,6 +6,8 @@ import { DatabaseError } from "../../errors/DatabaseError";
 import { Alumno } from "../../Student/entity";
 import { PagoPension } from "../entity";
 import { MetodoPago } from "../../Matricula/entity";
+import fileUpload from "express-fileupload";
+import { uploadImage } from "../../helpers/uploadImage";
 
 export class PensionService implements PensionRepository {
     public async register(data: RegisterPensionDTO): Promise<Pension> {
@@ -63,6 +65,19 @@ export class PensionService implements PensionRepository {
         }
     }
 
+    public async listPagosHechos() {
+        try {
+            const pagos = PagoPension.createQueryBuilder("pp")
+                .innerJoinAndSelect("pp.pension", "p")
+                .innerJoinAndSelect("pp.forma_pago", "fp")
+                .getMany();
+
+            return pagos;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     public async listPensionByMatricula(
         matriculaUuid: string
     ): Promise<Pension[]> {
@@ -112,6 +127,33 @@ export class PensionService implements PensionRepository {
                     "Not found error"
                 );
 
+            return pension;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    public async uploadPaidDocument(
+        uuid: string,
+        image: fileUpload.UploadedFile
+    ) {
+        try {
+            const pension = await PagoPension.findOneBy({ uuid });
+            if (!pension)
+                throw new DatabaseError(
+                    "No existe el registro de este pago",
+                    404,
+                    "Not found error"
+                );
+
+            pension.foto_comprobante = await uploadImage(
+                pension.foto_comprobante,
+                image,
+                "pago-pensiones"
+            );
+
+            await pension.save();
+            await pension.reload();
             return pension;
         } catch (error) {
             throw error;

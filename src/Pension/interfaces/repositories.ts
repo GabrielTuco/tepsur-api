@@ -11,4 +11,5 @@ export interface PensionRepository {
         uuid: string,
         data: RegisterPagoPensionDto
     ): Promise<PagoPension>;
+    listPagosHechos(): Promise<PagoPension[]>;
 }

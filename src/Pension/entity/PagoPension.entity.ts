@@ -27,4 +27,7 @@ export class PagoPension extends EntityBase {
 
     @Column({ type: "varchar", default: EstadoPagoPension.COMPLETO })
     estado: EstadoPagoPension;
+
+    @Column({ nullable: true })
+    foto_comprobante: string;
 }
