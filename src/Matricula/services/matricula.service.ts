@@ -270,7 +270,11 @@ export class MatriculaService implements MatriculaRepository {
             await queryRunner.manager.save(newMatricula);
 
             //Registrar pensiones por cada modulo matriculado
-            await this.registerPensiones(newMatricula, carreraUuid);
+            await this.registerPensiones(
+                newMatricula,
+                carreraUuid,
+                modulos.length
+            );
 
             await queryRunner.commitTransaction();
 
@@ -398,7 +402,8 @@ export class MatriculaService implements MatriculaRepository {
 
     public registerPensiones = async (
         matricula: Matricula,
-        carreraUuid: string
+        carreraUuid: string,
+        modulosMatriculados: number
     ): Promise<void> => {
         try {
             const fechaInicio = new Date(matricula.fecha_inicio);
@@ -408,8 +413,7 @@ export class MatriculaService implements MatriculaRepository {
                 .add(numeroDePensiones, "M")
                 .toDate();
             const meses: { mes: number; fechaLimite: Date }[] = [];
-            const modulosMatriculadosLength =
-                matricula.matriculaModulosModulo.length;
+            const modulosMatriculadosLength = modulosMatriculados;
 
             const tarifa = await TarifaPensionCarrera.createQueryBuilder("t")
                 .innerJoinAndSelect("t.carrera", "c")

@@ -68,7 +68,11 @@ export interface ScheduleRepository {
 
 export interface MatriculaRepository {
     register(data: MatriculaDTO): Promise<Matricula>;
-    registerPensiones(matricula: Matricula, carreraUuid: string): Promise<void>;
+    registerPensiones(
+        matricula: Matricula,
+        carreraUuid: string,
+        modulosMatriculados: number
+    ): Promise<void>;
     setRandomGroup(horarioUuid: string): Promise<Grupo>;
     setModulesForMatricula(
         matriculaUuid: string,
