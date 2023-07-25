@@ -223,6 +223,7 @@ export class GroupService implements GroupRepository {
                 await MatriculaGruposGrupo.createQueryBuilder("mg")
                     .innerJoinAndSelect("mg.matricula", "m")
                     .innerJoinAndSelect("m.alumno", "a")
+                    .innerJoinAndSelect("mg.responsable", "r")
                     .where("mg.grupoUuid=:uuid", { uuid })
                     .getMany();
 
