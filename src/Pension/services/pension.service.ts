@@ -1,9 +1,11 @@
 import { v4 as uuid } from "uuid";
 import { Pension } from "../entity/Pension.entity";
-import { RegisterPensionDTO } from "../interfaces/dtos";
+import { RegisterPagoPensionDto, RegisterPensionDTO } from "../interfaces/dtos";
 import { PensionRepository } from "../interfaces/repositories";
 import { DatabaseError } from "../../errors/DatabaseError";
 import { Alumno } from "../../Student/entity";
+import { PagoPension } from "../entity";
+import { MetodoPago } from "../../Matricula/entity";
 
 export class PensionService implements PensionRepository {
     public async register(data: RegisterPensionDTO): Promise<Pension> {
@@ -23,6 +25,44 @@ export class PensionService implements PensionRepository {
             throw error;
         }
     }
+
+    public async pagarPension(
+        uuid: string,
+        data: RegisterPagoPensionDto
+    ): Promise<PagoPension> {
+        try {
+            const pagoPensionExists = await PagoPension.createQueryBuilder("p")
+                .innerJoinAndSelect("p.pension", "pe")
+                .where("pe.uuid=:uuid", { uuid })
+                .getOne();
+
+            if (pagoPensionExists)
+                throw new DatabaseError(
+                    "Ya se registro el pago de esta mensualidad",
+                    403,
+                    "Already exists error"
+                );
+
+            const pension = await Pension.findOneBy({ uuid });
+            const formaPago = await MetodoPago.findOneBy({
+                uuid: data.formaPagoUuid,
+            });
+
+            const pagoPension = new PagoPension();
+            pagoPension.pension = pension!;
+            pagoPension.forma_pago = formaPago!;
+            pagoPension.fecha = data.fecha;
+            pagoPension.monto = pension!.monto;
+            pagoPension.num_comprobante = data.numComprobante;
+            pagoPension.entidad_bancaria = data.entidadBancaria;
+            await pagoPension.save();
+
+            return pagoPension;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     public async listPensionByMatricula(
         matriculaUuid: string
     ): Promise<Pension[]> {
@@ -77,6 +117,7 @@ export class PensionService implements PensionRepository {
             throw error;
         }
     }
+
     public async updateFechaLimite(
         uuid: string,
         fecha: Date

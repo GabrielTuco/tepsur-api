@@ -1,13 +1,8 @@
-import { Column, Entity, JoinColumn, OneToOne } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from "typeorm";
 import { MetodoPago } from "../../Matricula/entity";
 import { Pension } from "./Pension.entity";
 import { EntityBase } from "../../entity";
-
-enum EstadoPagoPension {
-    PENDIENTE = "PENDIENTE",
-    COMPROMISO = "COMPROMISO",
-    COMPLETO = "COMPLETO",
-}
+import { EstadoPagoPension } from "../../interfaces/enums";
 
 @Entity()
 export class PagoPension extends EntityBase {
@@ -15,8 +10,7 @@ export class PagoPension extends EntityBase {
     @JoinColumn()
     pension: Pension;
 
-    @OneToOne(() => MetodoPago)
-    @JoinColumn()
+    @ManyToOne(() => MetodoPago, (metodoPago) => metodoPago.pagos_pension)
     forma_pago: MetodoPago;
 
     @Column()
@@ -31,6 +25,6 @@ export class PagoPension extends EntityBase {
     @Column()
     entidad_bancaria: string;
 
-    @Column()
+    @Column({ type: "varchar", default: EstadoPagoPension.COMPLETO })
     estado: EstadoPagoPension;
 }

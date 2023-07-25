@@ -275,6 +275,7 @@ export class MatriculaController {
             );
 
             const data = matriculas.map((m) => ({
+                uuid: m.uuid,
                 dni: m.alumno.dni,
                 nombres: m.alumno.nombres,
                 ape_paterno: m.alumno.ape_paterno,

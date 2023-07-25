@@ -48,3 +48,9 @@ export enum ESTADO_MODULO_MATRICULA {
     CULMINADO = "culminado", //Indica que el modulo ya fue culminado por el alumno
     POR_LLEVAR = "por_llevar", //Indica que el modulo aun esta pendiente por llevar
 }
+
+export enum EstadoPagoPension {
+    PENDIENTE = "PENDIENTE",
+    COMPROMISO = "COMPROMISO",
+    COMPLETO = "COMPLETO",
+}
