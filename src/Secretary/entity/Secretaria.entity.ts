@@ -9,7 +9,7 @@ import {
 import { EntityBase } from "../../entity/EntityBase";
 import { Usuario } from "../../Auth/entity/Usuario.entity";
 import { Sede } from "../../Sede/entity/Sede.entity";
-import { Grupo, Matricula } from "../../Matricula/entity";
+import { Grupo, Matricula, MatriculaGruposGrupo } from "../../Matricula/entity";
 import { MatriculaEspecializacion } from "../../Especializacion/entity/MatriculaEspecializacion.entity";
 
 @Entity()
@@ -53,4 +53,10 @@ export class Secretaria extends EntityBase {
 
     @OneToMany(() => Grupo, (grupo) => grupo.secretaria)
     grupos: Grupo[];
+
+    @OneToMany(
+        () => MatriculaGruposGrupo,
+        (matriculaGrupo) => matriculaGrupo.responsable
+    )
+    matricula_grupos_grupo: MatriculaGruposGrupo[];
 }

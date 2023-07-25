@@ -113,7 +113,8 @@ export class GroupService implements GroupRepository {
      */
     public addStudent = async (
         matriculasUuid: string[],
-        grupoUuid: string
+        grupoUuid: string,
+        secretariaUuid: string
     ): Promise<Grupo> => {
         try {
             const students = await Promise.all(
@@ -129,10 +130,22 @@ export class GroupService implements GroupRepository {
 
             if (!grupo)
                 throw new DatabaseError(
-                    "grupo no existe",
+                    "El grupo no existe",
                     404,
                     "Not found error"
                 );
+
+            const secretaria = await Secretaria.findOneBy({
+                uuid: secretariaUuid,
+            });
+
+            if (!secretaria)
+                throw new DatabaseError(
+                    "La secretaria existe",
+                    404,
+                    "Not found error"
+                );
+
             const studentsArray = students!.filter(
                 (element): element is Matricula => element !== undefined
             );
@@ -141,6 +154,7 @@ export class GroupService implements GroupRepository {
                 const newMatriculaGrupo = new MatriculaGruposGrupo();
                 newMatriculaGrupo.matricula = student;
                 newMatriculaGrupo.grupo = grupo;
+                newMatriculaGrupo.responsable = secretaria;
 
                 if (!student.ultimo_grupo) {
                     student.ultimo_grupo = grupo;

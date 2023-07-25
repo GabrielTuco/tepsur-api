@@ -206,7 +206,7 @@ router.post(
  * @swagger
  * /group/add-student:
  *  patch:
- *      summary: Agregar a un estudiante a un grupo
+ *      summary: Agregar a un grupo de estudiantes a un grupo
  *      tags: [Group]
  *      parameters:
  *         - $ref: '#/components/parameters/token'
@@ -223,6 +223,9 @@ router.post(
  *                                  type: string
  *                                  format: uuid
  *                          grupoUuid:
+ *                              type: string
+ *                              format: uuid
+ *                          secretariaUuid:
  *                              type: string
  *                              format: uuid
  *      responses:
@@ -245,6 +248,7 @@ router.patch(
         body("matriculasUuid").isArray(),
         body("matriculasUuid.*").isUUID(4),
         body("grupoUuid").isUUID("4"),
+        body("secretariaUuid").isUUID("4"),
         validateFields,
     ],
     groupController.patchAddStudent
