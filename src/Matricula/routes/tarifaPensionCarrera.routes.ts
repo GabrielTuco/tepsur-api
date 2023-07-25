@@ -262,7 +262,7 @@ router.delete(
         param("uuid").isUUID("4"),
         validateFields,
     ],
-    tarifaController.DELETEupdate
+    tarifaController.DELETEdelete
 );
 
 export default router;

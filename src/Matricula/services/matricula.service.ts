@@ -449,6 +449,7 @@ export class MatriculaService implements MatriculaRepository {
                             mes: mesInicio + i,
                             fechaLimite: new Date(),
                         });
+                    console.log(i + mesInicio);
                 }
             } else {
                 for (let i = 0; i <= numeroDePensiones; i++) {

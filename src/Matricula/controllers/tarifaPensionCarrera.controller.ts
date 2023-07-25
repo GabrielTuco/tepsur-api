@@ -64,7 +64,7 @@ export class TarifaPensionCarreraController {
         }
     }
 
-    public async DELETEupdate(req: Request, res: Response) {
+    public async DELETEdelete(req: Request, res: Response) {
         try {
             const tarifa = await tarifaService.delete(req.params.uuid);
 
