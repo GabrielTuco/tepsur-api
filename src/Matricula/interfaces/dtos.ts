@@ -71,7 +71,14 @@ export class MatriculaDTO {
 
 export class UpdateMatriculaDto {
     alumno: Partial<RegisterAlumnoDto>;
-    modulos: Partial<RegisterMatriculaModuloDto>[];
+    modulos: UpdateMatriculaModulosDto[];
+}
+
+export class UpdateMatriculaModulosDto {
+    fechaInicio: Date;
+    horarioUuid: string;
+    modalidad: MODALIDAD;
+    uuid: string;
 }
 
 export class RegisterMatriculaModuloDto {

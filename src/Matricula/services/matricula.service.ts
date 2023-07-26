@@ -776,13 +776,10 @@ export class MatriculaService implements MatriculaRepository {
                         await MatriculaModulosModulo.createQueryBuilder("mm")
                             .innerJoin("mm.matricula", "ma")
                             .innerJoin("mm.modulo", "mo")
-                            .where(
-                                "ma.uuid=:matriculaUuid and mo.uuid=:moduloUuid",
-                                {
-                                    matriculaUuid: matricula.uuid,
-                                    moduloUuid: moduloData.uuid,
-                                }
-                            )
+                            .innerJoin("mm.horario", "h")
+                            .where("mm.uuid=:uuid", {
+                                uuid: moduloData.uuid,
+                            })
                             .getOne();
                     const horario = await Horario.findOneBy({
                         uuid: moduloData.horarioUuid,
