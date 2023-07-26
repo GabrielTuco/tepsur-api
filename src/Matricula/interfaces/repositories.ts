@@ -1,5 +1,4 @@
 import fileUpload from "express-fileupload";
-import { Alumno } from "../../Student/entity/Alumno.entity";
 import {
     Carrera,
     Grupo,
@@ -11,7 +10,6 @@ import {
     TarifaPensionCarrera,
 } from "../entity";
 import {
-    RegisterAlumnoDto,
     CareerDTO,
     GroupDTO,
     GrupoWithStudents,
@@ -24,10 +22,7 @@ import {
     TrasladoMatriculaDTO,
     UpdateMatriculaDto,
 } from "./dtos";
-import { Response } from "express";
 import { MODALIDAD } from "../../interfaces/enums";
-import { Direccion } from "../../entity";
-import { Usuario } from "../../Auth/entity";
 import { MatriculaEspecializacion } from "../../Especializacion/entity/MatriculaEspecializacion.entity";
 import { Pension } from "../../Pension/entity";
 
@@ -58,7 +53,7 @@ export interface GroupRepository {
         secretariaUuid: string
     ): Promise<Grupo>;
     listGroups(): Promise<Grupo[]>;
-    listEstudents(uuid: string): Promise<Matricula[]>; //TODO Debe retornar un arreglo de matriculas o alumnos
+    listEstudents(uuid: string): Promise<Matricula[]>;
     findByUuid(uuid: string): Promise<GrupoWithStudents>;
     findByName(name: string): Promise<Grupo>;
 }
