@@ -275,12 +275,13 @@ export class MatriculaController {
             );
 
             const data = matriculas.map((m) => ({
-                uuid: m.uuid,
-                dni: m.alumno.dni,
-                nombres: m.alumno.nombres,
-                ape_paterno: m.alumno.ape_paterno,
-                ape_materno: m.alumno.ape_materno,
-                pago_matricula: m.pagoMatricula,
+                uuid: m.matricula.uuid,
+                dni: m.matricula.alumno.dni,
+                nombres: m.matricula.alumno.nombres,
+                ape_paterno: m.matricula.alumno.ape_paterno,
+                ape_materno: m.matricula.alumno.ape_materno,
+                pago_matricula: m.matricula.pagoMatricula,
+                ultimo_pago: m.ultimoPago,
             }));
             return res.json(data);
         } catch (error) {
@@ -301,6 +302,26 @@ export class MatriculaController {
             return res.status(500).json({
                 msg: "Internal server error",
             });
+        }
+    }
+
+    public async putUpdateMatricula(req: Request, res: Response) {
+        try {
+            const { uuid } = req.params;
+            const { body } = req;
+
+            const matricula = await matriculaService.update(uuid, body);
+
+            return res.json(matricula);
+        } catch (error) {
+            console.log(error);
+            if (error instanceof DatabaseError) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                    name: error.name,
+                });
+            }
+            return res.status(500).json({ msg: "Internal server error" });
         }
     }
 

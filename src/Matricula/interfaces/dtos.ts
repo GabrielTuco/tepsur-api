@@ -1,24 +1,25 @@
+import { RegisterAlumnoDto } from "../../Student/interfaces/dtos";
 import {
     DIAS,
     MODALIDAD,
     TIPO_CARRERA,
     TIPO_MATRICULA,
 } from "../../interfaces/enums";
-import { Grupo, Horario, Matricula } from "../entity";
+import { Grupo, Matricula } from "../entity";
 
-export interface ModuleDTO {
+export class ModuleDTO {
     nombre: string;
     duracionSemanas: string;
     orden: number;
 }
 
-export interface HorarioDTO {
+export class HorarioDTO {
     horaInicio: string;
     horaFin: string;
     dias: string[];
 }
 
-export interface CareerDTO {
+export class CareerDTO {
     nombre: string;
     modulos: ModuleDTO[];
     duracionMeses: number;
@@ -26,7 +27,7 @@ export interface CareerDTO {
     sedeUuid: string;
 }
 
-export interface GroupDTO {
+export class GroupDTO {
     nombre: string;
     fechaInicio: Date;
     modalidad: MODALIDAD;
@@ -42,7 +43,7 @@ export interface GrupoWithStudents extends Partial<Grupo> {
     students: Matricula[];
 }
 
-export interface ScheduleDTO {
+export class ScheduleDTO {
     dias: DIAS[];
     horaInicio: string;
     horaFin: string;
@@ -50,20 +51,15 @@ export interface ScheduleDTO {
 
 export type UpdateScheduleDTO = Partial<ScheduleDTO>;
 
-export interface ModuloMatriculaDTO {
+export class ModuloMatriculaDTO {
     uuid: string;
     modalidad: MODALIDAD;
     fechaInicio: Date;
 }
-export interface MatriculaDTO {
-    alumno: AlumnoData;
+export class MatriculaDTO {
+    alumno: RegisterAlumnoDto;
     carreraUuid: string;
-    modulos: {
-        uuid: string;
-        modalidad: MODALIDAD;
-        fechaInicio: Date;
-        horarioUuid: string;
-    }[];
+    modulos: RegisterMatriculaModuloDto[];
     secretariaUuid: string;
     sedeUuid: string;
     pagoMatricula: PagoMatriculaData;
@@ -73,8 +69,20 @@ export interface MatriculaDTO {
     modalidad: MODALIDAD;
 }
 
-export interface TrasladoMatriculaDTO {
-    alumno: AlumnoData;
+export class UpdateMatriculaDto {
+    alumno: Partial<RegisterAlumnoDto>;
+    modulos: Partial<RegisterMatriculaModuloDto>[];
+}
+
+export class RegisterMatriculaModuloDto {
+    uuid: string;
+    modalidad: MODALIDAD;
+    fechaInicio: Date;
+    horarioUuid: string;
+}
+
+export class TrasladoMatriculaDTO {
+    alumno: RegisterAlumnoDto;
     carreraUuid: string;
     grupoUuid: string;
     moduloActualUuid: string;
@@ -85,39 +93,24 @@ export interface TrasladoMatriculaDTO {
     fechaInicio: Date;
 }
 
-export interface AlumnoData {
-    dni: string;
-    nombres: string;
-    apePaterno: string;
-    apeMaterno: string;
-    sexo: "m" | "f";
-    edad: number;
-    gradoEstudiosUuid: number;
-    lugarResidencia: string;
-    celular: string;
-    celularReferencia: string;
-    correo: string;
-    direccion: DireccionDto;
-}
-
-export interface DireccionDto {
+export class DireccionDto {
     direccionExacta: string;
     distrito: string;
     provincia: string;
     departamento: string;
 }
 
-export interface PagoMatriculaData {
+export class PagoMatriculaData {
     numComprobante: string;
     formaPagoUuid: number;
     monto: number;
 }
 
-export interface GradoEstudiosDTO {
+export class GradoEstudiosDTO {
     descripcion: string;
 }
 
-export interface TarifaPensionCarreraDTO {
+export class TarifaPensionCarreraDTO {
     carreraUuid: string;
     tarifa: number;
 }

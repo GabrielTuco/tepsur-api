@@ -4,15 +4,15 @@ import { Rol, Usuario } from "../../Auth/entity";
 import { Direccion } from "../../entity";
 import { DatabaseError } from "../../errors/DatabaseError";
 import { Alumno } from "../entity/Alumno.entity";
-import { StudentDTO } from "../interfaces/dtos";
 import { StudentRepository } from "../interfaces/repositories";
 import { encryptPassword } from "../../helpers/encryptPassword";
 import { GradoEstudios, Matricula } from "../../Matricula/entity";
 import { Sede } from "../../Sede/entity";
-import { AlumnoData, DireccionDto } from "../../Matricula/interfaces/dtos";
+import { DireccionDto } from "../../Matricula/interfaces/dtos";
+import { RegisterAlumnoDto } from "../interfaces/dtos";
 
 export class StudentService implements StudentRepository {
-    public register = async (data: StudentDTO): Promise<Alumno> => {
+    public register = async (data: RegisterAlumnoDto): Promise<Alumno> => {
         try {
             const {
                 apeMaterno,
@@ -164,13 +164,54 @@ export class StudentService implements StudentRepository {
 
     public updateInfo = async (
         uuid: string,
-        data: Partial<StudentDTO>
+        data: Partial<RegisterAlumnoDto>
     ): Promise<Alumno> => {
         try {
-            const alumno = await Alumno.findOneBy({ uuid });
-            if (!alumno) throw new DatabaseError("Alumno not found", 500, "");
+            const {
+                apeMaterno,
+                apePaterno,
+                celular,
+                celularReferencia,
+                correo,
+                direccion,
+                dni,
+                gradoEstudiosUuid,
+                lugarResidencia,
+                nombres,
+                sexo,
+            } = data;
 
-            Object.assign(alumno, data);
+            const alumno = await Alumno.createQueryBuilder("a")
+                .innerJoinAndSelect("a.grado_estudios", "g")
+                .innerJoinAndSelect("a.direccion", "d")
+                .where("a.uuid=:uuid", { uuid })
+                .getOne();
+
+            if (!alumno)
+                throw new DatabaseError(
+                    "El alumno no existe",
+                    404,
+                    "Not found error"
+                );
+            const gradoEstudios = await GradoEstudios.findOneBy({
+                uuid: gradoEstudiosUuid,
+            });
+
+            alumno.dni = dni!;
+            alumno.nombres = nombres!;
+            alumno.ape_materno = apeMaterno!;
+            alumno.ape_paterno = apePaterno!;
+            alumno.celular = celular!;
+            alumno.celular_referencia = celularReferencia!;
+            alumno.sexo = sexo!;
+            alumno.correo = correo!;
+            alumno.lugar_residencia = lugarResidencia!;
+            alumno.direccion.direccion_exacta = direccion?.direccionExacta!;
+            alumno.direccion.distrito = direccion?.distrito!;
+            alumno.direccion.provincia = direccion?.provincia!;
+            alumno.direccion.departamento = direccion?.departamento!;
+            alumno.grado_estudios = gradoEstudios!;
+
             await alumno.save();
             await alumno.reload();
 
@@ -214,7 +255,7 @@ export class StudentService implements StudentRepository {
     };
 
     public registerStudent = async (
-        alumno: AlumnoData,
+        alumno: RegisterAlumnoDto,
         newDireccionAlumno: Direccion,
         newUserAlumno: Usuario
     ) => {

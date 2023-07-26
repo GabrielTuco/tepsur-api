@@ -41,7 +41,7 @@ export class MatriculaEspecializacion extends EntityBase {
     @JoinColumn()
     pagoMatricula: PagoMatricula;
 
-    @Column({ type: "varchar" })
+    @Column({ type: "varchar", nullable: true })
     modalidad: MODALIDAD;
 
     @Column()

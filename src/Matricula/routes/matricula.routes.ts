@@ -120,6 +120,32 @@ const matriculaController = new MatriculaController();
  *                  type: string
  *                  format: date-time
  *                  description:  Fecha de inicio de clases
+ *      UpdateMatricula:
+ *          properties:
+ *              alumno:
+ *                  type: object
+ *                  $ref: '#/components/schemas/Alumno'
+ *                  description: Datos del alumno
+ *              modulos:
+ *                  type: array
+ *                  items:
+ *                      type: object
+ *                      properties:
+ *                          uuid:
+ *                              type: string
+ *                              format: uuid
+ *                              description:  Uuid de los modulos de la carrera
+ *                          modalidad:
+ *                              type: string
+ *                              enum: [virtual, presencial]
+ *                              description: La modalidad en la que se va llevar el modulo
+ *                          fechaInicio:
+ *                              type: string
+ *                              format: date-time
+ *                              description: La fecha de inicio del modulo
+ *                          horarioUuid:
+ *                              type: string
+ *                              format: uuid
  */
 
 /**
@@ -768,6 +794,81 @@ router.get(
         validateFields,
     ],
     matriculaController.getFindByUuid
+);
+
+/**
+ * @swagger
+ * /matricula/{uuid}:
+ *  patch:
+ *      summary: Actualizar una matricula
+ *      tags: [Matricula]
+ *      parameters:
+ *          - $ref: '#/components/parameters/token'
+ *          - in: path
+ *            name: uuid
+ *            required: true
+ *            schema:
+ *              type: string
+ *              format: uuid
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      $ref: '#/components/schemas/UpdateMatricula'
+ *      responses:
+ *          200:
+ *              description: La matricula actualizada del alumno
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          $ref: '#/components/schemas/Matricula'
+ *          500:
+ *              description: Error de servidor
+ *
+ */
+router.patch(
+    "/:uuid",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        body("alumno").isObject(),
+        body("alumno.dni").isString().isLength({ min: 8, max: 8 }),
+        body("alumno.dni").custom(isAlumnoDniValid),
+        body("alumno.nombres").isString(),
+        body("alumno.apePaterno").isString(),
+        body("alumno.apeMaterno").isString(),
+        body("alumno.sexo", "Los valores permitidos son: 'm'|'f' ").isIn([
+            "m",
+            "f",
+        ]),
+        body("alumno.edad").optional().isNumeric(),
+        body(
+            "alumno.gradoEstudiosUuid",
+            "El valor debe ser un UUID valido"
+        ).isNumeric(),
+        body("alumno.lugarResidencia").isString(),
+        body("alumno.celular", "No es un numero de celular valido")
+            .isString()
+            .isLength({ min: 9, max: 9 }),
+        body("alumno.celularReferencia", "No es un numero de celular valido")
+            .optional()
+            .isString()
+            .isLength({ min: 9, max: 9 }),
+        body("alumno.correo", "No es un correo valido").isEmail(),
+        body("alumno.correo").custom(isAlumnoCorreoValid),
+        body("alumno.direccion").isObject(),
+        body("alumno.direccion.direccionExacta").isString(),
+        body("alumno.direccion.distrito").isString(),
+        body("alumno.direccion.provincia").isString(),
+        body("alumno.direccion.departamento").isString(),
+        //Datos academicos
+        body("modulos", "Debe ser un array").optional().isArray(),
+        body("modulos.*").optional().isObject(),
+        validateFields,
+    ],
+    matriculaController.putUpdateMatricula
 );
 
 //TODO: mover

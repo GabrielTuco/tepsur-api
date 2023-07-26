@@ -11,7 +11,7 @@ import {
     TarifaPensionCarrera,
 } from "../entity";
 import {
-    AlumnoData,
+    RegisterAlumnoDto,
     CareerDTO,
     GroupDTO,
     GrupoWithStudents,
@@ -22,6 +22,7 @@ import {
     ScheduleDTO,
     TarifaPensionCarreraDTO,
     TrasladoMatriculaDTO,
+    UpdateMatriculaDto,
 } from "./dtos";
 import { Response } from "express";
 import { MODALIDAD } from "../../interfaces/enums";
@@ -101,7 +102,7 @@ export interface MatriculaRepository {
         uuid: string,
         data: PagoMatriculaData
     ): Promise<PagoMatricula>;
-    update(uuid: string, data: Partial<MatriculaDTO>): Promise<Matricula>;
+    update(uuid: string, data: UpdateMatriculaDto): Promise<Matricula>;
     delete(uuid: string): Promise<Matricula>;
     listModules(): Promise<Modulo[]>;
     changeSede(matriculaUuid: string, sedeUuid: string): Promise<Matricula>;

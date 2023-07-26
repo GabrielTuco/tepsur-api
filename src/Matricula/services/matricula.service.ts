@@ -17,6 +17,7 @@ import {
     PagoMatriculaData,
     ModuloMatriculaDTO,
     TrasladoMatriculaDTO,
+    UpdateMatriculaDto,
 } from "../interfaces/dtos";
 import { MatriculaRepository } from "../interfaces/repositories";
 import { Secretaria } from "../../Secretary/entity/Secretaria.entity";
@@ -752,10 +753,64 @@ export class MatriculaService implements MatriculaRepository {
     };
 
     public update = async (
-        _uuid: string,
-        _data: Partial<MatriculaDTO>
+        uuid: string,
+        data: UpdateMatriculaDto
     ): Promise<Matricula> => {
-        throw new Error("Method not implemented.");
+        try {
+            const { matricula } = await this.findByUuid(uuid);
+
+            if (!matricula)
+                throw new DatabaseError(
+                    "La matricula no existe",
+                    404,
+                    "Not found error"
+                );
+
+            matricula.alumno = await studentService.updateInfo(
+                matricula.uuid,
+                data.alumno
+            );
+            matricula.matriculaModulosModulo = await Promise.all(
+                data.modulos.map(async (moduloData) => {
+                    const matriculaModulo =
+                        await MatriculaModulosModulo.createQueryBuilder("mm")
+                            .innerJoin("mm.matricula", "ma")
+                            .innerJoin("mm.modulo", "mo")
+                            .where(
+                                "ma.uuid=:matriculaUuid and mo.uuid=:moduloUuid",
+                                {
+                                    matriculaUuid: matricula.uuid,
+                                    moduloUuid: moduloData.uuid,
+                                }
+                            )
+                            .getOne();
+                    const horario = await Horario.findOneBy({
+                        uuid: moduloData.horarioUuid,
+                    });
+
+                    if (!matriculaModulo)
+                        throw new DatabaseError(
+                            "El regitro no existe",
+                            404,
+                            "Not found error"
+                        );
+
+                    matriculaModulo.horario = horario!;
+                    matriculaModulo.fecha_inicio = moduloData.fechaInicio!;
+                    matriculaModulo.modalidad = moduloData.modalidad!;
+
+                    await matriculaModulo.save();
+
+                    return matriculaModulo;
+                })
+            );
+            await matricula.save();
+            await matricula.reload();
+
+            return matricula;
+        } catch (error) {
+            throw error;
+        }
     };
 
     public findByQuery = async (
@@ -844,6 +899,7 @@ export class MatriculaService implements MatriculaRepository {
     ): Promise<Matricula> => {
         throw new Error("Method not implemented.");
     };
+
     public changeModalidadModulo = async (
         matriculaUuid: string,
         _moduloUuid: string,

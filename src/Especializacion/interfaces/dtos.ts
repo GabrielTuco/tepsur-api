@@ -1,5 +1,5 @@
 import {
-    AlumnoData,
+    RegisterAlumnoDto,
     HorarioDTO,
     PagoMatriculaData,
     ScheduleDTO,
@@ -13,7 +13,7 @@ export class EspecializacionDTO {
 }
 
 export class MatEspeDTO {
-    alumno: AlumnoData;
+    alumno: RegisterAlumnoDto;
     secretariaUuid: string;
     especializacionUuid: string;
     sedeUuid: string;

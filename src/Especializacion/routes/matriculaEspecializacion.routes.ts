@@ -133,7 +133,9 @@ router.post(
         body("horario.horaFin").isString(),
         body("fechaInscripcion").isString(),
         body("fechaInicio").isString(),
-        body("modalidad").isIn([MODALIDAD.PRESENCIAL, MODALIDAD.VIRTUAL]),
+        body("modalidad")
+            .optional()
+            .isIn([MODALIDAD.PRESENCIAL, MODALIDAD.VIRTUAL]),
         //Pago de matricula(opcional)
         body("pagoMatricula").optional().isObject(),
         body("pagoMatricula.numComprobante").optional().isString(),

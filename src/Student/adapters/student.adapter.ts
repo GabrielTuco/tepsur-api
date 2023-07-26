@@ -1,7 +1,6 @@
-import { Alumno } from "../entity/Alumno.entity";
-import { StudentDTO } from "../interfaces/dtos";
+import { RegisterAlumnoDto } from "../interfaces/dtos";
 
-export const studentAdapter = (data: Partial<StudentDTO>) => {
+export const studentAdapter = (data: Partial<RegisterAlumnoDto>) => {
     return {
         dni: data.dni,
         nombres: data.nombres,
