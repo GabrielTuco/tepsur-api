@@ -5,7 +5,7 @@ import { PensionRepository } from "../interfaces/repositories";
 import { DatabaseError } from "../../errors/DatabaseError";
 import { Alumno } from "../../Student/entity";
 import { PagoPension } from "../entity";
-import { MetodoPago } from "../../Matricula/entity";
+import { Matricula, MetodoPago } from "../../Matricula/entity";
 import fileUpload from "express-fileupload";
 import { uploadImage } from "../../helpers/uploadImage";
 
@@ -112,6 +112,35 @@ export class PensionService implements PensionRepository {
                 .getMany();
 
             return { alumno, pensiones };
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    public async findUltimoPago(matriculaUuid: string) {
+        try {
+            const matricula = await Matricula.findOneBy({
+                uuid: matriculaUuid,
+            });
+            if (!matricula)
+                throw new DatabaseError(
+                    "La matricula no existe",
+                    404,
+                    "Not found error"
+                );
+
+            const pago = await Pension.createQueryBuilder("p")
+                .innerJoin("p.matricula", "m")
+                .innerJoin("m.alumno", "a")
+                .innerJoinAndSelect("p.pago_pension", "pp")
+                .where("m.uuid=:uuid and m.estado='true'", {
+                    uuid: matriculaUuid,
+                })
+                .orderBy("p.fecha", "ASC")
+                .limit(1)
+                .getOne();
+
+            return pago!;
         } catch (error) {
             throw error;
         }

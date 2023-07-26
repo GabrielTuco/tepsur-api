@@ -28,6 +28,7 @@ import { MODALIDAD } from "../../interfaces/enums";
 import { Direccion } from "../../entity";
 import { Usuario } from "../../Auth/entity";
 import { MatriculaEspecializacion } from "../../Especializacion/entity/MatriculaEspecializacion.entity";
+import { Pension } from "../../Pension/entity";
 
 export interface ModuleRepository {
     register(data: ModuleDTO): Promise<Modulo>;
@@ -92,7 +93,9 @@ export interface MatriculaRepository {
     ): Promise<Matricula[]>;
     findByStudent(uuid: number): Promise<Matricula>;
     findByUuid(uuid: string): Promise<any>;
-    findByQuery(query: string): Promise<Matricula[]>;
+    findByQuery(
+        query: string
+    ): Promise<{ matricula: Matricula; ultimoPago: Pension }[]>;
     matriculaDataForPDF(uuid: string): Promise<any>;
     updatePagoMatricula(
         uuid: string,

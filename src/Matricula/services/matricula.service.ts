@@ -758,7 +758,9 @@ export class MatriculaService implements MatriculaRepository {
         throw new Error("Method not implemented.");
     };
 
-    public findByQuery = async (query: string): Promise<Matricula[]> => {
+    public findByQuery = async (
+        query: string
+    ): Promise<{ matricula: Matricula; ultimoPago: Pension }[]> => {
         try {
             const matriculas = await Matricula.createQueryBuilder("m")
                 .innerJoinAndSelect("m.alumno", "a")
@@ -774,7 +776,19 @@ export class MatriculaService implements MatriculaRepository {
                 )
                 .getMany();
 
-            return matriculas;
+            const data = await Promise.all(
+                matriculas.map(async (m) => {
+                    const ultimoPago = await pensionService.findUltimoPago(
+                        m.uuid
+                    );
+
+                    return {
+                        matricula: m,
+                        ultimoPago,
+                    };
+                })
+            );
+            return data;
         } catch (error) {
             throw error;
         }
