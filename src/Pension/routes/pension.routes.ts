@@ -38,13 +38,13 @@ const pensionController = new PensionController(pensionService);
  *  description: Endpoints para la gestion de pagos pensiones o deudas
  */
 
-router.get("/:dni", [validateJWT], pensionController.getByDni);
-
 router.get(
     "/pagos",
     [validateJWT, checkAuthRole([ROLES.ADMIN, ROLES.SECRE])],
     pensionController.getListPagos
 );
+
+router.get("/:dni", [validateJWT], pensionController.getByDni);
 
 /**
  * @swagger
