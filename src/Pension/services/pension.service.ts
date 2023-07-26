@@ -136,7 +136,7 @@ export class PensionService implements PensionRepository {
                 .where("m.uuid=:uuid and m.estado='true'", {
                     uuid: matriculaUuid,
                 })
-                .orderBy("p.fecha", "ASC")
+                .orderBy("p.fecha_limite", "ASC")
                 .limit(1)
                 .getOne();
 
