@@ -767,7 +767,7 @@ export class MatriculaService implements MatriculaRepository {
                 );
 
             matricula.alumno = await studentService.updateInfo(
-                matricula.uuid,
+                matricula.alumno.uuid,
                 data.alumno
             );
             matricula.matriculaModulosModulo = await Promise.all(

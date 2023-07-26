@@ -204,7 +204,16 @@ export class StudentService implements StudentRepository {
             alumno.celular = celular!;
             alumno.celular_referencia = celularReferencia!;
             alumno.sexo = sexo!;
-            alumno.correo = correo!;
+            if (alumno.correo !== correo) {
+                const correoExists = await Alumno.findOneBy({ correo });
+                if (correoExists)
+                    throw new DatabaseError(
+                        "El correo ya esta registrado",
+                        403,
+                        "Already exists"
+                    );
+                else alumno.correo = correo!;
+            }
             alumno.lugar_residencia = lugarResidencia!;
             alumno.direccion.direccion_exacta = direccion?.direccionExacta!;
             alumno.direccion.distrito = direccion?.distrito!;

@@ -857,7 +857,7 @@ router.patch(
             .isString()
             .isLength({ min: 9, max: 9 }),
         body("alumno.correo", "No es un correo valido").isEmail(),
-        body("alumno.correo").custom(isAlumnoCorreoValid),
+        // body("alumno.correo").custom(isAlumnoCorreoValid),
         body("alumno.direccion").isObject(),
         body("alumno.direccion.direccionExacta").isString(),
         body("alumno.direccion.distrito").isString(),

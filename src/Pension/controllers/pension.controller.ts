@@ -17,6 +17,11 @@ export class PensionController {
             return res.json({ alumno, pensiones: data });
         } catch (error) {
             console.log(error);
+            if (error instanceof DatabaseError) {
+                return res
+                    .status(error.codeStatus)
+                    .json({ msg: error.message, name: error.name });
+            }
             return res.status(500).json({
                 msg: "Internal server error",
             });
