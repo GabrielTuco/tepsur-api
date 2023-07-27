@@ -119,6 +119,8 @@ export class PagoMatriculaData {
     numComprobante: string;
     formaPagoUuid: number;
     monto: number;
+    fecha: Date;
+    hora: string;
 }
 
 export class GradoEstudiosDTO {

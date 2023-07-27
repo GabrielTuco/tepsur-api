@@ -11,7 +11,7 @@
             <div class="logo-container">
                 <img src="/imgs/logo_tepsur.png" alt="logo_tepsur" />
             </div>
-            <div class="title"><h2>FICHA DE MATRICULA ESPECIALIZACION</h2></div>
+            <div class="title"><h2>FICHA DE MATRICULA</h2></div>
             <div class="foto">
                 <span>FOTO</span>
             </div>
@@ -19,6 +19,97 @@
             <div>
                 <span id="year"></span>
             </div>
+            <table border="1">
+                <tr>
+                    <td><b>Apellido Paterno</b></td>
+                    <td><b>Apellido Materno</b></td>
+                    <td><b>Nombres</b></td>
+                    <td colspan="2"><b>Sexo</b></td>
+                </tr>
+                <tr>
+                    <td><%= alumno.ape_paterno %></td>
+                    <td><%= alumno.ape_materno %></td>
+                    <td><%= alumno.nombres %></td>
+                    <td><%= alumno.sexo.toUpperCase() %></td>
+                </tr>
+                <tr>
+                    <td><b>Direccion: (Av,Jr,Calle)</b></td>
+                    <td colspan="3">
+                        <%= alumno.direccion.direccion_exacta %>
+                    </td>
+                </tr>
+                <tr>
+                    <td><b>Distrito</b></td>
+                    <td><b>Provincia</b></td>
+                    <td colspan="2"><b>Departamento</b></td>
+                </tr>
+                <tr>
+                    <td><%= alumno.direccion.distrito %></td>
+                    <td><%= alumno.direccion.provincia %></td>
+                    <td colspan="3"><%= alumno.direccion.departamento %></td>
+                </tr>
+            </table>
+
+            <table border="1">
+                <tr>
+                    <td><b>Edad</b></td>
+                    <td><b>Grado instruccion</b></td>
+                    <td><b>Documento de identidad</b></td>
+                </tr>
+                <tr>
+                    <td><%= alumno.edad %></td>
+                    <td><%= alumno.grado_estudios.descripcion %></td>
+                    <td><%= alumno.dni %></td>
+                </tr>
+                <tr>
+                    <td><b>Lugar de residencia</b></td>
+                    <td><b>Celular</b></td>
+                    <td><b>Correo</b></td>
+                </tr>
+                <tr>
+                    <td><%= alumno.lugar_residencia || "-" %></td>
+                    <td><%= alumno.celular %></td>
+                    <td><%= alumno.correo %></td>
+                </tr>
+            </table>
+
+            <table border="1">
+                <tr>
+                    <td><b>Especializacion</b></td>
+                    <td colspan="4"><%= especializacion.nombre %></td>
+                </tr>
+                <tr>
+                    <td><b>Sede</b></td>
+                    <td colspan="5"><%= sede.nombre %></td>
+                </tr>
+                <tr>
+                    <td colspan="5"><b>Pago de matricula</b></td>
+                </tr>
+                <tr>
+                    <td><b>Nro comprobante</b></td>
+                    <td><b>Forma de pago</b></td>
+                    <td><b>Monto</b></td>
+                    <td><b>Fecha</b></td>
+                    <td><b>Hora</b></td>
+                </tr>
+                <% if (pagoMatricula) { %>
+                <tr>
+                    <td><%= pagoMatricula.num_comprobante %></td>
+                    <td><%= pagoMatricula.forma_pago.description %></td>
+                    <td>S/. <%= pagoMatricula.monto %></td>
+                    <td><%= pagoMatricula.fecha || "-" %></td>
+                    <td><%= pagoMatricula.hora || "-" %></td>
+                </tr>
+                <% } else {%>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <% } %>
+            </table>
 
             <div class="firma-container">
                 <div class="firma">Estudiante</div>

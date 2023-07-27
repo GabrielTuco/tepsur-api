@@ -14,5 +14,11 @@ export class PagoMatricula extends EntityBase {
     monto: number;
 
     @Column({ nullable: true })
+    fecha: Date;
+
+    @Column({ nullable: true })
+    hora: string;
+
+    @Column({ nullable: true })
     foto_comprobante: string;
 }

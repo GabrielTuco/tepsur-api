@@ -66,7 +66,7 @@
                     <td><b>Correo</b></td>
                 </tr>
                 <tr>
-                    <td>Arequipa(falta)</td>
+                    <td><%= alumno.lugar_residencia || "-" %></td>
                     <td><%= alumno.celular %></td>
                     <td><%= alumno.correo %></td>
                 </tr>
@@ -75,14 +75,14 @@
             <table border="1">
                 <tr>
                     <td><b>Carrera</b></td>
-                    <td colspan="3"><%= carrera.nombre %></td>
+                    <td colspan="4"><%= carrera.nombre %></td>
                 </tr>
                 <tr>
                     <td><b>Sede</b></td>
-                    <td colspan="3"><%= sede.nombre %></td>
+                    <td colspan="5"><%= sede.nombre %></td>
                 </tr>
                 <tr>
-                    <td colspan="4">
+                    <td colspan="5">
                         <table border="1">
                             <tr>
                                 <td><b>Modulo</b></td>
@@ -115,6 +115,7 @@
                     <td><b>Nro comprobante</b></td>
                     <td><b>Forma de pago</b></td>
                     <td><b>Monto</b></td>
+                    <td><b>Fecha</b></td>
                     <td><b>Hora</b></td>
                 </tr>
                 <% if (pagoMatricula) { %>
@@ -122,10 +123,12 @@
                     <td><%= pagoMatricula.num_comprobante %></td>
                     <td><%= pagoMatricula.forma_pago.description %></td>
                     <td>S/. <%= pagoMatricula.monto %></td>
-                    <td>13:50(Falta)</td>
+                    <td><%= pagoMatricula.fecha || "-" %></td>
+                    <td><%= pagoMatricula.hora || "-" %></td>
                 </tr>
                 <% } else {%>
                 <tr>
+                    <td></td>
                     <td></td>
                     <td></td>
                     <td></td>
