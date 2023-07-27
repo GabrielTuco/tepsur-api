@@ -124,7 +124,10 @@ export class GroupService implements GroupRepository {
                 matriculasUuid.map((uuid) =>
                     Matricula.findOne({
                         where: { uuid },
-                        relations: { carrera: true },
+                        relations: {
+                            carrera: true,
+                            matriculaGruposGrupo: true,
+                        },
                     })
                 )
             );
