@@ -90,7 +90,10 @@
                 <tr>
                     <td><%= modalidad %></td>
                     <td><%= horario.hora_inicio + " " + horario.hora_fin %></td>
-                    <td><%= fecha_inicio %></td>
+                    <td>
+                        <%= new
+                        Date(fecha_inicio).toLocaleString().split(",")[0] %>
+                    </td>
                 </tr>
                 <tr>
                     <td colspan="5"><b>Pago de matricula</b></td>
@@ -120,6 +123,10 @@
                 </tr>
                 <% } %>
             </table>
+            <div>
+                <%= new Date(fecha_inscripcion).toLocaleString().split(",")[0]
+                %>
+            </div>
 
             <div class="firma-container">
                 <div class="firma">Estudiante</div>

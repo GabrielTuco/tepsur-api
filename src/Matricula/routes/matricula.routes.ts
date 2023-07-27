@@ -237,6 +237,7 @@ router.post(
         body("pagoMatricula").optional().isObject(),
         body("pagoMatricula.numComprobante").optional().isString(),
         body("pagoMatricula.formaPagoUuid").optional().isNumeric(),
+        body("pagoMatricula.fecha").optional().isString(),
         body("pagoMatricula.monto").optional().isNumeric(),
         validateFields,
     ],
