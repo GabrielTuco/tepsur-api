@@ -173,37 +173,40 @@ export class CareerService implements CareerRepository {
 
             career.nombre = data.nombre;
             career.duracion_meses = data.duracionMeses;
-            career.tipo_carrera = data.tipoCarera;
+            career.tipo_carrera = data.tipoCarrera;
 
-            career.modulos = await Promise.all(
-                data.modulos.map(async (modulo) => {
-                    if (modulo.uuid) {
-                        const moduloExists = await Modulo.findOneBy({
-                            uuid: modulo.uuid,
-                        });
-                        if (!moduloExists)
-                            throw new NotFoundError("El modulo no existe");
+            if (data.modulos) {
+                career.modulos = await Promise.all(
+                    data.modulos.map(async (modulo) => {
+                        if (modulo.uuid) {
+                            const moduloExists = await Modulo.findOneBy({
+                                uuid: modulo.uuid,
+                            });
+                            if (!moduloExists)
+                                throw new NotFoundError("El modulo no existe");
 
-                        moduloExists.duracion_semanas = modulo.duracionSemanas;
-                        moduloExists.nombre = modulo.nombre;
-                        moduloExists.orden = modulo.orden;
+                            moduloExists.duracion_semanas =
+                                modulo.duracionSemanas;
+                            moduloExists.nombre = modulo.nombre;
+                            moduloExists.orden = modulo.orden;
 
-                        await moduloExists.save();
-                        await moduloExists.reload();
+                            await moduloExists.save();
+                            await moduloExists.reload();
 
-                        return moduloExists;
-                    } else {
-                        const newModulo = new Modulo();
-                        newModulo.uuid = uuid();
-                        newModulo.nombre = modulo.nombre;
-                        newModulo.duracion_semanas = modulo.duracionSemanas;
-                        newModulo.orden = modulo.orden;
+                            return moduloExists;
+                        } else {
+                            const newModulo = new Modulo();
+                            newModulo.uuid = uuid();
+                            newModulo.nombre = modulo.nombre;
+                            newModulo.duracion_semanas = modulo.duracionSemanas;
+                            newModulo.orden = modulo.orden;
 
-                        await newModulo.save();
-                        return newModulo;
-                    }
-                })
-            );
+                            await newModulo.save();
+                            return newModulo;
+                        }
+                    })
+                );
+            }
 
             await career.save();
             await career.reload();

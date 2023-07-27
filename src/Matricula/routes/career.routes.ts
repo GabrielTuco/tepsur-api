@@ -409,7 +409,7 @@ router.patch(
         checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
         param("uuid").isUUID("4"),
         body("nombre").isString(),
-        body("modulos").isArray(),
+        body("modulos").optional().isArray(),
         body("modulos.*.nombre").isString(),
         body("modulos.*.duracionSemanas").isString(),
         body("modulos.*.orden").isNumeric(),

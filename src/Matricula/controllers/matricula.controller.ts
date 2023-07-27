@@ -8,11 +8,15 @@ import { UbigeoService } from "../services/ubigeo.service";
 import { generatePDF } from "../helpers/generatePDF";
 import yargs, { argv } from "yargs";
 import { Alumno } from "../../Student/entity";
+import { MatriculaEspecializacion } from "../../Especializacion/entity/MatriculaEspecializacion.entity";
+import { Matricula } from "../entity";
+import { MatriculaEspecilizacionService } from "../../Especializacion/services/matriculaEspecializacion.service";
 
 const gradoEstudioService = new GradoEstudiosService();
 const matriculaService = new MatriculaService();
 const validateDniService = new ValidateDniService();
 const ubigeoService = new UbigeoService();
+const matriculaEspeService = new MatriculaEspecilizacionService();
 export class MatriculaController {
     public async postMatricula(req: Request, res: Response) {
         try {
@@ -216,11 +220,15 @@ export class MatriculaController {
 
     public async getGenerateFichaMatricula(req: Request, res: Response) {
         try {
-            const data = await matriculaService.matriculaDataForPDF(
-                req.params.id
-            );
-
-            res.render("index", data);
+            const { id } = req.params;
+            let matricula: Matricula | null;
+            matricula = await matriculaService.matriculaDataForPDF(id);
+            if (!matricula) {
+                const data = await matriculaEspeService.findByUuid(id);
+                return res.render("matriculaEspecializacion", data);
+            } else {
+                return res.render("matricula", matricula);
+            }
         } catch (error) {
             console.log(error);
             return res.status(500).json({

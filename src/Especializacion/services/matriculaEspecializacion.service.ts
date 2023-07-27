@@ -9,6 +9,7 @@ import { MatriculaEspecializacionRepository } from "../interfaces/repository";
 import { Especializacion } from "../entity/Especializacion.entity";
 import { Horario, MetodoPago, PagoMatricula } from "../../Matricula/entity";
 import { DatabaseError } from "../../errors/DatabaseError";
+import { NotFoundError } from "../../errors/NotFoundError";
 
 const studentService = new StudentService();
 
@@ -165,12 +166,7 @@ export class MatriculaEspecilizacionService
                 .where("m.uuid=:uuid", { uuid })
                 .getOne();
 
-            if (!matricula)
-                throw new DatabaseError(
-                    "La matricula no existe",
-                    404,
-                    "Not found error"
-                );
+            if (!matricula) throw new NotFoundError("La matricula no existe");
             return matricula;
         } catch (error) {
             throw error;
@@ -184,12 +180,7 @@ export class MatriculaEspecilizacionService
             const matricula = await MatriculaEspecializacion.findOneBy({
                 uuid,
             });
-            if (!matricula)
-                throw new DatabaseError(
-                    "La matricula no existe",
-                    404,
-                    "Not found error"
-                );
+            if (!matricula) throw new NotFoundError("La matricula no existe");
 
             await MatriculaEspecializacion.update({ uuid }, data);
             await matricula.reload();

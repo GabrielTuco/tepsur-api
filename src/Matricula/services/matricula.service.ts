@@ -38,6 +38,7 @@ import { StudentService } from "../../Student/services/student.service";
 import { Alumno } from "../../Student/entity";
 import { MatriculaEspecializacion } from "../../Especializacion/entity/MatriculaEspecializacion.entity";
 import { Pension } from "../../Pension/entity";
+import { NotFoundError } from "../../errors/NotFoundError";
 
 const pensionService = new PensionService();
 const studentService = new StudentService();
@@ -340,7 +341,11 @@ export class MatriculaService implements MatriculaRepository {
                 (c) => c.uuid === carrera?.uuid
             );
             if (!carreraValid)
-                throw new Error("Esta carrera no se puede llevar en esta sede");
+                throw new DatabaseError(
+                    "Esta carrera no se puede llevar en esta sede",
+                    400,
+                    "Refused error"
+                );
 
             const newMatricula = new Matricula();
             newMatricula.uuid = uuid();
@@ -421,10 +426,8 @@ export class MatriculaService implements MatriculaRepository {
                 .where("c.uuid=:uuid", { uuid: carreraUuid })
                 .getOne();
             if (!tarifa)
-                throw new DatabaseError(
-                    "No existe una tarifa registrada para esta carrera",
-                    404,
-                    "Not found error"
+                throw new NotFoundError(
+                    "No existe una tarifa registrada para esta carrera"
                 );
             const tarifaPension = tarifa.tarifa;
 
@@ -528,8 +531,7 @@ export class MatriculaService implements MatriculaRepository {
                 .where("m.uuid=:uuid", { uuid: matriculaUuid })
                 .getOne();
 
-            if (!matricula)
-                throw new DatabaseError("Matricula not found", 500, "");
+            if (!matricula) throw new NotFoundError("La matricula no existe");
 
             //Busqueda de modulos
             const modulosExists = await Promise.all(
@@ -647,11 +649,7 @@ export class MatriculaService implements MatriculaRepository {
                     .where("m.uuid=:uuid", { uuid })
                     .getOne();
                 if (!matricula)
-                    throw new DatabaseError(
-                        "La matricula no existe",
-                        404,
-                        "Not found error"
-                    );
+                    throw new NotFoundError("La matricula no existe");
             }
 
             pagoMatricula = matricula.pagoMatricula;
@@ -682,12 +680,7 @@ export class MatriculaService implements MatriculaRepository {
                 relations: { pagoMatricula: true },
             });
 
-            if (!matricula)
-                throw new DatabaseError(
-                    "La matricula no existe",
-                    404,
-                    "Not found error"
-                );
+            if (!matricula) throw new NotFoundError("La matricula no existe");
 
             const newPagoMatricula = new PagoMatricula();
             const metodoPago = await MetodoPago.findOneBy({
@@ -718,7 +711,9 @@ export class MatriculaService implements MatriculaRepository {
         }
     };
 
-    public matriculaDataForPDF = async (uuid: string): Promise<any> => {
+    public matriculaDataForPDF = async (
+        uuid: string
+    ): Promise<Matricula | null> => {
         try {
             const data = await Matricula.createQueryBuilder("m")
                 .innerJoinAndSelect("m.carrera", "c")
@@ -739,14 +734,11 @@ export class MatriculaService implements MatriculaRepository {
                     .where("ma.uuid=:uuid", { uuid: data?.uuid })
                     .getMany();
 
-            if (!data)
-                throw new DatabaseError(
-                    "La matricula no existe",
-                    404,
-                    "Not found error"
-                );
+            //if (!data) throw new NotFoundError("La matricula no existe");
 
-            return { ...data, matriculaModulosModulo };
+            if (data) data!.matriculaModulosModulo = matriculaModulosModulo;
+
+            return data;
         } catch (error) {
             throw error;
         }
@@ -759,12 +751,7 @@ export class MatriculaService implements MatriculaRepository {
         try {
             const { matricula } = await this.findByUuid(uuid);
 
-            if (!matricula)
-                throw new DatabaseError(
-                    "La matricula no existe",
-                    404,
-                    "Not found error"
-                );
+            if (!matricula) throw new NotFoundError("La matricula no existe");
 
             matricula.alumno = await studentService.updateInfo(
                 matricula.alumno.uuid,
@@ -786,11 +773,7 @@ export class MatriculaService implements MatriculaRepository {
                     });
 
                     if (!matriculaModulo)
-                        throw new DatabaseError(
-                            "El regitro no existe",
-                            404,
-                            "Not found error"
-                        );
+                        throw new NotFoundError("El regitro no existe");
 
                     matriculaModulo.horario = horario!;
                     matriculaModulo.fecha_inicio = moduloData.fechaInicio!;
@@ -869,12 +852,7 @@ export class MatriculaService implements MatriculaRepository {
                 .where("m.uuid=:uuid", { uuid })
                 .getOne();
 
-            if (!matricula)
-                throw new DatabaseError(
-                    "La matricula no existe",
-                    404,
-                    "Not found error"
-                );
+            if (!matricula) throw new NotFoundError("La matricula no existe");
 
             const { pensiones } = await pensionService.listPensionByDni(
                 matricula.alumno.dni

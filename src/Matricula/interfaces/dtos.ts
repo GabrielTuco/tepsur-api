@@ -31,7 +31,7 @@ export class RegisterCareerDto {
 export class UpdateCareerDto {
     nombre: string;
     duracionMeses: number;
-    tipoCarera: TIPO_CARRERA;
+    tipoCarrera: TIPO_CARRERA;
     modulos: ModuleDTO[];
 }
 
