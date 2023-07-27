@@ -10,7 +10,7 @@ import {
     TarifaPensionCarrera,
 } from "../entity";
 import {
-    CareerDTO,
+    RegisterCareerDto,
     GroupDTO,
     GrupoWithStudents,
     MatriculaDTO,
@@ -21,6 +21,7 @@ import {
     TarifaPensionCarreraDTO,
     TrasladoMatriculaDTO,
     UpdateMatriculaDto,
+    UpdateCareerDto,
 } from "./dtos";
 import { MODALIDAD } from "../../interfaces/enums";
 import { MatriculaEspecializacion } from "../../Especializacion/entity/MatriculaEspecializacion.entity";
@@ -33,13 +34,13 @@ export interface ModuleRepository {
 }
 
 export interface CareerRepository {
-    register(data: CareerDTO): Promise<Carrera>;
+    register(data: RegisterCareerDto): Promise<Carrera>;
     listAll(): Promise<Carrera[]>;
     listBySede(uuid: string): Promise<Carrera[]>;
     listModules(uuid: string): Promise<Modulo[]>;
     findByUuid(uuid: string): Promise<Carrera>;
     findByName(name: string): Promise<Carrera>;
-    update(uuid: string, data: Partial<Carrera>): Promise<Carrera>;
+    update(uuid: string, data: UpdateCareerDto): Promise<Carrera>;
     addModule(uuid: string, module: Partial<Modulo>): Promise<Carrera>;
     removeModule(uuid: string, moduleUuid: string): Promise<Carrera>;
     delete(uuid: string): Promise<Carrera>;

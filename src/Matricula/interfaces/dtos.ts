@@ -11,6 +11,7 @@ export class ModuleDTO {
     nombre: string;
     duracionSemanas: string;
     orden: number;
+    uuid?: string;
 }
 
 export class HorarioDTO {
@@ -19,12 +20,19 @@ export class HorarioDTO {
     dias: string[];
 }
 
-export class CareerDTO {
+export class RegisterCareerDto {
     nombre: string;
     modulos: ModuleDTO[];
     duracionMeses: number;
     tipoCarrera: TIPO_CARRERA;
     sedeUuid: string;
+}
+
+export class UpdateCareerDto {
+    nombre: string;
+    duracionMeses: number;
+    tipoCarera: TIPO_CARRERA;
+    modulos: ModuleDTO[];
 }
 
 export class GroupDTO {

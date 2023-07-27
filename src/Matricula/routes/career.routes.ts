@@ -32,6 +32,9 @@ const careerController = new CareerController();
  *                  items:
  *                      type: object
  *                      properties:
+ *                          uuid:
+ *                              type: string
+ *                              format: uuid
  *                          nombre:
  *                              type: string
  *                          duracionSemanas:
@@ -44,6 +47,7 @@ const careerController = new CareerController();
  *              - nombre
  *              - duracionMeses
  *              - tipoCarrera
+ *              - sedeUuid
  *
  *      CareerResponse:
  *          properties:
@@ -67,6 +71,9 @@ const careerController = new CareerController();
  *                  items:
  *                      type: object
  *                      properties:
+ *                          uuid:
+ *                              type: string
+ *                              format: uuid
  *                          nombre:
  *                              type: string
  *                              example: "Cargador frontal"
@@ -401,6 +408,16 @@ router.patch(
         validateJWT,
         checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
         param("uuid").isUUID("4"),
+        body("nombre").isString(),
+        body("modulos").isArray(),
+        body("modulos.*.nombre").isString(),
+        body("modulos.*.duracionSemanas").isString(),
+        body("modulos.*.orden").isNumeric(),
+        body("tipoCarrera", "Validos: modular | semestral").isIn([
+            TIPO_CARRERA.MODULAR,
+            TIPO_CARRERA.SEMESTRAL,
+        ]),
+        body("duracionMeses").isNumeric(),
         validateFields,
     ],
     careerController.updateCareer

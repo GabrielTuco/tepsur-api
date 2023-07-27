@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { CareerService } from "../services/career.service";
 import { DatabaseError } from "../../errors/DatabaseError";
+import { NotFoundError } from "../../errors/NotFoundError";
+import { DatabaseErrorBase } from "../../errors/DatabaseErrorBase";
 
 const careerService = new CareerService();
 
@@ -11,9 +13,10 @@ export class CareerController {
             return res.json(carreras);
         } catch (error) {
             console.log(error);
-            if (error instanceof DatabaseError) {
+            if (error instanceof DatabaseErrorBase) {
                 return res.status(error.codeStatus).json({
                     msg: error.message,
+                    name: error.name,
                 });
             }
             return res.status(500).json({
@@ -28,7 +31,7 @@ export class CareerController {
             const carreras = await careerService.listBySede(String(sede));
             return res.json(carreras);
         } catch (error) {
-            if (error instanceof DatabaseError) {
+            if (error instanceof DatabaseErrorBase) {
                 return res.status(error.codeStatus).json({
                     msg: error.message,
                 });
@@ -46,7 +49,7 @@ export class CareerController {
             return res.json(career);
         } catch (error) {
             console.log(error);
-            if (error instanceof DatabaseError) {
+            if (error instanceof DatabaseErrorBase) {
                 return res.status(error.codeStatus).json({
                     msg: error.message,
                 });
@@ -65,7 +68,7 @@ export class CareerController {
             return res.json(modules);
         } catch (error) {
             console.log(error);
-            if (error instanceof DatabaseError) {
+            if (error instanceof DatabaseErrorBase) {
                 return res.status(error.codeStatus).json({
                     msg: error.message,
                 });
@@ -84,7 +87,7 @@ export class CareerController {
             return res.json(schedules);
         } catch (error) {
             console.log(error);
-            if (error instanceof DatabaseError) {
+            if (error instanceof DatabaseErrorBase) {
                 return res.status(error.codeStatus).json({
                     msg: error.message,
                 });
@@ -104,7 +107,7 @@ export class CareerController {
             return res.json(career);
         } catch (error) {
             console.log(error);
-            if (error instanceof DatabaseError) {
+            if (error instanceof DatabaseErrorBase) {
                 return res.status(error.codeStatus).json({
                     msg: error.message,
                 });
@@ -124,7 +127,7 @@ export class CareerController {
             return res.json(career);
         } catch (error) {
             console.log(error);
-            if (error instanceof DatabaseError) {
+            if (error instanceof DatabaseErrorBase) {
                 return res.status(error.codeStatus).json({
                     msg: error.message,
                 });
@@ -138,13 +141,13 @@ export class CareerController {
     public async updateCareer(req: Request, res: Response) {
         try {
             const { uuid } = req.params;
-            console.log(uuid);
-            const career = await careerService.update(uuid, req.body);
+            const data = req.body;
+            const career = await careerService.update(uuid, data);
 
             return res.json(career);
         } catch (error) {
             console.log(error);
-            if (error instanceof DatabaseError) {
+            if (error instanceof DatabaseErrorBase) {
                 return res.status(error.codeStatus).json({
                     msg: error.message,
                 });
@@ -163,7 +166,7 @@ export class CareerController {
             return res.json(career);
         } catch (error) {
             console.log(error);
-            if (error instanceof DatabaseError) {
+            if (error instanceof DatabaseErrorBase) {
                 return res.status(error.codeStatus).json({
                     msg: error.message,
                 });
@@ -183,7 +186,7 @@ export class CareerController {
             return res.json(career);
         } catch (error) {
             console.log(error);
-            if (error instanceof DatabaseError) {
+            if (error instanceof DatabaseErrorBase) {
                 return res.status(error.codeStatus).json({
                     msg: error.message,
                 });
@@ -201,7 +204,7 @@ export class CareerController {
 
             return res.json(carrera);
         } catch (error) {
-            if (error instanceof DatabaseError) {
+            if (error instanceof DatabaseErrorBase) {
                 return res.status(error.codeStatus).json({
                     name: error.name,
                     msg: error.message,
