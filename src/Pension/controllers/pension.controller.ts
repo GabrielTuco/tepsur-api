@@ -69,7 +69,7 @@ export class PensionController {
         }
     };
 
-    public async putUploadPaidDocument(req: Request, res: Response) {
+    public putUploadPaidDocument = async (req: Request, res: Response) => {
         try {
             if (!req.files || Object.keys(req.files).length === 0) {
                 res.status(400).json({ msg: "No hay imagen para subir." });
@@ -102,5 +102,5 @@ export class PensionController {
                 msg: "Internal server error",
             });
         }
-    }
+    };
 }
