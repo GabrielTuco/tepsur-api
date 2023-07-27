@@ -78,14 +78,18 @@ router.get("/:dni", [validateJWT], pensionController.getByDni);
  *              description: Error de servidor
  *
  */
-router.post("/pagar/:uuid", [
-    validateJWT,
-    checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
-    param("uuid").isUUID(4),
-    body("formaPagoUuid").isNumeric(),
-    body(["fecha", "hora", "numComprobante"]).isString(),
-    validateFields,
-]);
+router.post(
+    "/pagar/:uuid",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        param("uuid").isUUID(4),
+        body("formaPagoUuid").isNumeric(),
+        body(["fecha", "hora", "numComprobante"]).isString(),
+        validateFields,
+    ],
+    pensionController.postPagoPension
+);
 
 /**
  * @swagger

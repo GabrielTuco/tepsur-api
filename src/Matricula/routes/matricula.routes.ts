@@ -852,10 +852,10 @@ router.patch(
         body("alumno.celular", "No es un numero de celular valido")
             .isString()
             .isLength({ min: 9, max: 9 }),
-        body("alumno.celularReferencia", "No es un numero de celular valido")
-            .optional()
-            .isString()
-            .isLength({ min: 9, max: 9 }),
+        // body("alumno.celularReferencia", "No es un numero de celular valido")
+        //     .optional()
+        //     .isString()
+        //     .isLength({ min: 9, max: 9 }),
         body("alumno.correo", "No es un correo valido").isEmail(),
         // body("alumno.correo").custom(isAlumnoCorreoValid),
         body("alumno.direccion").isObject(),
