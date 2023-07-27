@@ -676,14 +676,24 @@ export class MatriculaService implements MatriculaRepository {
         data: PagoMatriculaData
     ): Promise<PagoMatricula> => {
         try {
-            const matricula = await Matricula.findOne({
+            let matricula: Matricula | MatriculaEspecializacion | null;
+            matricula = await Matricula.findOne({
                 where: {
                     uuid: matriculaUuid,
                 },
                 relations: { pagoMatricula: true },
             });
 
-            if (!matricula) throw new NotFoundError("La matricula no existe");
+            if (!matricula) {
+                matricula = await MatriculaEspecializacion.findOne({
+                    where: {
+                        uuid: matriculaUuid,
+                    },
+                    relations: { pagoMatricula: true },
+                });
+                if (!matricula)
+                    throw new NotFoundError("La matricula no existe");
+            }
 
             const newPagoMatricula = new PagoMatricula();
             const metodoPago = await MetodoPago.findOneBy({
@@ -693,6 +703,8 @@ export class MatriculaService implements MatriculaRepository {
             newPagoMatricula.num_comprobante = data.numComprobante;
             newPagoMatricula.forma_pago = metodoPago!;
             newPagoMatricula.monto = data.monto;
+            newPagoMatricula.fecha = data.fecha;
+            newPagoMatricula.hora = data.hora;
             await newPagoMatricula.save();
 
             matricula.pagoMatricula = newPagoMatricula;
