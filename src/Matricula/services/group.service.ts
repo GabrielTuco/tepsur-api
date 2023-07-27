@@ -9,7 +9,10 @@ import { Secretaria } from "../../Secretary/entity/Secretaria.entity";
 import { Sede } from "../../Sede/entity";
 import { MatriculaModulosModulo } from "../entity/MatriculaModulosModulo";
 import { CONDICION_ALUMNO, TIPO_CARRERA } from "../../interfaces/enums";
+import { PensionService } from "../../Pension/services/pension.service";
+import { NotFoundError } from "../../errors/NotFoundError";
 
+const pensionService = new PensionService();
 export class GroupService implements GroupRepository {
     /**
      * Servicio para registrar un nuevo grupo
@@ -219,7 +222,7 @@ export class GroupService implements GroupRepository {
     public listEstudents = async (uuid: string): Promise<any[]> => {
         try {
             const grupo = await Grupo.findOneBy({ uuid });
-            if (!grupo) throw new DatabaseError("Grupo no encontrado", 404, "");
+            if (!grupo) throw new NotFoundError("Grupo no encontrado");
 
             const studentsByGrupo =
                 await MatriculaGruposGrupo.createQueryBuilder("mg")
@@ -232,8 +235,20 @@ export class GroupService implements GroupRepository {
             // const students = studentsByGrupo.map(
             //     (student) => student.matricula
             // );
+            const data = await Promise.all(
+                studentsByGrupo.map(async (matriculaGrupo) => {
+                    const ultimoPago = await pensionService.findUltimoPago(
+                        matriculaGrupo.matricula.uuid
+                    );
 
-            return studentsByGrupo;
+                    return {
+                        matriculaGrupo,
+                        ultimoPago,
+                    };
+                })
+            );
+
+            return data;
         } catch (error) {
             throw error;
         }
@@ -245,8 +260,6 @@ export class GroupService implements GroupRepository {
                 .innerJoinAndSelect("g.docente", "d")
                 .innerJoinAndSelect("g.horario", "h")
                 .innerJoinAndSelect("g.carrera", "c")
-                //.leftJoinAndSelect("g.matriculas", "m")
-                //.leftJoinAndSelect("m.alumno", "a")
                 .innerJoinAndSelect("g.modulo", "m")
                 .leftJoinAndSelect("g.secretaria", "s")
                 .where("g.uuid=:uuid", { uuid })
