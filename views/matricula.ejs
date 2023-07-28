@@ -123,7 +123,11 @@
                     <td><%= pagoMatricula.num_comprobante %></td>
                     <td><%= pagoMatricula.forma_pago.description %></td>
                     <td>S/. <%= pagoMatricula.monto %></td>
-                    <td><%= pagoMatricula.fecha || "-" %></td>
+                    <td>
+                        <%= new
+                        Date(pagoMatricula.fecha).toLocaleString().split(",")[0]
+                        || "-" %>
+                    </td>
                     <td><%= pagoMatricula.hora || "-" %></td>
                 </tr>
                 <% } else {%>
