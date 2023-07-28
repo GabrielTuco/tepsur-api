@@ -29,7 +29,7 @@ export class Secretaria extends EntityBase {
     @Column({ nullable: true, length: 9 })
     celular: string;
 
-    @Column({ nullable: true, unique: true })
+    @Column({ nullable: true })
     correo: string;
 
     @Column({ nullable: true, default: true })
