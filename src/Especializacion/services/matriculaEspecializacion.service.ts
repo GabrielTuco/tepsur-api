@@ -96,6 +96,8 @@ export class MatriculaEspecilizacionService
                 newPagoMatricula.num_comprobante = pagoMatricula.numComprobante;
                 newPagoMatricula.forma_pago = metodoPago!;
                 newPagoMatricula.monto = pagoMatricula.monto;
+                newPagoMatricula.fecha = pagoMatricula.fecha;
+                newPagoMatricula.hora = pagoMatricula.hora;
                 await queryRunner.manager.save(newPagoMatricula);
 
                 newMatricula.pagoMatricula = newPagoMatricula;
