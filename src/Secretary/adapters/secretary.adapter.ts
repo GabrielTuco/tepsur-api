@@ -1,5 +1,5 @@
+import { UpdateSecretaryDTO } from "../dtos";
 import { Secretaria } from "../entity/Secretaria.entity";
-import { UpdateSecretaryDTO } from "../interfaces/secretary.dto";
 
 export const adaptedSecretary = (
     data: UpdateSecretaryDTO
