@@ -85,12 +85,12 @@
                 <tr>
                     <td><b>Modalidad</b></td>
                     <td><b>Horario</b></td>
-                    <td><b>Fecha inicio</b></td>
+                    <td colspan="2"><b>Fecha inicio</b></td>
                 </tr>
                 <tr>
                     <td><%= modalidad %></td>
                     <td><%= horario.hora_inicio + " " + horario.hora_fin %></td>
-                    <td>
+                    <td colspan="2">
                         <%= new
                         Date(fecha_inicio).toLocaleString().split(",")[0] %>
                     </td>
@@ -124,8 +124,8 @@
                 <% } %>
             </table>
             <div>
-                <%= new Date(fecha_inscripcion).toLocaleString().split(",")[0]
-                %>
+                Fecha: <%= new
+                Date(fecha_inscripcion).toLocaleString().split(",")[0] %>
             </div>
 
             <div class="firma-container">
