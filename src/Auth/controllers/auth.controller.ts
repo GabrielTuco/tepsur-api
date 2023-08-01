@@ -62,7 +62,7 @@ export class AuthController {
             const userTypes: FindUserTypesDictionary = {
                 Docente: teacherService.searchByUser,
                 Secretaria: secretaryService.searchByUser,
-                Administrador: administratorService.searchByUuid,
+                Administrador: administratorService.searchByUser,
                 Alumno: alumnoService.searchByUser,
             };
 

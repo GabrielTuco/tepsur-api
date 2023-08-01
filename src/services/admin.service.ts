@@ -104,6 +104,25 @@ export class AdministratorService {
         }
     };
 
+    public searchByUser = async (user: Usuario): Promise<Administrador> => {
+        try {
+            const adminExists = await Administrador.createQueryBuilder("a")
+                .innerJoinAndSelect("a.usuario", "u")
+                .innerJoinAndSelect("u.rol", "r")
+                .leftJoinAndSelect("a.sede", "s")
+                .where("u.uuid= :id and a.estado=true", { id: user.uuid })
+                .getOne();
+            if (!adminExists)
+                throw new NotFoundError(
+                    "La persona no existe o se ha eliminado de la base de datos ;)"
+                );
+
+            return adminExists;
+        } catch (error) {
+            throw error;
+        }
+    };
+
     public updateAdmin = async (adminUuid: string, data: UpdateAdminDto) => {
         try {
             const admin = await this.searchByUuid(adminUuid);
