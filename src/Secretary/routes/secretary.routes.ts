@@ -85,21 +85,21 @@ const secretaryController = new SecretaryController(secretaryService);
  *
  */
 router.post(
-  "/",
-  [
-    validateJWT,
-    checkAuthRole([ROLES.ADMIN]),
-    body("dni", "Debe de contener 8 caracteres").isLength({
-      min: 8,
-      max: 8,
-    }),
-    body("nombres", "Este campo es obligatorio").isString(),
-    body("apePaterno", "Este campo es obligatorio").isString(),
-    body("apeMaterno", "Este campo es obligatorio").isString(),
-    body("codSede", "Este campo es obligatorio").isUUID("4"),
-    validateFields,
-  ],
-  secretaryController.postSecretary
+    "/",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN]),
+        body("dni", "Debe de contener 8 caracteres").isLength({
+            min: 8,
+            max: 8,
+        }),
+        body("nombres", "Este campo es obligatorio").isString(),
+        body("apePaterno", "Este campo es obligatorio").isString(),
+        body("apeMaterno", "Este campo es obligatorio").isString(),
+        body("codSede", "Este campo es obligatorio").isUUID("4"),
+        validateFields,
+    ],
+    secretaryController.postSecretary
 );
 
 /**
@@ -125,9 +125,9 @@ router.post(
  *
  */
 router.get(
-  "/",
-  [validateJWT, checkAuthRole([ROLES.ADMIN, ROLES.SECRE])],
-  secretaryController.getSecretaries
+    "/",
+    [validateJWT, checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE])],
+    secretaryController.getSecretaries
 );
 
 /**
@@ -160,14 +160,14 @@ router.get(
  *
  */
 router.get(
-  "/list-by-sede",
-  [
-    validateJWT,
-    checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
-    query("sede", "Debe ser un uuuid valido").isUUID("4"),
-    validateFields,
-  ],
-  secretaryController.getSecretariesBySede
+    "/list-by-sede",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
+        query("sede", "Debe ser un uuuid valido").isUUID("4"),
+        validateFields,
+    ],
+    secretaryController.getSecretariesBySede
 );
 
 /**
@@ -204,14 +204,14 @@ router.get(
  *
  */
 router.patch(
-  "/:uuid",
-  [
-    validateJWT,
-    checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
-    param("uuid").isUUID("4"),
-    validateFields,
-  ],
-  secretaryController.patchSecretary
+    "/:uuid",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
+        param("uuid").isUUID("4"),
+        validateFields,
+    ],
+    secretaryController.patchSecretary
 );
 
 /**
@@ -242,14 +242,14 @@ router.patch(
  *
  */
 router.delete(
-  "/:uuid",
-  [
-    validateJWT,
-    checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
-    param("uuid").isUUID("4"),
-    validateFields,
-  ],
-  secretaryController.deleteSecretary
+    "/:uuid",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
+        param("uuid").isUUID("4"),
+        validateFields,
+    ],
+    secretaryController.deleteSecretary
 );
 
 export default router;

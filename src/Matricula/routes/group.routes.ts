@@ -175,7 +175,7 @@ router.post(
     "/",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         body("nombre").isString(),
         body("fechaInicio").isString(),
         body("modalidad").isIn([MODALIDAD.PRESENCIAL, MODALIDAD.VIRTUAL]),
@@ -244,7 +244,7 @@ router.patch(
     "/add-student",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         body("matriculasUuid").isArray(),
         body("matriculasUuid.*").isUUID(4),
         body("grupoUuid").isUUID("4"),
@@ -275,7 +275,11 @@ router.patch(
  *              description: Error de servidor
  *
  */
-router.get("/", [], groupController.getAll);
+router.get(
+    "/",
+    [validateJWT, checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE])],
+    groupController.getAll
+);
 
 /**
  * @swagger
@@ -309,7 +313,7 @@ router.get(
     "/students/:id",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE, ROLES.DOCENTE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE, ROLES.DOCENTE]),
         param("id").isString(),
         validateFields,
     ],
@@ -346,7 +350,7 @@ router.get(
     "/find-by-uuid/:id",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         param("id").isUUID("4"),
         validateFields,
     ],

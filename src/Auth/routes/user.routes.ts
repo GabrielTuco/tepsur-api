@@ -122,7 +122,18 @@ router.get(
  */
 router.patch(
     "/update-avatar/:id",
-    [validateJWT, param("id").exists(), validateFields],
+    [
+        validateJWT,
+        checkAuthRole([
+            ROLES.ADMIN,
+            ROLES.ALUMNO,
+            ROLES.DOCENTE,
+            ROLES.ROOT,
+            ROLES.SECRE,
+        ]),
+        param("id").exists(),
+        validateFields,
+    ],
     userController.patchUserAvatar
 );
 

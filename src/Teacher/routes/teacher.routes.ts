@@ -78,21 +78,21 @@ const teacherController = new TeacherController(teacherService);
  *
  */
 router.post(
-  "/",
-  [
-    validateJWT,
-    checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
-    body("dni", "El campo debe contener un numero de dni valido").isLength({
-      min: 8,
-      max: 8,
-    }),
-    body("nombres", "El campo es obligatorio").isString(),
-    body("apePaterno", "El campo es obligatorio").isString(),
-    body("apeMaterno", "El campo es obligatorio").isString(),
-    body("codSede", "El campo es obligatorio").isUUID("4"),
-    validateFields,
-  ],
-  teacherController.postRegister
+    "/",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
+        body("dni", "El campo debe contener un numero de dni valido").isLength({
+            min: 8,
+            max: 8,
+        }),
+        body("nombres", "El campo es obligatorio").isString(),
+        body("apePaterno", "El campo es obligatorio").isString(),
+        body("apeMaterno", "El campo es obligatorio").isString(),
+        body("codSede", "El campo es obligatorio").isUUID("4"),
+        validateFields,
+    ],
+    teacherController.postRegister
 );
 
 /**
@@ -116,9 +116,9 @@ router.post(
  *
  */
 router.get(
-  "/",
-  [validateJWT, checkAuthRole([ROLES.ADMIN, ROLES.SECRE])],
-  teacherController.getList
+    "/",
+    [validateJWT, checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE])],
+    teacherController.getList
 );
 
 /**
@@ -148,14 +148,14 @@ router.get(
  *
  */
 router.get(
-  "/find-by-sede",
-  [
-    validateJWT,
-    checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
-    query("sede").isUUID("4"),
-    validateFields,
-  ],
-  teacherController.getListBySede
+    "/find-by-sede",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
+        query("sede").isUUID("4"),
+        validateFields,
+    ],
+    teacherController.getListBySede
 );
 
 /**
@@ -198,17 +198,17 @@ router.get(
  *
  */
 router.patch(
-  "/:uuid",
-  [
-    validateJWT,
-    checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
-    param("uuid", "Debe ser un uuid valido").isUUID("4"),
-    body("nombres").optional().isString(),
-    body("apePaterno").optional().isString(),
-    body("apeMaterno").optional().isString(),
-    validateFields,
-  ],
-  teacherController.updateTeacher
+    "/:uuid",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
+        param("uuid", "Debe ser un uuid valido").isUUID("4"),
+        body("nombres").optional().isString(),
+        body("apePaterno").optional().isString(),
+        body("apeMaterno").optional().isString(),
+        validateFields,
+    ],
+    teacherController.updateTeacher
 );
 
 /**
@@ -238,14 +238,14 @@ router.patch(
  *
  */
 router.delete(
-  "/:uuid",
-  [
-    validateJWT,
-    checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
-    param("uuid").isUUID("4"),
-    validateFields,
-  ],
-  teacherController.deleteTeacher
+    "/:uuid",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
+        param("uuid").isUUID("4"),
+        validateFields,
+    ],
+    teacherController.deleteTeacher
 );
 
 export default router;

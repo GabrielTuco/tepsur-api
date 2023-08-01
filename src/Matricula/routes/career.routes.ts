@@ -122,7 +122,7 @@ router.post(
     "/",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         body("nombre").isString(),
         body("modulos").isArray(),
         body("modulos.*.nombre").isString(),
@@ -163,7 +163,7 @@ router.post(
  */
 router.get(
     "/",
-    [validateJWT, checkAuthRole([ROLES.ADMIN, ROLES.SECRE])],
+    [validateJWT, checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE])],
     careerController.getCareers
 );
 
@@ -199,7 +199,7 @@ router.get(
     "/list-by-sede",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         query("sede").isUUID("4"),
     ],
     careerController.getCareersBySede
@@ -236,7 +236,7 @@ router.get(
     "/find-by-uuid/:uuid",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         param("uuid").isUUID("4"),
         validateFields,
     ],
@@ -273,7 +273,7 @@ router.get(
     "/find-by-name/:name",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         param("name").isString(),
         validateFields,
     ],
@@ -322,7 +322,7 @@ router.get(
     "/modules/:uuid",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         param("uuid").isUUID("4"),
         validateFields,
     ],
@@ -362,7 +362,7 @@ router.get(
     "/schedules/:uuid",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         param("uuid").isUUID("4"),
         validateFields,
     ],
@@ -406,7 +406,7 @@ router.patch(
     "/:uuid",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         param("uuid").isUUID("4"),
         body("nombre").isString(),
         body("modulos").optional().isArray(),
@@ -467,7 +467,7 @@ router.patch(
     "/add-module/:id",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN]),
         param("id").isUUID("4"),
         validateFields,
     ],
@@ -515,7 +515,7 @@ router.patch(
     "/remove-module/:id",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN]),
         param("id").isUUID("4"),
         body("moduloUuid").isUUID("4"),
         validateFields,
@@ -568,7 +568,7 @@ router.delete(
     "/:uuid",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         param("uuid").isUUID("4"),
         validateFields,
     ],

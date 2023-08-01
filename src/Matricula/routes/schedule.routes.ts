@@ -87,7 +87,7 @@ router.post(
     "/",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN]),
         body(["dias"], "Este campo es obligatorio").isArray(),
         body(["horaInicio", "horaFin"], "Debe ser un string").isString(),
         validateFields,
@@ -119,7 +119,7 @@ router.post(
  */
 router.get(
     "/",
-    [validateJWT, checkAuthRole([ROLES.ADMIN, ROLES.SECRE])],
+    [validateJWT, checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE])],
     scheduleController.getAll
 );
 
@@ -152,7 +152,7 @@ router.get(
  */
 router.get(
     "/:id",
-    [validateJWT, checkAuthRole([ROLES.ADMIN])],
+    [validateJWT, checkAuthRole([ROLES.ROOT, ROLES.ADMIN])],
     scheduleController.getByUuid
 );
 
@@ -192,7 +192,7 @@ router.patch(
     "/:id",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN]),
         param("id").isUUID("4"),
         validateFields,
     ],
@@ -233,7 +233,7 @@ router.delete(
     "/:id",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN]),
         param("id").isUUID("4"),
         validateFields,
     ],

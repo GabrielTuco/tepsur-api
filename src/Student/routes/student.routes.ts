@@ -112,7 +112,7 @@ router.get(
     "/",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         query("sede").isUUID("4"),
         validateFields,
     ],
@@ -161,7 +161,7 @@ router.get(
  */
 router.get("/check-email", [
     validateJWT,
-    checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+    checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
     query("correo").isEmail(),
     studentController.getIsValidEmail,
 ]);
@@ -170,7 +170,7 @@ router.patch(
     "/update-info/:id",
     [
         validateJWT,
-        checkAuthRole([ROLES.ALUMNO]),
+        checkAuthRole([ROLES.ROOT, ROLES.ALUMNO]),
         param("id").isUUID("4"),
         validateFields,
     ],

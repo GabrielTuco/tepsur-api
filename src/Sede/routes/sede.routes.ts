@@ -103,7 +103,7 @@ const sedeController = new SedeController(sedeService);
  */
 router.get(
     "/",
-    //[validateJWT, checkAuthRole([ROLES.ADMIN, ROLES.SECRE])],
+    [validateJWT, checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE])],
     sedeController.getAll
 );
 
@@ -139,7 +139,7 @@ router.get(
  */
 router.get(
     "/:id",
-    [validateJWT, checkAuthRole([ROLES.ADMIN])],
+    [validateJWT, checkAuthRole([ROLES.ROOT, ROLES.ADMIN])],
     sedeController.getOneById
 );
 
@@ -188,7 +188,7 @@ router.get(
  */
 router.post(
     "/",
-    [validateJWT, checkAuthRole([ROLES.ADMIN])],
+    [validateJWT, checkAuthRole([ROLES.ROOT, ROLES.ADMIN])],
     sedeController.postSede
 );
 
@@ -226,7 +226,7 @@ router.delete(
     "/:uuid",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         param("uuid").isUUID("4"),
         validateFields,
     ],

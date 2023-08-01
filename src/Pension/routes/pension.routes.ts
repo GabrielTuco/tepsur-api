@@ -40,7 +40,7 @@ const pensionController = new PensionController(pensionService);
 
 router.get(
     "/pagos",
-    [validateJWT, checkAuthRole([ROLES.ADMIN, ROLES.SECRE])],
+    [validateJWT, checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE])],
     pensionController.getListPagos
 );
 
@@ -82,7 +82,7 @@ router.post(
     "/pagar/:uuid",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         param("uuid").isUUID(4),
         body("formaPagoUuid").isNumeric(),
         body(["fecha", "hora", "numComprobante"]).isString(),
@@ -131,7 +131,7 @@ router.put(
     "/upload-payment-document/:uuid",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         param("uuid").isUUID(4),
     ],
     pensionController.putUploadPaidDocument
