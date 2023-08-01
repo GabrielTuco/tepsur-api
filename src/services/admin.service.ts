@@ -5,86 +5,138 @@ import { DatabaseError } from "../errors/DatabaseError";
 import { UserEntity } from "../interfaces/entities";
 import { AdministratorDTO } from "../interfaces/schemas";
 import { Sede } from "../Sede/entity/Sede.entity";
+import { NotFoundError } from "../errors/NotFoundError";
+import { encryptPassword } from "../helpers/encryptPassword";
+import { CreateAdminDto } from "../dtos/createAdmin.dto";
+import { UpdateAdminDto } from "../dtos/updateAdmin.dto";
 
 export class AdministratorService {
-  public register = async (data: AdministratorDTO) => {
-    const { dni, apeMaterno, apePaterno, nombres, celular, correo, sedeUuid } =
-      data;
-    try {
-      const sede = await Sede.findOneBy({ uuid: sedeUuid });
+    public register = async (data: CreateAdminDto) => {
+        const {
+            dni,
+            apeMaterno,
+            apePaterno,
+            nombres,
+            celular,
+            correo,
+            sedeUuid,
+        } = data;
+        try {
+            const sede = await Sede.findOneBy({ uuid: sedeUuid });
 
-      if (!sede)
-        throw new DatabaseError("Sede not found", 404, "Not found error");
+            if (!sede) throw new NotFoundError("La sede no existe");
 
-      const newAdministrator = new Administrador();
-      newAdministrator.dni = dni;
-      newAdministrator.uuid = uuid();
-      newAdministrator.nombres = nombres;
-      newAdministrator.ape_materno = apeMaterno;
-      newAdministrator.ape_paterno = apePaterno;
-      newAdministrator.celular = celular;
-      newAdministrator.correo = correo;
-      newAdministrator.sede = sede;
+            const newAdministrator = new Administrador();
+            newAdministrator.dni = dni;
+            newAdministrator.uuid = uuid();
+            newAdministrator.nombres = nombres;
+            newAdministrator.ape_materno = apeMaterno;
+            newAdministrator.ape_paterno = apePaterno;
+            newAdministrator.celular = celular;
+            newAdministrator.correo = correo;
+            newAdministrator.sede = sede;
 
-      return await newAdministrator.save();
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
-  };
+            newAdministrator.usuario = await this.createUser(dni);
 
-  public createUser = async ({
-    adminUuid,
-    password,
-    usuario,
-  }: UserEntity & { adminUuid: string }) => {
-    try {
-      const administrator = await Administrador.findOneBy({
-        uuid: adminUuid,
-      });
-      if (administrator) {
-        const newUser = new Usuario();
-        const role = await Rol.findOneBy({ nombre: "Administrador" });
+            return await newAdministrator.save();
+        } catch (error) {
+            throw error;
+        }
+    };
 
-        if (!role)
-          throw new DatabaseError(
-            "Rol not valid or not found",
-            404,
-            "Not found error"
-          );
-        newUser.uuid = uuid();
-        newUser.usuario = usuario;
-        newUser.password = password;
-        newUser.rol = role;
+    public createUser = async (dni: string): Promise<Usuario> => {
+        try {
+            const newUser = new Usuario();
+            const role = await Rol.findOneBy({ nombre: "Administrador" });
 
-        const savedUser = await newUser.save();
-        administrator.usuario = savedUser;
+            if (!role) throw new NotFoundError("El rol no existe");
+            newUser.uuid = uuid();
+            newUser.usuario = dni;
+            newUser.password = encryptPassword(dni);
+            newUser.rol = role;
 
-        return await administrator.save();
-      }
-    } catch (error) {
-      console.log(error);
-      throw new Error("Error creando el usuario para el administrador");
-    }
-  };
-  public searchByUser = async (usuario: Usuario): Promise<Administrador> => {
-    try {
-      const adminExists = await Administrador.createQueryBuilder("a")
-        .innerJoinAndSelect("a.usuario", "u")
-        .innerJoinAndSelect("u.rol", "r")
-        .leftJoinAndSelect("a.sede", "s")
-        .where("u.uuid= :id and a.estado=true", { id: usuario.uuid })
-        .getOne();
-      if (!adminExists)
-        throw new DatabaseError(
-          "La persona no existe o se ha eliminado de la base de datos ;)",
-          404,
-          "Not found error"
-        );
+            const savedUser = await newUser.save();
 
-      return adminExists;
-    } catch (error) {
-      throw error;
-    }
-  };
+            return savedUser;
+        } catch (error) {
+            throw new Error("Error creando el usuario para el administrador");
+        }
+    };
+
+    public listAll = async (): Promise<{
+        count: number;
+        admins: Administrador[];
+    }> => {
+        try {
+            const adminExists = await Administrador.createQueryBuilder("a")
+                .innerJoinAndSelect("a.usuario", "u")
+                .innerJoinAndSelect("u.rol", "r")
+                .leftJoinAndSelect("a.sede", "s")
+                .where("a.estado=true")
+                .getManyAndCount();
+            if (!adminExists)
+                throw new NotFoundError(
+                    "La persona no existe o se ha eliminado de la base de datos ;)"
+                );
+
+            return { admins: adminExists[0], count: adminExists[1] };
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    public searchByUuid = async (adminUuid: string): Promise<Administrador> => {
+        try {
+            const adminExists = await Administrador.createQueryBuilder("a")
+                .innerJoinAndSelect("a.usuario", "u")
+                .innerJoinAndSelect("u.rol", "r")
+                .leftJoinAndSelect("a.sede", "s")
+                .where("u.uuid= :id and a.estado=true", { id: adminUuid })
+                .getOne();
+            if (!adminExists)
+                throw new NotFoundError(
+                    "La persona no existe o se ha eliminado de la base de datos ;)"
+                );
+
+            return adminExists;
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    public updateAdmin = async (adminUuid: string, data: UpdateAdminDto) => {
+        try {
+            const admin = await this.searchByUuid(adminUuid);
+            if (!admin) {
+                throw new NotFoundError("EL administrador no existe");
+            }
+            const { nombres, dni, apeMaterno, apePaterno, correo, celular } =
+                data;
+
+            admin.dni = dni;
+            admin.nombres = nombres;
+            admin.ape_materno = apeMaterno;
+            admin.ape_paterno = apePaterno;
+            admin.celular = celular;
+            admin.correo = correo;
+
+            return admin.save();
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    public deleteAdmin = async (adminUuid: string) => {
+        try {
+            const admin = await this.searchByUuid(adminUuid);
+            if (!admin) {
+                throw new NotFoundError("EL administrador no existe");
+            }
+            admin.estado = false;
+
+            return admin.save();
+        } catch (error) {
+            throw error;
+        }
+    };
 }

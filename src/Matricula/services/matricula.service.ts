@@ -760,11 +760,11 @@ export class MatriculaService implements MatriculaRepository {
     };
 
     public update = async (
-        uuid: string,
+        matriculaUuid: string,
         data: UpdateMatriculaDto
     ): Promise<Matricula> => {
         try {
-            const { matricula } = await this.findByUuid(uuid);
+            const { matricula } = await this.findByUuid(matriculaUuid);
 
             if (!matricula) throw new NotFoundError("La matricula no existe");
 
@@ -787,8 +787,27 @@ export class MatriculaService implements MatriculaRepository {
                         uuid: moduloData.horarioUuid,
                     });
 
-                    if (!matriculaModulo)
-                        throw new NotFoundError("El regitro no existe");
+                    if (!matriculaModulo) {
+                        const newMatriculaModulo = new MatriculaModulosModulo();
+                        const horario = await Horario.findOneBy({
+                            uuid: moduloData.horarioUuid,
+                        });
+                        const modulo = await Modulo.findOneBy({
+                            uuid: moduloData.uuid,
+                        });
+                        newMatriculaModulo.uuid = uuid();
+                        newMatriculaModulo.modulo = modulo!;
+                        newMatriculaModulo.matricula = matricula;
+                        newMatriculaModulo.horario = horario!;
+                        newMatriculaModulo.fecha_inicio =
+                            moduloData.fechaInicio;
+                        newMatriculaModulo.modalidad = moduloData.modalidad;
+                        newMatriculaModulo.estado =
+                            ESTADO_MODULO_MATRICULA.MATRICULADO;
+
+                        await newMatriculaModulo.save();
+                        return newMatriculaModulo;
+                    }
 
                     matriculaModulo.horario = horario!;
                     matriculaModulo.fecha_inicio = moduloData.fechaInicio!;

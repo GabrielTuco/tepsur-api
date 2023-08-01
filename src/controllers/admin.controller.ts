@@ -1,36 +1,102 @@
 import { Request, Response } from "express";
 import { AdministratorService } from "../services/admin.service";
-import { encryptPassword } from "../helpers/encryptPassword";
+import { DatabaseErrorBase } from "../errors/DatabaseErrorBase";
 
 export class AdministratorController {
     constructor(private readonly administratorService: AdministratorService) {}
-    public postAdministrator = async (req: Request, res: Response) => {
+    public postAdmin = async (req: Request, res: Response) => {
         try {
-            const administratorCreated =
-                await this.administratorService.register(req.body);
+            const data = req.body;
+            const admnistrador = await this.administratorService.register(data);
 
-            if (!administratorCreated) {
-                return res.status(400).json({
-                    msg: "No se pudo registrar al administrador",
-                });
-            }
-            const administratorUserCreated =
-                await this.administratorService.createUser({
-                    adminUuid: administratorCreated.uuid,
-                    usuario: administratorCreated.dni,
-                    password: encryptPassword(administratorCreated.dni),
-                });
-            if (!administratorUserCreated) {
-                return res.status(400).json({
-                    msg: "No se pudo crear el usuario para el administrador",
-                });
-            }
-            return res.json({
-                administrator: administratorUserCreated,
-            });
+            return res.json(admnistrador);
         } catch (error) {
             console.log(error);
-            res.status(500).json({
+            if (error instanceof DatabaseErrorBase) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                    name: error.name,
+                });
+            }
+            return res.status(500).json({
+                msg: "contact the administrator",
+            });
+        }
+    };
+
+    public getAll = async (_req: Request, res: Response) => {
+        try {
+            const admin = await this.administratorService.listAll();
+
+            return res.json(admin);
+        } catch (error) {
+            console.log(error);
+            if (error instanceof DatabaseErrorBase) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                    name: error.name,
+                });
+            }
+            return res.status(500).json({
+                msg: "contact the administrator",
+            });
+        }
+    };
+
+    public getByUuid = async (req: Request, res: Response) => {
+        try {
+            const { uuid } = req.params;
+            const admin = await this.administratorService.searchByUuid(uuid);
+
+            return res.json(admin);
+        } catch (error) {
+            console.log(error);
+            if (error instanceof DatabaseErrorBase) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                    name: error.name,
+                });
+            }
+            return res.status(500).json({
+                msg: "contact the administrator",
+            });
+        }
+    };
+
+    public putAdmin = async (req: Request, res: Response) => {
+        try {
+            const { uuid } = req.params;
+            const data = req.body;
+            const admin = this.administratorService.updateAdmin(uuid, data);
+            return res.json(admin);
+        } catch (error) {
+            console.log(error);
+            if (error instanceof DatabaseErrorBase) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                    name: error.name,
+                });
+            }
+            return res.status(500).json({
+                msg: "contact the administrator",
+            });
+        }
+    };
+
+    public deleteAdmin = async (req: Request, res: Response) => {
+        try {
+            const { uuid } = req.params;
+            const admin = this.administratorService.deleteAdmin(uuid);
+            return res.json(admin);
+        } catch (error) {
+            console.log(error);
+            if (error instanceof DatabaseErrorBase) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                    name: error.name,
+                });
+            }
+            return res.status(500).json({
                 msg: "contact the administrator",
             });
         }

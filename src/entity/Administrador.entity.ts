@@ -5,31 +5,31 @@ import { Sede } from "../Sede/entity/Sede.entity";
 
 @Entity()
 export class Administrador extends EntityBase {
-  @Column({ length: 8, unique: true })
-  dni: string;
+    @Column({ length: 8, unique: true })
+    dni: string;
 
-  @Column()
-  nombres: string;
+    @Column()
+    nombres: string;
 
-  @Column()
-  ape_paterno: string;
+    @Column()
+    ape_paterno: string;
 
-  @Column()
-  ape_materno: string;
+    @Column()
+    ape_materno: string;
 
-  @Column({ nullable: true, length: 9 })
-  celular: string;
+    @Column({ nullable: true, length: 9 })
+    celular: string;
 
-  @Column({ nullable: true, unique: true })
-  correo: string;
+    @Column({ nullable: true })
+    correo: string;
 
-  @Column({ nullable: true, default: true })
-  estado: boolean;
+    @Column({ nullable: true, default: true })
+    estado: boolean;
 
-  @ManyToOne(() => Sede, (sede) => sede.administradores)
-  sede: Sede;
+    @ManyToOne(() => Sede, (sede) => sede.administradores)
+    sede: Sede;
 
-  @OneToOne(() => Usuario, { nullable: true })
-  @JoinColumn()
-  usuario: Usuario;
+    @OneToOne(() => Usuario, { nullable: true })
+    @JoinColumn()
+    usuario: Usuario;
 }

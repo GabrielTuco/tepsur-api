@@ -18,135 +18,144 @@ const administratorService = new AdministratorService();
 const alumnoService = new StudentService();
 
 declare module "express-serve-static-core" {
-  interface Request {
-    id: string;
-    user: string;
-  }
+    interface Request {
+        id: string;
+        user: string;
+    }
 }
 export class AuthController {
-  async postLogin(req: Request, res: Response) {
-    //TODO: Validar la sede a la que pertenece el usuario
+    async postLogin(req: Request, res: Response) {
+        //TODO: Validar la sede a la que pertenece el usuario
 
-    try {
-      const { usuario, password } = req.body;
+        try {
+            const { usuario, password } = req.body;
 
-      //Busqueda del usuario
-      const userRegistered = await userService.findByUser(usuario);
-      if (!userRegistered) {
-        return res.status(404).json({
-          msg: "El usuario no existe",
-        });
-      }
+            //Busqueda del usuario
+            const userRegistered = await userService.findByUser(usuario);
+            if (!userRegistered) {
+                return res.status(404).json({
+                    msg: "El usuario no existe",
+                });
+            }
 
-      //Validacion de usuario ROOT
-      if (userRegistered.rol.nombre === ROLES.ROOT) {
-        if (userRegistered.password !== password) {
-          return res.status(400).json({
-            msg: "Password incorrecto",
-          });
+            //Validacion de usuario ROOT
+            if (userRegistered.rol.nombre === ROLES.ROOT) {
+                if (userRegistered.password !== password) {
+                    return res.status(400).json({
+                        msg: "Password incorrecto",
+                    });
+                }
+                return res.json({
+                    userRegistered: {
+                        id: userRegistered.uuid,
+                        usuario: userRegistered.usuario,
+                        avatar: userRegistered.avatar,
+                        rol: userRegistered.rol,
+                    },
+                    token: await generateJWT(
+                        userRegistered.uuid,
+                        userRegistered.usuario
+                    ),
+                });
+            }
+
+            const userTypes: FindUserTypesDictionary = {
+                Docente: teacherService.searchByUser,
+                Secretaria: secretaryService.searchByUser,
+                Administrador: administratorService.searchByUuid,
+                Alumno: alumnoService.searchByUser,
+            };
+
+            const role = userRegistered.rol.nombre;
+
+            const userTypeRegistered = await userTypes[
+                role as keyof FindUserTypesDictionary
+            ](userRegistered!);
+
+            //   if (!userTypeRegistered) {
+            //     return res.status(404).json({
+            //       msg: "La persona no existe o se ha eliminado de la base de datos ;)",
+            //     });
+            //   }
+
+            const passwordValid = verifyPassword(
+                password,
+                userRegistered.password
+            );
+            if (!passwordValid) {
+                return res.status(404).json({
+                    msg: "Password incorrecto",
+                });
+            }
+
+            res.json({
+                userRegistered: userTypeRegistered,
+                token: await generateJWT(
+                    userRegistered.uuid,
+                    userRegistered.usuario
+                ),
+            });
+        } catch (error) {
+            console.log(error);
+            if (error instanceof DatabaseError) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                    name: error.name,
+                });
+            }
+            res.status(500).json({
+                msg: "Internal server error, contact the administrator",
+            });
         }
-        return res.json({
-          userRegistered: {
-            id: userRegistered.uuid,
-            usuario: userRegistered.usuario,
-            avatar: userRegistered.avatar,
-            rol: userRegistered.rol,
-          },
-          token: await generateJWT(userRegistered.uuid, userRegistered.usuario),
-        });
-      }
-
-      const userTypes: FindUserTypesDictionary = {
-        Docente: teacherService.searchByUser,
-        Secretaria: secretaryService.searchByUser,
-        Administrador: administratorService.searchByUser,
-        Alumno: alumnoService.searchByUser,
-      };
-
-      const role = userRegistered.rol.nombre;
-
-      const userTypeRegistered = await userTypes[
-        role as keyof FindUserTypesDictionary
-      ](userRegistered!);
-
-      //   if (!userTypeRegistered) {
-      //     return res.status(404).json({
-      //       msg: "La persona no existe o se ha eliminado de la base de datos ;)",
-      //     });
-      //   }
-
-      const passwordValid = verifyPassword(password, userRegistered.password);
-      if (!passwordValid) {
-        return res.status(404).json({
-          msg: "Password incorrecto",
-        });
-      }
-
-      res.json({
-        userRegistered: userTypeRegistered,
-        token: await generateJWT(userRegistered.uuid, userRegistered.usuario),
-      });
-    } catch (error) {
-      console.log(error);
-      if (error instanceof DatabaseError) {
-        return res.status(error.codeStatus).json({
-          msg: error.message,
-          name: error.name,
-        });
-      }
-      res.status(500).json({
-        msg: "Internal server error, contact the administrator",
-      });
     }
-  }
 
-  async revalidateToken(req: Request, res: Response) {
-    try {
-      const { id, user } = req;
+    async revalidateToken(req: Request, res: Response) {
+        try {
+            const { id, user } = req;
 
-      const token = await generateJWT(id, user);
+            const token = await generateJWT(id, user);
 
-      return res.json({
-        token,
-      });
-    } catch (error) {
-      console.log(error);
-      return res.status(500).json({
-        msg: "contact the administrator",
-      });
+            return res.json({
+                token,
+            });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: "contact the administrator",
+            });
+        }
     }
-  }
 
-  async changePassword(req: Request, res: Response) {
-    try {
-      const { codUser, currentPassword, newPassword } = req.body;
+    async changePassword(req: Request, res: Response) {
+        try {
+            const { codUser, currentPassword, newPassword } = req.body;
 
-      const user = await userService.findById(codUser);
-      if (!user) {
-        return res.status(404).json({
-          msg: "El usuario no existe",
-        });
-      }
-      const currentPasswordIsValid = verifyPassword(
-        currentPassword,
-        user.password
-      );
-      if (!currentPasswordIsValid) {
-        return res.status(404).json({
-          msg: "La contraseña actual no es correcta",
-        });
-      }
+            const user = await userService.findById(codUser);
+            if (!user) {
+                return res.status(404).json({
+                    msg: "El usuario no existe",
+                });
+            }
+            const currentPasswordIsValid = verifyPassword(
+                currentPassword,
+                user.password
+            );
+            if (!currentPasswordIsValid) {
+                return res.status(404).json({
+                    msg: "La contraseña actual no es correcta",
+                });
+            }
 
-      const newPasswordUser = encryptPassword(newPassword);
-      user.password = newPasswordUser;
-      user.securePasswordUpdated = true;
-      const saved = await user.save();
-      return res.json(saved);
-    } catch (error) {
-      console.log(error);
-      return res.status(500).json({
-        msg: "contact the administrator",
-      });
+            const newPasswordUser = encryptPassword(newPassword);
+            user.password = newPasswordUser;
+            user.securePasswordUpdated = true;
+            const saved = await user.save();
+            return res.json(saved);
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                msg: "contact the administrator",
+            });
+        }
     }
-  }
 }
