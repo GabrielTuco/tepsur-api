@@ -108,7 +108,8 @@
                         </table>
                     </td>
                 </tr>
-                <tr style="height: 50px"></tr>
+            </table>
+            <table border="1" style="margin-top: 20px">
                 <tr>
                     <td colspan="4"><b>Pago de matricula</b></td>
                 </tr>
@@ -125,8 +126,7 @@
                     <td><%= pagoMatricula.forma_pago.description %></td>
                     <td>S/. <%= pagoMatricula.monto %></td>
                     <td>
-                        <%= new
-                        Date(pagoMatricula.fecha).toLocaleString().split(",")[0]
+                        <%= new Date(pagoMatricula.fecha).toLocaleDateString()
                         || "-" %>
                     </td>
                     <td><%= pagoMatricula.hora || "-" %></td>
