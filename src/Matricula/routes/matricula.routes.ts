@@ -645,8 +645,8 @@ router.get(
 router.get(
     "/generate-ficha/:id",
     [
-        validateJWT,
-        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
+        //validateJWT,
+        //checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         param("id", "Debe ser un ID valido").isUUID("4"),
         validateFields,
     ],
