@@ -39,6 +39,7 @@ import { Alumno } from "../../Student/entity";
 import { MatriculaEspecializacion } from "../../Especializacion/entity/MatriculaEspecializacion.entity";
 import { Pension } from "../../Pension/entity";
 import { NotFoundError } from "../../errors/NotFoundError";
+import { AlreadyExistsError } from "../../errors/AlreadyExistsError";
 
 const pensionService = new PensionService();
 const studentService = new StudentService();
@@ -86,6 +87,23 @@ export class MatriculaService implements MatriculaRepository {
                 await queryRunner.manager.save(newAlumno);
             } else {
                 newAlumno = alumnoAlreadyExists;
+            }
+
+            const isMatriculaInSameCareer = await Matricula.createQueryBuilder(
+                "m"
+            )
+                .innerJoin("m.alumno", "a")
+                .innerJoin("m.carrera", "c")
+                .where("a.uuid=:alumno and c.uuid=:carrera", {
+                    alumno: newAlumno.uuid,
+                    carrera: carreraUuid,
+                })
+                .getOne();
+
+            if (isMatriculaInSameCareer) {
+                throw new AlreadyExistsError(
+                    "Este alumno ya registra una matricula en esta carrera"
+                );
             }
 
             //Registro de datos academicos del estudiante
