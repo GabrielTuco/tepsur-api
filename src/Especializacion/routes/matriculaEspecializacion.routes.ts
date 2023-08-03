@@ -94,7 +94,7 @@ router.post(
     "/",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         body("alumno").isObject(),
         body("alumno.dni").isString().isLength({ min: 8, max: 8 }),
         body("alumno.dni").custom(isAlumnoDniValid),
@@ -183,7 +183,7 @@ router.get(
     "/",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         query("year").isNumeric(),
         query("month").optional().isNumeric(),
     ],
@@ -222,7 +222,7 @@ router.get(
     "/:uuid",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         param("uuid", "Debe ser un uuid valido").isUUID("4"),
         validateFields,
     ],
@@ -265,7 +265,7 @@ router.put(
     "/:uuid",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         param("uuid").isUUID("4"),
         validateFields,
     ],
@@ -303,7 +303,7 @@ router.delete(
     "/:uuid",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         param("uuid").isUUID("4"),
         validateFields,
     ],

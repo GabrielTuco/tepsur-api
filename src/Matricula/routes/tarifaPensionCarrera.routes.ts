@@ -68,7 +68,7 @@ router.post(
     "/",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         body("carreraUuid").isUUID("4"),
         body("tarifa").isNumeric(),
         validateFields,
@@ -100,7 +100,7 @@ router.post(
  */
 router.get(
     "/",
-    [validateJWT, checkAuthRole([ROLES.ADMIN, ROLES.SECRE])],
+    [validateJWT, checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE])],
     tarifaController.GETall
 );
 
@@ -135,7 +135,7 @@ router.get(
     "/find-by-uuid/:uuid",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         param("uuid").isUUID("4"),
         validateFields,
     ],
@@ -173,7 +173,7 @@ router.get(
     "/find-by-carrera-uuid/:uuid",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         param("uuid").isUUID("4"),
         validateFields,
     ],
@@ -220,7 +220,7 @@ router.put(
     "/:uuid",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         param("uuid").isUUID("4"),
         validateFields,
     ],
@@ -258,7 +258,7 @@ router.delete(
     "/:uuid",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         param("uuid").isUUID("4"),
         validateFields,
     ],

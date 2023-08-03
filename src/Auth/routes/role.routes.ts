@@ -66,7 +66,11 @@ const roleController = new RoleController();
  *                             $ref: '#/components/schemas/Role'
  *
  */
-router.get("/", [], roleController.getRoles);
+router.get(
+    "/",
+    [validateJWT, checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE])],
+    roleController.getRoles
+);
 
 /**
  * @swagger
@@ -96,6 +100,8 @@ router.post(
     "/",
     [
         /*validateJWT, checkAuthRole([ROLES.ROOT])*/
+        validateJWT,
+        checkAuthRole([ROLES.ROOT]),
     ],
     roleController.postRole
 );
@@ -135,7 +141,11 @@ router.post(
  *              description: Error de servidor
  *
  */
-router.put("/:id", [], roleController.putRole);
+router.put(
+    "/:id",
+    [validateJWT, checkAuthRole([ROLES.ROOT])],
+    roleController.putRole
+);
 
 /**
  * @swagger
@@ -166,6 +176,10 @@ router.put("/:id", [], roleController.putRole);
  *              description: Error de servidor
  *
  */
-router.delete("/:id", [], roleController.deleteRole);
+router.delete(
+    "/:id",
+    [validateJWT, checkAuthRole([ROLES.ROOT])],
+    roleController.deleteRole
+);
 
 export default router;

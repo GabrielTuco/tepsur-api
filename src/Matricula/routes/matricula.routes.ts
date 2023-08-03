@@ -185,7 +185,7 @@ router.post(
     "/",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         //Datos personales del alumno
         body("alumno").isObject(),
         body("alumno.dni").isString().isLength({ min: 8, max: 8 }),
@@ -274,7 +274,7 @@ router.post(
     "/traslado",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
 
         //Datos personales del alumno
         body("alumno").isObject(),
@@ -366,7 +366,7 @@ router.post(
     "/upload-payment-document/:id",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         param("id").isUUID("4"),
     ],
     matriculaController.patchUploadPaidDocument
@@ -415,7 +415,7 @@ router.patch(
     "/update-pago/:id",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         param("id", "Debe ser un ID valido").isUUID("4"),
         body("numComprobante").isString(),
         body("formaPagoUuid").isNumeric(),
@@ -461,7 +461,7 @@ router.post(
     "/grado-estudio",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN]),
         body("descripcion").exists(),
         validateFields,
     ],
@@ -523,7 +523,7 @@ router.put(
     "/set-modules-to-matricula/:matriculaUuid",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         param("matriculaUuid").isUUID("4"),
         body("modulosMatricula").isArray(),
         body("modulosMatricula.*").isObject(),
@@ -572,7 +572,7 @@ router.get(
     "/validate-dni-1/:dni",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         param("dni", "Debe ser un DNI valido")
             .isString()
             .isLength({ min: 8, max: 8 }),
@@ -646,7 +646,7 @@ router.get(
     "/generate-ficha/:id",
     [
         //validateJWT,
-        //checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        //checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         param("id", "Debe ser un ID valido").isUUID("4"),
         validateFields,
     ],
@@ -656,8 +656,8 @@ router.get(
 router.get(
     "/generate-pdf/:id",
     [
-        //validateJWT,
-        //checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        validateJWT,
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         param("id", "Debe ser un ID valido").isUUID("4"),
         validateFields,
     ],
@@ -702,7 +702,7 @@ router.get(
     "/",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         query("year").isNumeric(),
         query("month").optional().isNumeric(),
         validateFields,
@@ -751,7 +751,7 @@ router.get(
     "/find-alumnos",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         query("query").isString(),
         validateFields,
     ],
@@ -790,7 +790,7 @@ router.get(
     "/find/:uuid",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         param("uuid").isUUID(4),
         validateFields,
     ],
@@ -833,7 +833,7 @@ router.patch(
     "/:uuid",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         body("alumno").isObject(),
         body("alumno.dni").isString().isLength({ min: 8, max: 8 }),
         body("alumno.dni").custom(isAlumnoDniValid),
@@ -1028,5 +1028,18 @@ router.get(
  *              description: Error de servidor
  *
  */
-router.get("/modules", [validateJWT], matriculaController.getModules);
+router.get(
+    "/modules",
+    [
+        validateJWT,
+        checkAuthRole([
+            ROLES.ADMIN,
+            ROLES.ROOT,
+            ROLES.SECRE,
+            ROLES.ALUMNO,
+            ROLES.DOCENTE,
+        ]),
+    ],
+    matriculaController.getModules
+);
 export default router;

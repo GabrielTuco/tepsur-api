@@ -87,7 +87,7 @@ const especializacionController = new EspecializacionController(
  */
 router.get(
     "/",
-    [validateJWT, checkAuthRole([ROLES.ADMIN, ROLES.SECRE])],
+    [validateJWT, checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE])],
     especializacionController.getList
 );
 
@@ -127,7 +127,7 @@ router.get(
     "/:uuid",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         param("uuid").isUUID("4"),
         validateFields,
     ],
@@ -176,7 +176,7 @@ router.post(
     "/",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         body("nombre").isString(),
         body("duracionSemanas").isNumeric(),
         body("precio").isNumeric(),
@@ -234,7 +234,7 @@ router.put(
     "/:uuid",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         param("uuid").isUUID("4"),
         body("nombre").optional().isString(),
         body("duracionSemanas").optional().isNumeric(),
@@ -279,7 +279,7 @@ router.delete(
     "/",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         param("uuid").isUUID("4"),
         validateFields,
     ],
