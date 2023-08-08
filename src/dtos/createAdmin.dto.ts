@@ -5,5 +5,7 @@ export class CreateAdminDto {
     apeMaterno: string;
     celular: string;
     correo: string;
-    sedeUuid?: string;
+    sedeUuid: string;
+    usuario: string;
+    password: string;
 }

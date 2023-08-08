@@ -36,8 +36,9 @@ export class Sede extends EntityBase {
     @OneToMany(() => Grupo, (grupo) => grupo.sede)
     grupos: Grupo[];
 
-    @OneToMany(() => Administrador, (administrador) => administrador.sede)
-    administradores: Administrador[];
+    @OneToOne(() => Administrador, (admin) => admin.sede)
+    @JoinColumn()
+    administrador: Administrador[];
 
     @ManyToMany(() => Carrera)
     @JoinTable()

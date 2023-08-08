@@ -1,9 +1,6 @@
 import { v4 as uuid } from "uuid";
 import { Rol, Usuario } from "../Auth/entity";
 import { Administrador } from "../entity";
-import { DatabaseError } from "../errors/DatabaseError";
-import { UserEntity } from "../interfaces/entities";
-import { AdministratorDTO } from "../interfaces/schemas";
 import { Sede } from "../Sede/entity/Sede.entity";
 import { NotFoundError } from "../errors/NotFoundError";
 import { encryptPassword } from "../helpers/encryptPassword";
@@ -20,6 +17,8 @@ export class AdministratorService {
             celular,
             correo,
             sedeUuid,
+            usuario,
+            password,
         } = data;
         try {
             const sede = await Sede.findOneBy({ uuid: sedeUuid });
@@ -36,7 +35,7 @@ export class AdministratorService {
             newAdministrator.correo = correo;
             newAdministrator.sede = sede;
 
-            newAdministrator.usuario = await this.createUser(dni);
+            newAdministrator.usuario = await this.createUser(usuario, password);
 
             return await newAdministrator.save();
         } catch (error) {
@@ -44,22 +43,25 @@ export class AdministratorService {
         }
     };
 
-    public createUser = async (dni: string): Promise<Usuario> => {
+    public createUser = async (
+        usuario: string,
+        password: string
+    ): Promise<Usuario> => {
         try {
             const newUser = new Usuario();
             const role = await Rol.findOneBy({ nombre: "Administrador" });
 
             if (!role) throw new NotFoundError("El rol no existe");
             newUser.uuid = uuid();
-            newUser.usuario = dni;
-            newUser.password = encryptPassword(dni);
+            newUser.usuario = usuario;
+            newUser.password = encryptPassword(password);
             newUser.rol = role;
 
             const savedUser = await newUser.save();
 
             return savedUser;
         } catch (error) {
-            throw new Error("Error creando el usuario para el administrador");
+            throw error;
         }
     };
 
@@ -74,10 +76,10 @@ export class AdministratorService {
                 .leftJoinAndSelect("a.sede", "s")
                 .where("a.estado=true")
                 .getManyAndCount();
-            if (!adminExists)
-                throw new NotFoundError(
-                    "La persona no existe o se ha eliminado de la base de datos ;)"
-                );
+            // if (!adminExists)
+            //     throw new NotFoundError(
+            //         "La persona no existe o se ha eliminado de la base de datos ;)"
+            //     );
 
             return { admins: adminExists[0], count: adminExists[1] };
         } catch (error) {

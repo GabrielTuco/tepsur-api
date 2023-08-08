@@ -41,12 +41,23 @@ const adminController = new AdministratorController(adminService);
  *                  type: string
  *                  format: email
  *                  description: Correo
+ *              sedeUuid:
+ *                  type: string
+ *                  format: uuid
+ *              usuario:
+ *                  type: string
+ *              password:
+ *                  type: string
+ *                  description: El password del administrador de minimo 8 caracteres
  *          required:
  *              - dni
  *              - nombres
  *              - apePaterno
  *              - apeMaterno
  *              - celular
+ *              - sedeUuid
+ *              - usuario
+ *              - password
  */
 
 /**
@@ -91,6 +102,9 @@ router.post(
         body("nombres").isString(),
         body("apePaterno").isString(),
         body("apeMaterno").isString(),
+        body("sedeUuid").isUUID(4),
+        body("usuario").isString(),
+        body("password").isString().isLength({ min: 8 }),
         validateFields,
     ],
     adminController.postAdmin

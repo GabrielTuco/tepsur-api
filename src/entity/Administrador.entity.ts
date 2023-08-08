@@ -26,7 +26,7 @@ export class Administrador extends EntityBase {
     @Column({ nullable: true, default: true })
     estado: boolean;
 
-    @ManyToOne(() => Sede, (sede) => sede.administradores)
+    @OneToOne(() => Sede, (sede) => sede.administrador)
     sede: Sede;
 
     @OneToOne(() => Usuario, { nullable: true })
