@@ -38,7 +38,7 @@ export class Sede extends EntityBase {
 
     @OneToOne(() => Administrador, (admin) => admin.sede)
     @JoinColumn()
-    administrador: Administrador[];
+    administrador: Administrador;
 
     @ManyToMany(() => Carrera)
     @JoinTable()

@@ -6,6 +6,7 @@ import { NotFoundError } from "../errors/NotFoundError";
 import { encryptPassword } from "../helpers/encryptPassword";
 import { CreateAdminDto } from "../dtos/createAdmin.dto";
 import { UpdateAdminDto } from "../dtos/updateAdmin.dto";
+import { AlreadyExistsError } from "../errors/AlreadyExistsError";
 
 export class AdministratorService {
     public register = async (data: CreateAdminDto) => {
@@ -21,9 +22,17 @@ export class AdministratorService {
             password,
         } = data;
         try {
-            const sede = await Sede.findOneBy({ uuid: sedeUuid });
+            const sede = await Sede.createQueryBuilder("s")
+                .leftJoinAndSelect("s.administrador", "a")
+                .where("s.uuid=:sedeUuid", { sedeUuid })
+                .getOne();
 
             if (!sede) throw new NotFoundError("La sede no existe");
+            if (sede.administrador) {
+                throw new AlreadyExistsError(
+                    "Solo se puede crear un usuario administrador por sede"
+                );
+            }
 
             const newAdministrator = new Administrador();
             newAdministrator.dni = dni;
