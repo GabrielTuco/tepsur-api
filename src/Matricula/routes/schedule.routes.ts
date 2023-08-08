@@ -5,9 +5,11 @@ import { checkAuthRole } from "../../middlewares/checkAuthRole";
 import { ROLES } from "../../interfaces/enums";
 import { body, param, query } from "express-validator";
 import { validateFields } from "../../middlewares/validateFields";
+import { ScheduleService } from "../services/schedule.service";
 
 const router = Router();
-const scheduleController = new ScheduleController();
+const service = new ScheduleService();
+const scheduleController = new ScheduleController(service);
 
 /**
  * @swagger
@@ -154,6 +156,46 @@ router.get(
     "/:id",
     [validateJWT, checkAuthRole([ROLES.ROOT, ROLES.ADMIN])],
     scheduleController.getByUuid
+);
+
+/**
+ * @swagger
+ * /schedule/list-by-career/{uuid}:
+ *  get:
+ *      summary: Obtener el listado de horarios activos de una carrera
+ *      tags: [Schedule]
+ *      parameters:
+ *         - $ref: '#/components/parameters/token'
+ *         - in: path
+ *           name: uuid
+ *           schema:
+ *              type: string
+ *              format: uuid
+ *           required: true
+ *           description: El uuid de la carrera
+ *      responses:
+ *          200:
+ *              description: Listado de horarios activos de la carrera
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: array
+ *                          items:
+ *                              type: object
+ *                              $ref: '#/components/schemas/ScheduleResponse'
+ *          500:
+ *              description: Error de servidor
+ *
+ */
+router.get(
+    "/list-by-career/:uuid",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
+        param("uuid").isUUID(4),
+        validateFields,
+    ],
+    scheduleController.getByCareer
 );
 
 /**

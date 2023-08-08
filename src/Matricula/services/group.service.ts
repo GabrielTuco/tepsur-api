@@ -7,8 +7,7 @@ import { DatabaseError } from "../../errors/DatabaseError";
 import { Docente } from "../../Teacher/entity/Docente.entity";
 import { Secretaria } from "../../Secretary/entity/Secretaria.entity";
 import { Sede } from "../../Sede/entity";
-import { MatriculaModulosModulo } from "../entity/MatriculaModulosModulo";
-import { CONDICION_ALUMNO, TIPO_CARRERA } from "../../interfaces/enums";
+import { CONDICION_ALUMNO } from "../../interfaces/enums";
 import { PensionService } from "../../Pension/services/pension.service";
 import { NotFoundError } from "../../errors/NotFoundError";
 
@@ -134,23 +133,13 @@ export class GroupService implements GroupRepository {
 
             const grupo = await Grupo.findOne({ where: { uuid: grupoUuid } });
 
-            if (!grupo)
-                throw new DatabaseError(
-                    "El grupo no existe",
-                    404,
-                    "Not found error"
-                );
+            if (!grupo) throw new NotFoundError("El grupo no existe");
 
             const secretaria = await Secretaria.findOneBy({
                 uuid: secretariaUuid,
             });
 
-            if (!secretaria)
-                throw new DatabaseError(
-                    "La secretaria existe",
-                    404,
-                    "Not found error"
-                );
+            if (!secretaria) throw new NotFoundError("La secretaria existe");
 
             const studentsArray = students!.filter(
                 (element): element is Matricula => element !== undefined

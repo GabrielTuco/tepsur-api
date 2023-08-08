@@ -2,17 +2,17 @@ import { Request, Response } from "express";
 import { ScheduleService } from "../services/schedule.service";
 import { DatabaseError } from "../../errors/DatabaseError";
 import { adaptedSchedule } from "../adapters/schedule.adapter";
-
-const scheduleService = new ScheduleService();
-
+import { DatabaseErrorBase } from "../../errors/DatabaseErrorBase";
 export class ScheduleController {
-    public async postSchedule(req: Request, res: Response) {
+    constructor(private readonly scheduleService: ScheduleService) {}
+
+    public postSchedule = async (req: Request, res: Response) => {
         try {
-            const horario = await scheduleService.register(req.body);
+            const horario = await this.scheduleService.register(req.body);
 
             return res.json(horario);
         } catch (error: any) {
-            if (error instanceof DatabaseError) {
+            if (error instanceof DatabaseErrorBase) {
                 return res.status(error.codeStatus).json({
                     msg: error.message,
                     name: error.name,
@@ -22,15 +22,15 @@ export class ScheduleController {
                 msg: "contact the administrator",
             });
         }
-    }
+    };
 
-    public async getAll(_req: Request, res: Response) {
+    public getAll = async (_req: Request, res: Response) => {
         try {
-            const horarios = await scheduleService.listAll();
+            const horarios = await this.scheduleService.listAll();
 
             return res.json(horarios);
         } catch (error) {
-            if (error instanceof DatabaseError) {
+            if (error instanceof DatabaseErrorBase) {
                 return res.status(error.codeStatus).json({
                     msg: error.message,
                     name: error.name,
@@ -40,16 +40,16 @@ export class ScheduleController {
                 msg: "contact the administrator",
             });
         }
-    }
+    };
 
-    public async getByUuid(req: Request, res: Response) {
+    public getByUuid = async (req: Request, res: Response) => {
         try {
             const { id } = req.params;
-            const horario = scheduleService.findByUuid(id);
+            const horario = await this.scheduleService.findByUuid(id);
 
             return res.json(horario);
         } catch (error) {
-            if (error instanceof DatabaseError) {
+            if (error instanceof DatabaseErrorBase) {
                 return res.status(error.codeStatus).json({
                     msg: error.message,
                     name: error.name,
@@ -59,19 +59,37 @@ export class ScheduleController {
                 msg: "contact the administrator",
             });
         }
-    }
+    };
 
-    public async patchSchedule(req: Request, res: Response) {
+    public getByCareer = async (req: Request, res: Response) => {
+        try {
+            const { uuid } = req.params;
+            const horarios = await this.scheduleService.listPerCareer(uuid);
+            return res.json(horarios);
+        } catch (error) {
+            if (error instanceof DatabaseErrorBase) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                    name: error.name,
+                });
+            }
+            return res.status(500).json({
+                msg: "contact the administrator",
+            });
+        }
+    };
+
+    public patchSchedule = async (req: Request, res: Response) => {
         try {
             const { id } = req.params;
-            const horario = await scheduleService.update(
+            const horario = await this.scheduleService.update(
                 id,
                 adaptedSchedule(req.body)
             );
 
             return res.json(horario);
         } catch (error) {
-            if (error instanceof DatabaseError) {
+            if (error instanceof DatabaseErrorBase) {
                 return res.status(error.codeStatus).json({
                     msg: error.message,
                     name: error.name,
@@ -81,16 +99,16 @@ export class ScheduleController {
                 msg: "contact the administrator",
             });
         }
-    }
+    };
 
-    public async deleteSchedule(req: Request, res: Response) {
+    public deleteSchedule = async (req: Request, res: Response) => {
         try {
             const { id } = req.params;
-            await scheduleService.delete(id);
+            await this.scheduleService.delete(id);
 
             return res.json({ msg: "Ok" });
         } catch (error) {
-            if (error instanceof DatabaseError) {
+            if (error instanceof DatabaseErrorBase) {
                 return res.status(error.codeStatus).json({
                     msg: error.message,
                     name: error.name,
@@ -100,5 +118,5 @@ export class ScheduleController {
                 msg: "contact the administrator",
             });
         }
-    }
+    };
 }

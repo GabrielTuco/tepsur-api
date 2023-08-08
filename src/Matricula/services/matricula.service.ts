@@ -833,6 +833,7 @@ export class MatriculaService implements MatriculaRepository {
         try {
             const matriculas = await Matricula.createQueryBuilder("m")
                 .innerJoinAndSelect("m.alumno", "a")
+                .innerJoinAndSelect("m.carrera", "c")
                 .leftJoinAndSelect("m.pagoMatricula", "pm")
                 .leftJoinAndSelect("pm.forma_pago", "fp")
                 .where(

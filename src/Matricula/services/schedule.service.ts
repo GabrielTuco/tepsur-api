@@ -1,11 +1,12 @@
 import { v4 as uuid } from "uuid";
-import { Carrera, Horario } from "../entity";
+import { Carrera, Grupo, Horario } from "../entity";
 import { ScheduleDTO } from "../interfaces/dtos";
 import { ScheduleRepository } from "../interfaces/repositories";
 import { DatabaseError } from "../../errors/DatabaseError";
+import { NotFoundError } from "../../errors/NotFoundError";
 
 export class ScheduleService implements ScheduleRepository {
-    public async register(data: ScheduleDTO): Promise<Horario> {
+    public register = async (data: ScheduleDTO): Promise<Horario> => {
         try {
             const newHorario = new Horario();
 
@@ -18,8 +19,9 @@ export class ScheduleService implements ScheduleRepository {
         } catch (error) {
             throw error;
         }
-    }
-    public async listAll(): Promise<Horario[]> {
+    };
+
+    public listAll = async (): Promise<Horario[]> => {
         try {
             const horarios = await Horario.find({ where: { estado: true } });
 
@@ -27,36 +29,27 @@ export class ScheduleService implements ScheduleRepository {
         } catch (error) {
             throw error;
         }
-    }
-    public async findByUuid(uuid: string): Promise<Horario> {
+    };
+
+    public findByUuid = async (uuid: string): Promise<Horario> => {
         try {
             const horario = await Horario.findOneBy({ uuid });
-            if (!horario)
-                throw new DatabaseError(
-                    "El horario no existe",
-                    404,
-                    "Not found error"
-                );
+            if (!horario) throw new NotFoundError("El horario no existe");
 
             return horario;
         } catch (error) {
             throw error;
         }
-    }
+    };
 
-    public async update(
+    public update = async (
         uuid: string,
         data: Partial<Horario>
-    ): Promise<Horario> {
+    ): Promise<Horario> => {
         try {
             console.log(uuid);
             const horario = await Horario.findOneBy({ uuid });
-            if (!horario)
-                throw new DatabaseError(
-                    "El horario no existe",
-                    404,
-                    "Not found error"
-                );
+            if (!horario) throw new NotFoundError("El horario no existe");
 
             await Horario.update({ uuid }, data);
 
@@ -65,17 +58,12 @@ export class ScheduleService implements ScheduleRepository {
         } catch (error) {
             throw error;
         }
-    }
+    };
 
-    public async delete(uuid: string): Promise<Horario> {
+    public delete = async (uuid: string): Promise<Horario> => {
         try {
             const horario = await Horario.findOneBy({ uuid });
-            if (!horario)
-                throw new DatabaseError(
-                    "El horario no existe",
-                    404,
-                    "Not found error"
-                );
+            if (!horario) throw new NotFoundError("El horario no existe");
             horario.estado = false;
             await horario.save();
             await horario.reload();
@@ -83,28 +71,21 @@ export class ScheduleService implements ScheduleRepository {
         } catch (error) {
             throw error;
         }
-    }
+    };
 
-    // public async listPerCareer(carreraUuid: string): Promise<Horario[]> {
-    //     try {
-    //        const carrera = await Carrera.createQueryBuilder("c")
-    //         .innerJoinAndSelect("c.modulos","m")
-    //         .innerJoinAndSelect("m.horarios","h")
-    //         .where("c.uuid=:uuid",{uuid:carreraUuid}).getOne();
-    //        if(!carrera) throw new DatabaseError("Carrera not found",500,"");
+    public listPerCareer = async (carreraUuid: string): Promise<Horario[]> => {
+        try {
+            const grupos = await Grupo.createQueryBuilder("g")
+                .innerJoinAndSelect("g.carrera", "c")
+                .innerJoinAndSelect("g.horario", "h")
+                .where("c.uuid=:carreraUuid", { carreraUuid })
+                .getMany();
 
-    //        const {modulos} = carrera;
-    //        const horariosMatriz =  modulos.map(m=>m.horarios)
+            const horarios = grupos.map((m) => m.horario);
 
-    //        const horariosArray = horariosMatriz.flatMap(row=>row)
-
-    //        const horarios = horariosArray.filter((horario,index,self)=>{
-    //         return (index===self.findIndex(h=>h.uuid===horario.uuid))
-    //        })
-
-    //        return horarios;
-    //     } catch (error) {
-    //         throw error;
-    //     }
-    // }
+            return horarios;
+        } catch (error) {
+            throw error;
+        }
+    };
 }

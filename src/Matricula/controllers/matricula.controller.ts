@@ -289,6 +289,7 @@ export class MatriculaController {
                 ape_paterno: m.matricula.alumno.ape_paterno,
                 ape_materno: m.matricula.alumno.ape_materno,
                 pago_matricula: m.matricula.pagoMatricula,
+                carrera: m.matricula.carrera,
                 ultimo_pago: m.ultimoPago,
             }));
             return res.json(data);
