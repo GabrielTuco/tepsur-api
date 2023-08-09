@@ -189,18 +189,26 @@ export class GroupService implements GroupRepository {
      * Servicio que retorna el listado de todos los grupos creados
      * @returns {Promise<Grupo[]>} Grupos Listado de grupos
      */
-    public listGroups = async (): Promise<Grupo[]> => {
+    public listGroups = async (): Promise<any> => {
         try {
             const grupos = await Grupo.createQueryBuilder("g")
-                .innerJoinAndSelect("g.docente", "d")
-                .innerJoinAndSelect("g.horario", "h")
-                .innerJoinAndSelect("g.carrera", "c")
+                .leftJoinAndSelect("g.docente", "d")
+                .leftJoinAndSelect("g.horario", "h")
+                .leftJoinAndSelect("g.carrera", "c")
                 .leftJoinAndSelect("g.secretaria", "s")
-                .innerJoinAndSelect("g.modulo", "m")
-                .innerJoinAndSelect("g.sede", "se")
-                .getMany();
+                .leftJoinAndSelect("g.modulo", "m")
+                .leftJoinAndSelect("g.sede", "se")
+                .leftJoinAndSelect("g.matriculaGruposGrupo", "mgg")
 
-            return grupos;
+                .getMany();
+            const gruposWithStudentsCountMapped = grupos.map(
+                ({ matriculaGruposGrupo, ...grupo }) => ({
+                    ...grupo,
+                    numero_matriculados: matriculaGruposGrupo.length,
+                })
+            );
+
+            return gruposWithStudentsCountMapped;
         } catch (error) {
             throw error;
         }

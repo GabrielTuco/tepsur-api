@@ -7,19 +7,22 @@ import { Secretaria } from "../../Secretary/entity";
 @Entity()
 export class MatriculaGruposGrupo extends BaseEntity {
     @PrimaryColumn()
-    matriculaUuid: string;
+    uuid: string;
 
-    @PrimaryColumn()
-    grupoUuid: string;
+    // @Column()
+    // matriculaUuid: string;
+
+    // @Column()
+    // grupoUuid: string;
 
     @Column({ type: "varchar" })
     condicion: CONDICION_ALUMNO;
 
-    @ManyToOne(() => Matricula, (matricula) => matricula.matriculaGruposGrupo)
-    matricula: Matricula;
-
     @ManyToOne(() => Grupo, (grupo) => grupo.matriculaGruposGrupo)
     grupo: Grupo;
+
+    @ManyToOne(() => Matricula, (matricula) => matricula.matriculaGruposGrupo)
+    matricula: Matricula;
 
     @ManyToOne(
         () => Secretaria,

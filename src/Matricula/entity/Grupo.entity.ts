@@ -47,7 +47,7 @@ export class Grupo extends EntityBase {
 
     @OneToMany(
         () => MatriculaGruposGrupo,
-        (matriculaGruposGrupo) => matriculaGruposGrupo.matricula
+        (matriculaGruposGrupo) => matriculaGruposGrupo.grupo
     )
     matriculaGruposGrupo: MatriculaGruposGrupo[];
 
