@@ -62,27 +62,15 @@ export class GroupService implements GroupRepository {
             );
 
             if (!isDocenteValid) {
-                throw new DatabaseError(
-                    "El docente no existe en esta sede",
-                    404,
-                    "Database found error"
-                );
+                throw new NotFoundError("El docente no existe en esta sede");
             }
 
             if (!isCarreraValid) {
-                throw new DatabaseError(
-                    "La carrera no existe en esta sede",
-                    404,
-                    "Database found error"
-                );
+                throw new NotFoundError("La carrera no existe en esta sede");
             }
 
             if (!isSecretariaValid) {
-                throw new DatabaseError(
-                    "La secretaria no existe en esta sede",
-                    404,
-                    "Database found error"
-                );
+                throw new NotFoundError("La secretaria no existe en esta sede");
             }
 
             const moduloExists = carreraExists?.modulos.find(
@@ -114,21 +102,24 @@ export class GroupService implements GroupRepository {
      * @returns {Promise<Grupo>}
      */
     public addStudent = async (
-        matriculasUuid: string[],
+        matriculasUuid: { matriculaUuid: string; observaciones: string }[],
         grupoUuid: string,
         secretariaUuid: string
     ): Promise<any> => {
         try {
             const students = await Promise.all(
-                matriculasUuid.map((uuid) =>
-                    Matricula.findOne({
-                        where: { uuid },
+                matriculasUuid.map(async ({ matriculaUuid, observaciones }) => {
+                    const matricula = await Matricula.findOne({
+                        where: { uuid: matriculaUuid },
                         relations: {
                             carrera: true,
                             matriculaGruposGrupo: true,
                         },
-                    })
-                )
+                    });
+                    if (matricula) {
+                        return { matricula, observaciones };
+                    } else return undefined;
+                })
             );
 
             const grupo = await Grupo.findOne({ where: { uuid: grupoUuid } });
@@ -142,14 +133,18 @@ export class GroupService implements GroupRepository {
             if (!secretaria) throw new NotFoundError("La secretaria existe");
 
             const studentsArray = students!.filter(
-                (element): element is Matricula => element !== undefined
+                (
+                    element
+                ): element is { matricula: Matricula; observaciones: string } =>
+                    element !== undefined
             );
 
-            studentsArray.map(async (student) => {
+            studentsArray.map(async ({ matricula: student, observaciones }) => {
                 const newMatriculaGrupo = new MatriculaGruposGrupo();
                 newMatriculaGrupo.matricula = student;
                 newMatriculaGrupo.grupo = grupo;
                 newMatriculaGrupo.responsable = secretaria;
+                newMatriculaGrupo.observacion = observaciones;
 
                 if (!student.ultimo_grupo) {
                     student.ultimo_grupo = grupo;
@@ -186,7 +181,7 @@ export class GroupService implements GroupRepository {
     };
 
     /**
-     * Servicio que retorna el listado de todos los grupos creados
+     * Servicio que retorna el listado de todos los grupos creados con el numero de estudiantes matriculados
      * @returns {Promise<Grupo[]>} Grupos Listado de grupos
      */
     public listGroups = async (): Promise<any> => {

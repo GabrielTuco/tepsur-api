@@ -220,8 +220,13 @@ router.post(
  *                          matriculasUuid:
  *                              type: array
  *                              items:
- *                                  type: string
- *                                  format: uuid
+ *                                  type: object
+ *                                  properties:
+ *                                      matriculaUuid:
+ *                                          type: string
+ *                                          format: uuid
+ *                                      observaciones:
+ *                                          type: string
  *                          grupoUuid:
  *                              type: string
  *                              format: uuid

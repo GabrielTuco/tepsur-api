@@ -9,12 +9,6 @@ export class MatriculaGruposGrupo extends BaseEntity {
     @PrimaryColumn()
     uuid: string;
 
-    // @Column()
-    // matriculaUuid: string;
-
-    // @Column()
-    // grupoUuid: string;
-
     @Column({ type: "varchar" })
     condicion: CONDICION_ALUMNO;
 
@@ -30,4 +24,7 @@ export class MatriculaGruposGrupo extends BaseEntity {
         { nullable: true }
     )
     responsable: Secretaria;
+
+    @Column({ type: "text", nullable: true })
+    observacion: string;
 }

@@ -49,7 +49,7 @@ export interface CareerRepository {
 export interface GroupRepository {
     register(data: GroupDTO): Promise<Grupo>;
     addStudent(
-        matriculasUuid: string[],
+        matriculasUuid: { matriculaUuid: string; observaciones: string }[],
         grupoUuid: string,
         secretariaUuid: string
     ): Promise<Grupo>;
