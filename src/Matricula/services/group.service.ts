@@ -141,6 +141,7 @@ export class GroupService implements GroupRepository {
 
             studentsArray.map(async ({ matricula, observaciones }) => {
                 const newMatriculaGrupo = new MatriculaGruposGrupo();
+                newMatriculaGrupo.uuid = uuid();
                 newMatriculaGrupo.matricula = matricula;
                 newMatriculaGrupo.grupo = grupo;
                 newMatriculaGrupo.responsable = secretaria;
