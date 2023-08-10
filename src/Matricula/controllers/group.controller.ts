@@ -85,6 +85,25 @@ export class GroupController {
         }
     }
 
+    public async getAllBySede(req: Request, res: Response) {
+        try {
+            const { uuid } = req.params;
+            const grupos = await groupService.listGroupsBySede(uuid);
+            return res.json(grupos);
+        } catch (error) {
+            console.log(error);
+            if (error instanceof DatabaseErrorBase) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                    name: error.name,
+                });
+            }
+            return res.status(500).json({
+                msg: "Internal Server Error, contact the administrator",
+            });
+        }
+    }
+
     public async getStudents(req: Request, res: Response) {
         try {
             const { id } = req.params;
@@ -130,6 +149,25 @@ export class GroupController {
             return res.json(grupo);
         } catch (error) {
             if (error instanceof DatabaseError) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                    name: error.name,
+                });
+            }
+            return res.status(500).json({
+                msg: "Internal Server Error, contact the administrator",
+            });
+        }
+    }
+
+    public async putCloseGroup(req: Request, res: Response) {
+        try {
+            const { uuid } = req.params;
+            const grupo = await groupService.closeGroup(uuid);
+
+            return res.json(grupo);
+        } catch (error) {
+            if (error instanceof DatabaseErrorBase) {
                 return res.status(error.codeStatus).json({
                     msg: error.message,
                     name: error.name,

@@ -7,7 +7,7 @@ import { DatabaseError } from "../../errors/DatabaseError";
 import { Docente } from "../../Teacher/entity/Docente.entity";
 import { Secretaria } from "../../Secretary/entity/Secretaria.entity";
 import { Sede } from "../../Sede/entity";
-import { CONDICION_ALUMNO } from "../../interfaces/enums";
+import { CONDICION_ALUMNO, ESTADO_GRUPO } from "../../interfaces/enums";
 import { PensionService } from "../../Pension/services/pension.service";
 import { NotFoundError } from "../../errors/NotFoundError";
 
@@ -107,6 +107,14 @@ export class GroupService implements GroupRepository {
         secretariaUuid: string
     ): Promise<any> => {
         try {
+            const grupo = await Grupo.findOne({ where: { uuid: grupoUuid } });
+            const secretaria = await Secretaria.findOneBy({
+                uuid: secretariaUuid,
+            });
+
+            if (!grupo) throw new NotFoundError("El grupo no existe");
+            if (!secretaria) throw new NotFoundError("La secretaria existe");
+
             const students = await Promise.all(
                 matriculasUuid.map(async ({ matriculaUuid, observaciones }) => {
                     const matricula = await Matricula.findOne({
@@ -121,38 +129,40 @@ export class GroupService implements GroupRepository {
                     } else return undefined;
                 })
             );
+            type MatriculaWithObservaciones = {
+                matricula: Matricula;
+                observaciones: string;
+            };
 
-            const grupo = await Grupo.findOne({ where: { uuid: grupoUuid } });
-
-            if (!grupo) throw new NotFoundError("El grupo no existe");
-
-            const secretaria = await Secretaria.findOneBy({
-                uuid: secretariaUuid,
-            });
-
-            if (!secretaria) throw new NotFoundError("La secretaria existe");
-
-            const studentsArray = students!.filter(
-                (
-                    element
-                ): element is { matricula: Matricula; observaciones: string } =>
+            const studentsArray = students.filter(
+                (element): element is MatriculaWithObservaciones =>
                     element !== undefined
             );
 
-            studentsArray.map(async ({ matricula: student, observaciones }) => {
+            studentsArray.map(async ({ matricula, observaciones }) => {
                 const newMatriculaGrupo = new MatriculaGruposGrupo();
-                newMatriculaGrupo.matricula = student;
+                newMatriculaGrupo.matricula = matricula;
                 newMatriculaGrupo.grupo = grupo;
                 newMatriculaGrupo.responsable = secretaria;
                 newMatriculaGrupo.observacion = observaciones;
 
-                if (!student.ultimo_grupo) {
-                    student.ultimo_grupo = grupo;
+                if (!matricula.ultimo_grupo) {
+                    matricula.ultimo_grupo = grupo;
                     newMatriculaGrupo.condicion = CONDICION_ALUMNO.NUEVO;
                 } else {
                     //si no es nuevo ver que horarios y modulos ha llevado establecer si continua o es cambio de horario
                     if (
-                        student.ultimo_grupo.horario.uuid === grupo.horario.uuid
+                        matricula.ultimo_grupo.estado === ESTADO_GRUPO.EN_CURSO
+                    ) {
+                        throw new DatabaseError(
+                            "No se puede agregar a un alumno que se encuentra en un grupo activo",
+                            406,
+                            "Not aceptable"
+                        );
+                    }
+                    if (
+                        matricula.ultimo_grupo.horario.uuid ===
+                        grupo.horario.uuid
                     ) {
                         newMatriculaGrupo.condicion = CONDICION_ALUMNO.CONTINUA;
                     } else {
@@ -160,12 +170,12 @@ export class GroupService implements GroupRepository {
                             CONDICION_ALUMNO.CAMBIO_HORARIO;
                     }
 
-                    student.ultimo_grupo = grupo;
+                    matricula.ultimo_grupo = grupo;
                 }
 
                 await newMatriculaGrupo.save();
-                student.matriculaGruposGrupo.push(newMatriculaGrupo);
-                await student.save();
+                matricula.matriculaGruposGrupo.push(newMatriculaGrupo);
+                await matricula.save();
             });
 
             await grupo.save();
@@ -222,6 +232,30 @@ export class GroupService implements GroupRepository {
                 .leftJoinAndSelect("g.sede", "se")
                 .leftJoinAndSelect("g.matriculaGruposGrupo", "mgg")
                 .where("s.uuid=:secretariaUuid", { secretariaUuid })
+                .getMany();
+            const gruposWithStudentsCountMapped = grupos.map(
+                ({ matriculaGruposGrupo, ...grupo }) => ({
+                    ...grupo,
+                    numero_matriculados: matriculaGruposGrupo.length,
+                })
+            );
+            return gruposWithStudentsCountMapped;
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    public listGroupsBySede = async (sedeUuid: string): Promise<object[]> => {
+        try {
+            const grupos = await Grupo.createQueryBuilder("g")
+                .leftJoinAndSelect("g.docente", "d")
+                .leftJoinAndSelect("g.horario", "h")
+                .leftJoinAndSelect("g.carrera", "c")
+                .leftJoinAndSelect("g.secretaria", "s")
+                .leftJoinAndSelect("g.modulo", "m")
+                .leftJoinAndSelect("g.sede", "se")
+                .leftJoinAndSelect("g.matriculaGruposGrupo", "mgg")
+                .where("se.uuid=:sedeUuid", { sedeUuid })
                 .getMany();
             const gruposWithStudentsCountMapped = grupos.map(
                 ({ matriculaGruposGrupo, ...grupo }) => ({
@@ -301,6 +335,20 @@ export class GroupService implements GroupRepository {
             if (!group) throw new DatabaseError("Grupo no encontrado", 404, "");
 
             return group;
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    public closeGroup = async (grupoUuid: string): Promise<Grupo> => {
+        try {
+            const grupo = await Grupo.findOneBy({ uuid: grupoUuid });
+            if (!grupo) throw new NotFoundError("El grupo no existe");
+
+            grupo.estado = ESTADO_GRUPO.CERRADO;
+            await grupo.save();
+            await grupo.reload();
+            return grupo;
         } catch (error) {
             throw error;
         }

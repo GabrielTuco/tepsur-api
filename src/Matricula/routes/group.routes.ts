@@ -314,7 +314,55 @@ router.get(
  *              description: Error de servidor
  *
  */
-router.get("/list-by-secretary/:uuid", [], groupController.getAllBySecretary);
+router.get(
+    "/list-by-secretary/:uuid",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
+        param("uuid").isUUID(4),
+        validateFields,
+    ],
+    groupController.getAllBySecretary
+);
+
+/**
+ * @swagger
+ * /group/list-by-sede/{uuid}:
+ *  get:
+ *      summary: Listado de grupos por sede
+ *      tags: [Group]
+ *      parameters:
+ *         - $ref: '#/components/parameters/token'
+ *         - in: path
+ *           name: uuid
+ *           required: true
+ *           schema:
+ *              type: string
+ *              format: uuid
+ *           description: El uuid de la sede
+ *      responses:
+ *          200:
+ *              description: El listado de grupos por sede
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: array
+ *                          items:
+ *                              $ref: '#/components/schemas/GroupResponse'
+ *          500:
+ *              description: Error de servidor
+ *
+ */
+router.get(
+    "/list-by-sede/:uuid",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
+        param("uuid").isUUID(4),
+        validateFields,
+    ],
+    groupController.getAllBySede
+);
 
 /**
  * @swagger
@@ -422,11 +470,49 @@ router.get(
     "/find-by-name/:name",
     [
         validateJWT,
-        checkAuthRole([ROLES.ADMIN, ROLES.SECRE]),
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         param("name").isString(),
         validateFields,
     ],
     groupController.getByName
+);
+
+/**
+ * @swagger
+ * /group/close-group/{uuid}:
+ *  put:
+ *      summary: Cerrar o culminar un grupo
+ *      tags: [Group]
+ *      parameters:
+ *         - $ref: '#/components/parameters/token'
+ *         - in: path
+ *           name: uuid
+ *           required: true
+ *           schema:
+ *              type: string
+ *              format: uuid
+ *           description: El uuid del grupo
+ *      responses:
+ *          200:
+ *              description: El grupo con el estado CERRADO
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          $ref: '#/components/schemas/GroupResponse'
+ *          500:
+ *              description: Error de servidor
+ *
+ */
+router.put(
+    "/close-group/:uuid",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
+        param("UID").isUUID(4),
+        validateFields,
+    ],
+    groupController.putCloseGroup
 );
 
 export default router;
