@@ -209,6 +209,32 @@ export class GroupService implements GroupRepository {
         }
     };
 
+    public listGroupsBySecretary = async (
+        secretariaUuid: string
+    ): Promise<object[]> => {
+        try {
+            const grupos = await Grupo.createQueryBuilder("g")
+                .leftJoinAndSelect("g.docente", "d")
+                .leftJoinAndSelect("g.horario", "h")
+                .leftJoinAndSelect("g.carrera", "c")
+                .leftJoinAndSelect("g.secretaria", "s")
+                .leftJoinAndSelect("g.modulo", "m")
+                .leftJoinAndSelect("g.sede", "se")
+                .leftJoinAndSelect("g.matriculaGruposGrupo", "mgg")
+                .where("s.uuid=:secretariaUuid", { secretariaUuid })
+                .getMany();
+            const gruposWithStudentsCountMapped = grupos.map(
+                ({ matriculaGruposGrupo, ...grupo }) => ({
+                    ...grupo,
+                    numero_matriculados: matriculaGruposGrupo.length,
+                })
+            );
+            return gruposWithStudentsCountMapped;
+        } catch (error) {
+            throw error;
+        }
+    };
+
     /**
      * Servicio para obtener el listado de los alumnos matriculados en un grupo
      * @param {string} uuid Uuid del grupo

@@ -288,6 +288,36 @@ router.get(
 
 /**
  * @swagger
+ * /group/list-by-secretary/{uuid}:
+ *  get:
+ *      summary: Listado de grupos que maneja una secretaria
+ *      tags: [Group]
+ *      parameters:
+ *         - $ref: '#/components/parameters/token'
+ *         - in: path
+ *           name: uuid
+ *           required: true
+ *           schema:
+ *              type: string
+ *              format: uuid
+ *           description: El uuid de la secretaria
+ *      responses:
+ *          200:
+ *              description: El listado de grupos que maneja una secretaria
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: array
+ *                          items:
+ *                              $ref: '#/components/schemas/GroupResponse'
+ *          500:
+ *              description: Error de servidor
+ *
+ */
+router.get("/list-by-secretary/:uuid", [], groupController.getAllBySecretary);
+
+/**
+ * @swagger
  * /group/students/{id}:
  *  get:
  *      summary: Listado de alumnos pertenecientes a un grupo

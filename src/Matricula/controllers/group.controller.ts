@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { GroupService } from "../services/group.service";
 import { DatabaseError } from "../../errors/DatabaseError";
+import { DatabaseErrorBase } from "../../errors/DatabaseErrorBase";
 
 const groupService = new GroupService();
 
@@ -54,6 +55,25 @@ export class GroupController {
         } catch (error) {
             console.log(error);
             if (error instanceof DatabaseError) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                    name: error.name,
+                });
+            }
+            return res.status(500).json({
+                msg: "Internal Server Error, contact the administrator",
+            });
+        }
+    }
+
+    public async getAllBySecretary(req: Request, res: Response) {
+        try {
+            const { uuid } = req.params;
+            const grupos = await groupService.listGroupsBySecretary(uuid);
+            return res.json(grupos);
+        } catch (error) {
+            console.log(error);
+            if (error instanceof DatabaseErrorBase) {
                 return res.status(error.codeStatus).json({
                     msg: error.message,
                     name: error.name,
