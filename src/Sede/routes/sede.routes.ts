@@ -79,6 +79,8 @@ const sedeController = new SedeController(sedeService);
  *  get:
  *      summary: Listado de sede existentes
  *      tags: [Sede]
+ *      parameters:
+ *         - $ref: '#/components/parameters/token'
  *      responses:
  *          200:
  *              description: El listado de sedes
