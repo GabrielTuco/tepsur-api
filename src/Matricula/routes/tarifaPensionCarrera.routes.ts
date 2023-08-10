@@ -106,6 +106,46 @@ router.get(
 
 /**
  * @swagger
+ * /tarifa-pension/list-by-sede/{uuid}:
+ *  get:
+ *      summary: Listado de tarifas por sede
+ *      tags: [TarifaPension]
+ *      parameters:
+ *         - $ref: '#/components/parameters/token'
+ *         - in: path
+ *           name: uuid
+ *           required: true
+ *           schema:
+ *              type: string
+ *              format: uuid
+ *           description: El uuid de la sede
+ *      responses:
+ *          200:
+ *              description: El listado de tarifas por sede
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: array
+ *                          items:
+ *                              type: object
+ *                              $ref: '#/components/schemas/TarifaPensionResponse'
+ *          500:
+ *              description: Error de servidor
+ *
+ */
+router.get(
+    "/list-by-sede/:uuid",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
+        param("uuid").isUUID(4),
+        validateFields,
+    ],
+    tarifaController.GETallBySede
+);
+
+/**
+ * @swagger
  * /tarifa-pension/find-by-uuid/{uuid}:
  *  get:
  *      summary: Busqueda de tarifa por uuid

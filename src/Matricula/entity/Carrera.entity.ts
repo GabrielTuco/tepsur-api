@@ -5,6 +5,7 @@ import { Grupo } from "./Grupo.entity";
 import { Matricula } from "./Matricula.entity";
 import { TIPO_CARRERA } from "../../interfaces/enums";
 import { Sede } from "../../Sede/entity";
+import { TarifaPensionCarrera } from "./TarifaPensionCarrera.entity";
 
 @Entity()
 export class Carrera extends EntityBase {
@@ -36,4 +37,7 @@ export class Carrera extends EntityBase {
 
     @ManyToMany(() => Sede, (sede) => sede.carreras)
     sedes: Sede[];
+
+    @OneToMany(() => TarifaPensionCarrera, (tarifa) => tarifa.carrera)
+    tarifas: TarifaPensionCarrera[];
 }

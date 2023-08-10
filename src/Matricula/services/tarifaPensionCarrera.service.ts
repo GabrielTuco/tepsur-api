@@ -1,35 +1,48 @@
 import { v4 as uuid } from "uuid";
 import { DatabaseError } from "../../errors/DatabaseError";
 import { Carrera, TarifaPensionCarrera } from "../entity";
-import { TarifaPensionCarreraDTO } from "../interfaces/dtos";
 import { TarifaPensionCarreraRepository } from "../interfaces/repositories";
+import { CreateTarifaPensionDto } from "../dto/createTarifaPension.dto";
+import { Sede } from "../../Sede/entity";
+import { NotFoundError } from "../../errors/NotFoundError";
 
 export class TarifaPensionCarreraService
     implements TarifaPensionCarreraRepository
 {
     public async register(
-        data: TarifaPensionCarreraDTO
+        data: CreateTarifaPensionDto
     ): Promise<TarifaPensionCarrera> {
+        const { carreraUuid, sedeUuid, tarifa } = data;
         try {
-            const carrera = await Carrera.findOne({
-                where: { uuid: data.carreraUuid },
-            });
-            if (!carrera) throw new DatabaseError("Carrera not found", 500, "");
+            const sede = await Sede.findOneBy({ uuid: sedeUuid });
 
-            const tarifa = await TarifaPensionCarrera.createQueryBuilder("t")
-                .innerJoinAndSelect("t.carrera", "c")
-                .where("c.uuid=:uuid", { uuid: carrera.uuid })
+            const carrera = await Carrera.findOne({
+                where: { uuid: carreraUuid },
+            });
+            if (!sede) throw new NotFoundError("La sede no existe");
+            if (!carrera) throw new NotFoundError("La carrera no existe");
+
+            const tarifaExists = await TarifaPensionCarrera.createQueryBuilder(
+                "t"
+            )
+                .innerJoin("t.carrera", "c")
+                .innerJoin("t.sede", "s")
+                .where("s.uuid=:sedeUuid and c.uuid=carreraUuid", {
+                    sedeUuid,
+                    carreraUuid,
+                })
                 .getOne();
 
-            if (tarifa) {
-                tarifa.tarifa = data.tarifa;
-                await tarifa.save();
-                await tarifa.reload();
+            if (tarifaExists) {
+                tarifaExists.tarifa = tarifa;
+                await tarifaExists.save();
+                await tarifaExists.reload();
 
-                return tarifa;
+                return tarifaExists;
             } else {
                 const newTarifa = new TarifaPensionCarrera();
                 newTarifa.uuid = uuid();
+                newTarifa.sede = sede;
                 newTarifa.carrera = carrera;
                 newTarifa.tarifa = data.tarifa;
                 await newTarifa.save();
@@ -49,6 +62,21 @@ export class TarifaPensionCarreraService
             throw error;
         }
     }
+
+    public async listBySede(sedeUuid: string): Promise<TarifaPensionCarrera[]> {
+        try {
+            const tarifas = await TarifaPensionCarrera.createQueryBuilder("t")
+                .innerJoinAndSelect("t.sede", "s")
+                .innerJoinAndSelect("t.carrera", "c")
+                .where("s.uuid=:sedeUuid", { sedeUuid })
+                .getMany();
+
+            return tarifas;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     public async findByUuid(uuid: string): Promise<TarifaPensionCarrera> {
         try {
             const tarifa = await TarifaPensionCarrera.findOne({

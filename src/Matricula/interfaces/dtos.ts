@@ -126,8 +126,3 @@ export class PagoMatriculaData {
 export class GradoEstudiosDTO {
     descripcion: string;
 }
-
-export class TarifaPensionCarreraDTO {
-    carreraUuid: string;
-    tarifa: number;
-}

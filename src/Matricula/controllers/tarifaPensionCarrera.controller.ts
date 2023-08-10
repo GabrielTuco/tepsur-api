@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { TarifaPensionCarreraService } from "../services/tarifaPensionCarrera.service";
+import { DatabaseErrorBase } from "../../errors/DatabaseErrorBase";
 
 const tarifaService = new TarifaPensionCarreraService();
 
@@ -11,7 +12,15 @@ export class TarifaPensionCarreraController {
             return res.json(tarifa);
         } catch (error) {
             console.log(error);
-            return res.status(500).json({ msg: "Internal server error" });
+            if (error instanceof DatabaseErrorBase) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                    name: error.name,
+                });
+            }
+            return res.status(500).json({
+                msg: "contact the administrator",
+            });
         }
     }
 
@@ -22,7 +31,35 @@ export class TarifaPensionCarreraController {
             return res.json(tarifas);
         } catch (error) {
             console.log(error);
-            return res.status(500).json({ msg: "Internal server error" });
+            if (error instanceof DatabaseErrorBase) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                    name: error.name,
+                });
+            }
+            return res.status(500).json({
+                msg: "contact the administrator",
+            });
+        }
+    }
+
+    public async GETallBySede(req: Request, res: Response) {
+        try {
+            const { uuid } = req.params;
+            const tarifas = await tarifaService.listBySede(uuid);
+
+            return res.json(tarifas);
+        } catch (error) {
+            console.log(error);
+            if (error instanceof DatabaseErrorBase) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                    name: error.name,
+                });
+            }
+            return res.status(500).json({
+                msg: "contact the administrator",
+            });
         }
     }
 
@@ -33,7 +70,15 @@ export class TarifaPensionCarreraController {
             return res.json(tarifa);
         } catch (error) {
             console.log(error);
-            return res.status(500).json({ msg: "Internal server error" });
+            if (error instanceof DatabaseErrorBase) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                    name: error.name,
+                });
+            }
+            return res.status(500).json({
+                msg: "contact the administrator",
+            });
         }
     }
 
@@ -46,7 +91,15 @@ export class TarifaPensionCarreraController {
             return res.json(tarifa);
         } catch (error) {
             console.log(error);
-            return res.status(500).json({ msg: "Internal server error" });
+            if (error instanceof DatabaseErrorBase) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                    name: error.name,
+                });
+            }
+            return res.status(500).json({
+                msg: "contact the administrator",
+            });
         }
     }
 
@@ -60,7 +113,15 @@ export class TarifaPensionCarreraController {
             return res.json(tarifa);
         } catch (error) {
             console.log(error);
-            return res.status(500).json({ msg: "Internal server error" });
+            if (error instanceof DatabaseErrorBase) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                    name: error.name,
+                });
+            }
+            return res.status(500).json({
+                msg: "contact the administrator",
+            });
         }
     }
 
@@ -71,7 +132,15 @@ export class TarifaPensionCarreraController {
             return res.json(tarifa);
         } catch (error) {
             console.log(error);
-            return res.status(500).json({ msg: "Internal server error" });
+            if (error instanceof DatabaseErrorBase) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                    name: error.name,
+                });
+            }
+            return res.status(500).json({
+                msg: "contact the administrator",
+            });
         }
     }
 }
