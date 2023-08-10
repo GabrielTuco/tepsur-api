@@ -18,7 +18,6 @@ import {
     ModuloMatriculaDTO,
     PagoMatriculaData,
     ScheduleDTO,
-    TarifaPensionCarreraDTO,
     TrasladoMatriculaDTO,
     UpdateMatriculaDto,
     UpdateCareerDto,
@@ -26,6 +25,7 @@ import {
 import { MODALIDAD } from "../../interfaces/enums";
 import { MatriculaEspecializacion } from "../../Especializacion/entity/MatriculaEspecializacion.entity";
 import { Pension } from "../../Pension/entity";
+import { CreateTarifaPensionDto } from "../dto/createTarifaPension.dto";
 
 export interface ModuleRepository {
     register(data: ModuleDTO): Promise<Modulo>;
@@ -127,7 +127,7 @@ export interface UbigeoRepository {
 }
 
 export interface TarifaPensionCarreraRepository {
-    register(data: TarifaPensionCarreraDTO): Promise<TarifaPensionCarrera>;
+    register(data: CreateTarifaPensionDto): Promise<TarifaPensionCarrera>;
     listAll(): Promise<TarifaPensionCarrera[]>;
     findByUuid(uuid: string): Promise<TarifaPensionCarrera>;
     findByCarreraUuid(carreraUuid: string): Promise<TarifaPensionCarrera>;
