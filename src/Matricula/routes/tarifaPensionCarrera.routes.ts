@@ -15,6 +15,9 @@ const tarifaController = new TarifaPensionCarreraController();
  *  schemas:
  *      TarifaPension:
  *          properties:
+ *              sedeUuid:
+ *                  type: string
+ *                  format: uuid
  *              carreraUuid:
  *                  type: string
  *                  format: uuid
@@ -69,7 +72,8 @@ router.post(
     [
         validateJWT,
         checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
-        body("carreraUuid").isUUID("4"),
+        body("sedeUuid").isUUID(4),
+        body("carreraUuid").isUUID(4),
         body("tarifa").isNumeric(),
         validateFields,
     ],
