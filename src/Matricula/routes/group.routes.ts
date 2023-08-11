@@ -511,10 +511,11 @@ router.put(
     [
         validateJWT,
         checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
-        param("UID").isUUID(4),
+        param("uuid").isUUID(4),
         validateFields,
     ],
     groupController.putCloseGroup
 );
 
 export default router;
+//Todo agregar el mes y el anio al listar por sede secretaria y listado general

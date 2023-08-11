@@ -53,7 +53,10 @@ export interface GroupRepository {
         grupoUuid: string,
         secretariaUuid: string
     ): Promise<Grupo>;
-    listGroups(): Promise<Grupo[]>;
+    listGroups(
+        year: string | undefined,
+        month: string | undefined
+    ): Promise<Grupo[]>;
     listEstudents(uuid: string): Promise<Matricula[]>;
     findByUuid(uuid: string): Promise<GrupoWithStudents>;
     findByName(name: string): Promise<Grupo>;

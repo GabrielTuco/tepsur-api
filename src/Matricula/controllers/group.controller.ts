@@ -48,9 +48,13 @@ export class GroupController {
         }
     }
 
-    public async getAll(_req: Request, res: Response) {
+    public async getAll(req: Request, res: Response) {
         try {
-            const grupos = await groupService.listGroups();
+            const { year, month } = req.query;
+            const grupos = await groupService.listGroups(
+                year?.toString(),
+                month?.toString()
+            );
             return res.json(grupos);
         } catch (error) {
             console.log(error);
@@ -68,8 +72,13 @@ export class GroupController {
 
     public async getAllBySecretary(req: Request, res: Response) {
         try {
+            const { year, month } = req.query;
             const { uuid } = req.params;
-            const grupos = await groupService.listGroupsBySecretary(uuid);
+            const grupos = await groupService.listGroupsBySecretary(
+                uuid,
+                year?.toString(),
+                month?.toString()
+            );
             return res.json(grupos);
         } catch (error) {
             console.log(error);
@@ -87,8 +96,13 @@ export class GroupController {
 
     public async getAllBySede(req: Request, res: Response) {
         try {
+            const { year, month } = req.query;
             const { uuid } = req.params;
-            const grupos = await groupService.listGroupsBySede(uuid);
+            const grupos = await groupService.listGroupsBySede(
+                uuid,
+                year?.toString(),
+                month?.toString()
+            );
             return res.json(grupos);
         } catch (error) {
             console.log(error);
