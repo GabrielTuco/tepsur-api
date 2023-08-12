@@ -97,7 +97,7 @@ export class GroupService implements GroupRepository {
 
     /**
      * Servicio para agregar un alumno a un grupo que pertenezca a la carrera en la que esta matriculado
-     * @param {string} matriculaUuid Uuid unico de la matricula de alumno
+     * @param {object} matriculasUuid Uuid unico de la matricula de alumno
      * @param {string} grupoUuid Uuid unico del grupo donde se agregara al alumno
      * @returns {Promise<Grupo>}
      */
@@ -122,6 +122,7 @@ export class GroupService implements GroupRepository {
                         relations: {
                             carrera: true,
                             matriculaGruposGrupo: true,
+                            ultimo_grupo: true,
                         },
                     });
                     if (matricula) {
@@ -146,6 +147,8 @@ export class GroupService implements GroupRepository {
                 newMatriculaGrupo.grupo = grupo;
                 newMatriculaGrupo.responsable = secretaria;
                 newMatriculaGrupo.observacion = observaciones;
+
+                console.log(matricula.ultimo_grupo);
 
                 if (!matricula.ultimo_grupo) {
                     matricula.ultimo_grupo = grupo;
