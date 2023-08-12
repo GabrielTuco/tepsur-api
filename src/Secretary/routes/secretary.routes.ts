@@ -39,7 +39,7 @@ const secretaryController = new SecretaryController(secretaryService);
  *              correo:
  *                  type: string
  *                  description: Correo
- *              codSede:
+ *              sedeUuid:
  *                  type: string
  *                  format: uuid
  *                  description: El uuid de la sede en la que se registra la secretaria
@@ -48,7 +48,7 @@ const secretaryController = new SecretaryController(secretaryService);
  *              - nombre
  *              - apePaterno
  *              - apeMaterno
- *              - codSede
+ *              - sedeUuid
  */
 
 /**
@@ -96,7 +96,7 @@ router.post(
         body("nombres", "Este campo es obligatorio").isString(),
         body("apePaterno", "Este campo es obligatorio").isString(),
         body("apeMaterno", "Este campo es obligatorio").isString(),
-        body("codSede", "Este campo es obligatorio").isUUID("4"),
+        body("sedeUuid", "Este campo es obligatorio").isUUID("4"),
         validateFields,
     ],
     secretaryController.postSecretary
