@@ -117,14 +117,14 @@ export class GroupService implements GroupRepository {
 
             const students = await Promise.all(
                 matriculasUuid.map(async ({ matriculaUuid, observaciones }) => {
-                    const matricula = await Matricula.findOne({
-                        where: { uuid: matriculaUuid },
-                        relations: {
-                            carrera: true,
-                            matriculaGruposGrupo: true,
-                            ultimo_grupo: true,
-                        },
-                    });
+                    const matricula = await Matricula.createQueryBuilder("m")
+                        .innerJoinAndSelect("m.carrera", "c")
+                        .innerJoinAndSelect("m.matriculaGruposGrupo", "mgg")
+                        .innerJoinAndSelect("m.ultimo_grupo", "ug")
+                        .innerJoinAndSelect("ug.horario", "h")
+                        .where("m.uuid=:matriculaUuid", { matriculaUuid })
+                        .getOne();
+
                     if (matricula) {
                         return { matricula, observaciones };
                     } else return undefined;
