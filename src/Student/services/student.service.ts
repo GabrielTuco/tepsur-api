@@ -104,7 +104,14 @@ export class StudentService implements StudentRepository {
 
     public searchByUuid = async (uuid: string): Promise<Alumno> => {
         try {
-            const alumno = await Alumno.findOneBy({ uuid });
+            const alumno = await Alumno.findOne({
+                where: { uuid },
+                relations: {
+                    usuario: true,
+                    grado_estudios: true,
+                    direccion: true,
+                },
+            });
             if (!alumno) {
                 throw new DatabaseError(
                     "No se puedo encontrar el registro",

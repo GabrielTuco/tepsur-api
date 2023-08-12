@@ -121,6 +121,44 @@ router.get(
 
 /**
  * @swagger
+ * /student/{uuid}:
+ *  get:
+ *      summary: Obtener un alumno por uuid
+ *      tags: [Student]
+ *      parameters:
+ *          - $ref: '#/components/parameters/token'
+ *          - in: path
+ *            name: uuid
+ *            schema:
+ *              type: string
+ *              format: uuid
+ *            required: true
+ *            description: El uuid del alumno
+ *      responses:
+ *          200:
+ *              description: El listado de alumnos
+ *              content:
+ *                  application/json:
+ *                       schema:
+ *                          type: object
+ *                          $ref: '#/components/schemas/Alumno'
+ *          500:
+ *              description: Error de servidor
+ *
+ */
+router.get(
+    "/:uuid",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
+        param("uuid").isUUID("4"),
+        validateFields,
+    ],
+    studentController.getByUuid
+);
+
+/**
+ * @swagger
  * /student/check-email:
  *  get:
  *      summary: Validar que el correo de un nuevo estudiante sea valido

@@ -1,6 +1,7 @@
-import { Request, Response } from "express";
+import { Request, Response, response } from "express";
 import { StudentService } from "../services/student.service";
 import { studentAdapter } from "../adapters/student.adapter";
+import { DatabaseErrorBase } from "../../errors/DatabaseErrorBase";
 
 export class StudentController {
     constructor(private readonly studentService: StudentService) {}
@@ -15,8 +16,14 @@ export class StudentController {
             return res.json(student);
         } catch (error) {
             console.log(error);
+            if (error instanceof DatabaseErrorBase) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                    name: error.name,
+                });
+            }
             return res.status(500).json({
-                message: "Internal server error",
+                msg: "Internal Server Error, contact the administrator",
             });
         }
     };
@@ -29,8 +36,14 @@ export class StudentController {
             return res.json(alumnos);
         } catch (error) {
             console.log(error);
+            if (error instanceof DatabaseErrorBase) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                    name: error.name,
+                });
+            }
             return res.status(500).json({
-                message: "Internal server error",
+                msg: "Internal Server Error, contact the administrator",
             });
         }
     };
@@ -43,17 +56,42 @@ export class StudentController {
             );
 
             if (alumno) {
-                return res
-                    .status(403)
-                    .json({
-                        msg: "El correo ya se encuentra registrado",
-                        name: "Already exists error",
-                    });
+                return res.status(403).json({
+                    msg: "El correo ya se encuentra registrado",
+                    name: "Already exists error",
+                });
             }
             return res.json({ msg: "Correo valido" });
         } catch (error) {
+            console.log(error);
+            if (error instanceof DatabaseErrorBase) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                    name: error.name,
+                });
+            }
             return res.status(500).json({
-                msg: "Internal server error",
+                msg: "Internal Server Error, contact the administrator",
+            });
+        }
+    };
+
+    public getByUuid = async (req: Request, res: Response) => {
+        try {
+            const { uuid } = req.params;
+            const student = await this.studentService.searchByUuid(uuid);
+
+            return res.json(student);
+        } catch (error) {
+            console.log(error);
+            if (error instanceof DatabaseErrorBase) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                    name: error.name,
+                });
+            }
+            return res.status(500).json({
+                msg: "Internal Server Error, contact the administrator",
             });
         }
     };
