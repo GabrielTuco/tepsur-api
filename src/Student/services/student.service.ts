@@ -104,7 +104,21 @@ export class StudentService implements StudentRepository {
 
     public searchByUuid = async (uuid: string): Promise<Alumno> => {
         try {
-            const alumno = await Alumno.findOne({
+            const alumno = await Alumno.createQueryBuilder("a")
+                .innerJoinAndSelect("a.matriculas", "m")
+                .leftJoinAndSelect("m.pagoMatricula", "pm")
+                .leftJoinAndSelect("pm.forma_pago", "fp")
+                .leftJoinAndSelect("m.matriculaModulosModulo", "mmm")
+                .leftJoinAndSelect("mmm.modulo", "mo")
+                .innerJoinAndSelect("m.carrera", "c")
+                .innerJoinAndSelect("m.sede", "s")
+                .innerJoinAndSelect("a.usuario", "u")
+                .innerJoinAndSelect("a.grado_estudios", "ge")
+                .innerJoinAndSelect("a.direccion", "d")
+                .where("a.uuid=:uuid", { uuid })
+                .getOne();
+
+            const alumno2 = await Alumno.findOne({
                 where: { uuid },
                 relations: {
                     usuario: true,
