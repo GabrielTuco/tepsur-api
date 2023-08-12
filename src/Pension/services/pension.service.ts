@@ -70,6 +70,8 @@ export class PensionService implements PensionRepository {
             const pagos = PagoPension.createQueryBuilder("pp")
                 .innerJoinAndSelect("pp.pension", "p")
                 .innerJoinAndSelect("pp.forma_pago", "fp")
+                .innerJoinAndSelect("p.matricula", "m")
+                .innerJoinAndSelect("m.alumno", "a")
                 .getMany();
 
             return pagos;

@@ -38,6 +38,27 @@ const pensionController = new PensionController(pensionService);
  *  description: Endpoints para la gestion de pagos pensiones o deudas
  */
 
+/**
+ * @swagger
+ * /pensiones/pagos:
+ *  get:
+ *      summary: Pagar una pension
+ *      tags: [Pension]
+ *      parameters:
+ *          - $ref: '#/components/parameters/token'
+ *      responses:
+ *          200:
+ *              description: El registro de la pension pagada
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: array
+ *                          items:
+ *                              type: object
+ *          500:
+ *              description: Error de servidor
+ *
+ */
 router.get(
     "/pagos",
     [validateJWT, checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE])],
