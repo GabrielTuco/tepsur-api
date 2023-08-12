@@ -27,7 +27,7 @@ export class TarifaPensionCarreraService
             )
                 .innerJoin("t.carrera", "c")
                 .innerJoin("t.sede", "s")
-                .where("s.uuid=:sedeUuid and c.uuid=carreraUuid", {
+                .where("s.uuid=:sedeUuid and c.uuid=:carreraUuid", {
                     sedeUuid,
                     carreraUuid,
                 })
