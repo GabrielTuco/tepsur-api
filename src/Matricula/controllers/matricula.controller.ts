@@ -6,11 +6,11 @@ import { MatriculaService } from "../services/matricula.service";
 import { ValidateDniService } from "../services/validateDNI.service";
 import { UbigeoService } from "../services/ubigeo.service";
 import { generatePDF } from "../helpers/generatePDF";
-import yargs, { argv } from "yargs";
+import yargs from "yargs";
 import { Alumno } from "../../Student/entity";
-import { MatriculaEspecializacion } from "../../Especializacion/entity/MatriculaEspecializacion.entity";
 import { Matricula } from "../entity";
 import { MatriculaEspecilizacionService } from "../../Especializacion/services/matriculaEspecializacion.service";
+import { DatabaseErrorBase } from "../../errors/DatabaseErrorBase";
 
 const gradoEstudioService = new GradoEstudiosService();
 const matriculaService = new MatriculaService();
@@ -29,7 +29,7 @@ export class MatriculaController {
             return res.json(matriculaData);
         } catch (error) {
             console.log(error);
-            if (error instanceof DatabaseError) {
+            if (error instanceof DatabaseErrorBase) {
                 return res.status(error.codeStatus).json({
                     msg: error.message,
                     name: error.name,
@@ -47,7 +47,7 @@ export class MatriculaController {
             return res.json(matricula);
         } catch (error) {
             console.log(error);
-            if (error instanceof DatabaseError) {
+            if (error instanceof DatabaseErrorBase) {
                 return res.status(error.codeStatus).json({
                     msg: error.message,
                     name: error.name,
@@ -73,7 +73,7 @@ export class MatriculaController {
             return res.json(matriculaWithNewModules);
         } catch (error) {
             console.log(error);
-            if (error instanceof DatabaseError) {
+            if (error instanceof DatabaseErrorBase) {
                 return res.status(error.codeStatus).json({
                     msg: error.message,
                     name: error.name,
@@ -108,7 +108,7 @@ export class MatriculaController {
             });
         } catch (error) {
             console.log(error);
-            if (error instanceof DatabaseError) {
+            if (error instanceof DatabaseErrorBase) {
                 return res.status(error.codeStatus).json({
                     msg: error.message,
                     name: error.name,
@@ -127,7 +127,7 @@ export class MatriculaController {
             return res.json(gradoEstudio);
         } catch (error) {
             console.log(error);
-            if (error instanceof DatabaseError) {
+            if (error instanceof DatabaseErrorBase) {
                 return res.status(error.codeStatus).json({
                     msg: error.message,
                     name: error.name,
@@ -150,7 +150,7 @@ export class MatriculaController {
             return res.json(matriculas);
         } catch (error) {
             console.log(error);
-            if (error instanceof DatabaseError) {
+            if (error instanceof DatabaseErrorBase) {
                 return res.status(error.codeStatus).json({
                     msg: error.message,
                     name: error.name,
@@ -324,7 +324,7 @@ export class MatriculaController {
             return res.json(matricula);
         } catch (error) {
             console.log(error);
-            if (error instanceof DatabaseError) {
+            if (error instanceof DatabaseErrorBase) {
                 return res.status(error.codeStatus).json({
                     msg: error.message,
                     name: error.name,
