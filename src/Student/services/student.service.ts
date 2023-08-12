@@ -61,17 +61,14 @@ export class StudentService implements StudentRepository {
         }
     };
 
-    public listBySede = async (sedeUuid: string): Promise<Matricula[]> => {
+    public listBySede = async (sedeUuid: string): Promise<any[]> => {
         try {
-            const sede = await Sede.createQueryBuilder("s")
-                .innerJoinAndSelect("s.matriculas", "m")
-                .innerJoinAndSelect("m.carrera", "c")
-                .innerJoinAndSelect("m.alumno", "a")
+            const alumnos = await Alumno.createQueryBuilder("a")
+                .innerJoin("a.matriculas", "m")
                 .innerJoinAndSelect("a.direccion", "d")
                 .where("s.uuid=:uuid", { uuid: sedeUuid })
-                .getOne();
-
-            const alumnos = sede!.matriculas;
+                .distinct(true)
+                .getMany();
 
             return alumnos;
         } catch (error) {
