@@ -107,7 +107,10 @@ export class GroupService implements GroupRepository {
         secretariaUuid: string
     ): Promise<any> => {
         try {
-            const grupo = await Grupo.findOne({ where: { uuid: grupoUuid } });
+            const grupo = await Grupo.findOne({
+                where: { uuid: grupoUuid },
+                relations: { horario: true },
+            });
             const secretaria = await Secretaria.findOneBy({
                 uuid: secretariaUuid,
             });
