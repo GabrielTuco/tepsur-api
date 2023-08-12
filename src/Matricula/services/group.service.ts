@@ -151,8 +151,6 @@ export class GroupService implements GroupRepository {
                 newMatriculaGrupo.responsable = secretaria;
                 newMatriculaGrupo.observacion = observaciones;
 
-                console.log(matricula.ultimo_grupo);
-
                 if (!matricula.ultimo_grupo) {
                     matricula.ultimo_grupo = grupo;
                     newMatriculaGrupo.condicion = CONDICION_ALUMNO.NUEVO;
@@ -320,7 +318,8 @@ export class GroupService implements GroupRepository {
                     .innerJoinAndSelect("mg.matricula", "m")
                     .innerJoinAndSelect("m.alumno", "a")
                     .innerJoinAndSelect("mg.responsable", "r")
-                    .innerJoinAndSelect("r.usuario", "u")
+                    .innerJoinAndSelect("r.sede", "s")
+                    .leftJoinAndSelect("r.usuario", "u")
                     .where("mg.grupoUuid=:uuid", { uuid })
                     .getMany();
 
