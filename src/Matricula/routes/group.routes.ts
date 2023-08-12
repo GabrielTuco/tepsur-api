@@ -269,6 +269,15 @@ router.patch(
  *      tags: [Group]
  *      parameters:
  *         - $ref: '#/components/parameters/token'
+ *         - in: query
+ *           name: year
+ *           required: true
+ *           schema:
+ *              type: number
+ *         - in: query
+ *           name: month
+ *           schema:
+ *              type: number
  *      responses:
  *          200:
  *              description: El listado de grupos
@@ -303,6 +312,15 @@ router.get(
  *              type: string
  *              format: uuid
  *           description: El uuid de la secretaria
+ *         - in: query
+ *           name: year
+ *           required: true
+ *           schema:
+ *              type: number
+ *         - in: query
+ *           name: month
+ *           schema:
+ *              type: number
  *      responses:
  *          200:
  *              description: El listado de grupos que maneja una secretaria
@@ -342,6 +360,15 @@ router.get(
  *              type: string
  *              format: uuid
  *           description: El uuid de la sede
+ *         - in: query
+ *           name: year
+ *           required: true
+ *           schema:
+ *              type: number
+ *         - in: query
+ *           name: month
+ *           schema:
+ *              type: number
  *      responses:
  *          200:
  *              description: El listado de grupos por sede
