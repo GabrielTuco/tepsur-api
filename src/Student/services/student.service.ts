@@ -65,6 +65,7 @@ export class StudentService implements StudentRepository {
         try {
             const alumnos = await Alumno.createQueryBuilder("a")
                 .innerJoin("a.matriculas", "m")
+                .innerJoinAndSelect("m.sede", "s")
                 .innerJoinAndSelect("a.direccion", "d")
                 .where("s.uuid=:uuid", { uuid: sedeUuid })
                 .distinct(true)
