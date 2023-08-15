@@ -5,13 +5,12 @@ import { Sede } from "../../Sede/entity";
 
 @Entity()
 export class TarifaPensionCarrera extends EntityBase {
-  @ManyToOne(() => Sede)
-  @JoinColumn()
-  sede: Sede;
+    @ManyToOne(() => Sede, (sede) => sede.tarifas)
+    sede: Sede;
 
-  @ManyToOne(() => Carrera, (carrera) => carrera.tarifas)
-  carrera: Carrera;
+    @ManyToOne(() => Carrera, (carrera) => carrera.tarifas)
+    carrera: Carrera;
 
-  @Column()
-  tarifa: number;
+    @Column()
+    tarifa: number;
 }

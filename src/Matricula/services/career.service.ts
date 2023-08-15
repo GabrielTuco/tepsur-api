@@ -33,7 +33,9 @@ export class CareerService implements CareerRepository {
 
     public listAll = async (): Promise<Carrera[]> => {
         try {
-            const carreras = await Carrera.createQueryBuilder("c").getMany();
+            const carreras = await Carrera.createQueryBuilder("c")
+                .leftJoinAndSelect("c.modulos", "m")
+                .getMany();
 
             return carreras;
         } catch (error) {

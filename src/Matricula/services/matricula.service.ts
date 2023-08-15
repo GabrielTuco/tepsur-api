@@ -628,6 +628,7 @@ export class MatriculaService implements MatriculaRepository {
                 .innerJoinAndSelect("a.grado_estudios", "ge")
                 .innerJoinAndSelect("m.secretaria", "sc")
                 .innerJoinAndSelect("sc.usuario", "u")
+                .leftJoinAndSelect("sc.sede", "se")
                 .innerJoinAndSelect("a.direccion", "d")
                 .innerJoinAndSelect("m.sede", "s")
                 .leftJoinAndSelect("m.pagoMatricula", "p")
@@ -737,9 +738,12 @@ export class MatriculaService implements MatriculaRepository {
 
     public listModules = async (): Promise<Modulo[]> => {
         try {
-            const modules = await Modulo.find();
+            const modulos = await Modulo.createQueryBuilder("m")
+                .innerJoinAndSelect("m.carrera", "c")
+                .where("c.estado='activo'")
+                .getMany();
 
-            return modules;
+            return modulos;
         } catch (error) {
             throw error;
         }
@@ -960,6 +964,7 @@ export class MatriculaService implements MatriculaRepository {
             throw error;
         }
     };
+
     public changeHorario = async (
         _matriculaUuid: string,
         _moduloUuid: string

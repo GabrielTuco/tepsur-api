@@ -11,7 +11,12 @@ import { EntityBase } from "../../entity/EntityBase";
 import { Direccion } from "../../entity/Direccion.entity";
 import { Docente } from "../../Teacher/entity/Docente.entity";
 import { Secretaria } from "../../Secretary/entity/Secretaria.entity";
-import { Carrera, Grupo, Matricula } from "../../Matricula/entity";
+import {
+    Carrera,
+    Grupo,
+    Matricula,
+    TarifaPensionCarrera,
+} from "../../Matricula/entity";
 import { Administrador } from "../../entity";
 import { MatriculaEspecializacion } from "../../Especializacion/entity/MatriculaEspecializacion.entity";
 
@@ -52,4 +57,7 @@ export class Sede extends EntityBase {
         (matriculaEspe) => matriculaEspe.sede
     )
     matriculas_especializacion: MatriculaEspecializacion[];
+
+    @OneToMany(() => TarifaPensionCarrera, (tarifa) => tarifa.sede)
+    tarifas: TarifaPensionCarrera[];
 }
