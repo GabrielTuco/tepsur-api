@@ -295,7 +295,7 @@ router.post(
         body("alumno.celular", "No es un numero de celular valido")
             .isString()
             .isLength({ min: 9, max: 9 }),
-        body("alumno.correo", "No es un correo valido").isEmail(),
+        body("alumno.correo", "No es un correo valido").optional().isEmail(),
         body("alumno.direccion").isObject(),
         body("alumno.direccion.direccionExacta").isString(),
         body("alumno.direccion.distrito").isString(),
