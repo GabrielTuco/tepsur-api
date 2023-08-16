@@ -31,6 +31,24 @@ export class ScheduleService implements ScheduleRepository {
         }
     };
 
+    public listBySecretary = async (
+        secretariaUuid: string
+    ): Promise<Horario[]> => {
+        try {
+            const grupos = await Grupo.createQueryBuilder("g")
+                .innerJoinAndSelect("g.horario", "h")
+                .innerJoinAndSelect("g.secretaria", "s")
+                .where("s.uuid=:secretariaUuid", { secretariaUuid })
+                .getMany();
+
+            const horarios = grupos.map((g) => g.horario);
+
+            return horarios;
+        } catch (error) {
+            throw error;
+        }
+    };
+
     public findByUuid = async (uuid: string): Promise<Horario> => {
         try {
             const horario = await Horario.findOneBy({ uuid });

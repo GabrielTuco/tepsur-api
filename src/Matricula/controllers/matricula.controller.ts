@@ -290,6 +290,7 @@ export class MatriculaController {
                 ape_materno: m.matricula.alumno.ape_materno,
                 pago_matricula: m.matricula.pagoMatricula,
                 carrera: m.matricula.carrera,
+                ultimo_grupo: m.matricula.ultimo_grupo,
                 ultimo_pago: m.ultimoPago,
             }));
             return res.json(data);

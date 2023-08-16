@@ -49,9 +49,9 @@ export interface CareerRepository {
 export interface GroupRepository {
     register(data: GroupDTO): Promise<Grupo>;
     addStudent(
-        matriculasUuid: { matriculaUuid: string; observaciones: string }[],
-        grupoUuid: string,
-        secretariaUuid: string
+        mat: { matriculaUuid: string; observaciones: string }[],
+        grup: string,
+        secre: string
     ): Promise<Grupo>;
     listGroups(
         year: string | undefined,
@@ -59,12 +59,13 @@ export interface GroupRepository {
     ): Promise<Grupo[]>;
     listEstudents(uuid: string): Promise<Matricula[]>;
     findByUuid(uuid: string): Promise<GrupoWithStudents>;
-    findByName(name: string): Promise<Grupo>;
+    findByName(n: string): Promise<Grupo>;
 }
 
 export interface ScheduleRepository {
     register(data: ScheduleDTO): Promise<Horario>;
     listAll(): Promise<Horario[]>;
+    listBySecretary(s: string): Promise<Horario[]>;
     findByUuid(uuid: string): Promise<Horario>;
     update(uuid: string, data: Partial<Horario>): Promise<Horario>;
     delete(uuid: string): Promise<Horario>;

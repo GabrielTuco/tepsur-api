@@ -127,6 +127,46 @@ router.get(
 
 /**
  * @swagger
+ * /schedule/list-by-secretary/{uuid}:
+ *  get:
+ *      summary: Listado de horarios de los grupos de una secretaria
+ *      tags: [Schedule]
+ *      parameters:
+ *         - $ref: '#/components/parameters/token'
+ *         - in: path
+ *           name: uuid
+ *           required: true
+ *           description: Uuid de la secretaria
+ *           schema:
+ *              type: string
+ *              format: uuid
+ *      responses:
+ *          200:
+ *              description: Listado de horarios de los grupos de una secretaria
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: array
+ *                          items:
+ *                              type: object
+ *                              $ref: '#/components/schemas/ScheduleResponse'
+ *          500:
+ *              description: Error de servidor
+ *
+ */
+router.get(
+    "/list-by-secretary/:uuid",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
+        param("uuid").isUUID(4),
+        validateFields,
+    ],
+    scheduleController.getAll
+);
+
+/**
+ * @swagger
  * /schedule/{id}:
  *  get:
  *      summary: Buscar un horario por su uuid

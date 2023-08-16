@@ -859,12 +859,13 @@ export class MatriculaService implements MatriculaRepository {
                 .innerJoinAndSelect("m.carrera", "c")
                 .leftJoinAndSelect("m.pagoMatricula", "pm")
                 .leftJoinAndSelect("pm.forma_pago", "fp")
+                .leftJoinAndSelect("m.ultimo_grupo", "ug")
                 .where(
                     `LOWER(a.dni) LIKE '%' || :query || '%'
                     OR LOWER(a.nombres) LIKE '%' || :query || '%'
                     OR LOWER(a.ape_paterno) LIKE '%' || :query || '%'
                     OR LOWER(a.ape_materno) LIKE '%' || :query || '%'
-                    AND m.estado='true'`,
+                    AND m.estado='true' and ug.estado='cerrado' OR m.ultimoGrupoUuid is null`,
                     { query: query.toLowerCase() }
                 )
                 .getMany();

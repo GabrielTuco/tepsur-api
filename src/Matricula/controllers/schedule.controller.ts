@@ -42,6 +42,25 @@ export class ScheduleController {
         }
     };
 
+    public getBySecre = async (req: Request, res: Response) => {
+        try {
+            const { uuid } = req.params;
+            const horarios = await this.scheduleService.listBySecretary(uuid);
+
+            return res.json(horarios);
+        } catch (error) {
+            if (error instanceof DatabaseErrorBase) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                    name: error.name,
+                });
+            }
+            return res.status(500).json({
+                msg: "Internal server error",
+            });
+        }
+    };
+
     public getByUuid = async (req: Request, res: Response) => {
         try {
             const { id } = req.params;
