@@ -43,7 +43,7 @@ export class Alumno extends EntityBase {
     @Column({ nullable: true })
     celular_referencia: string;
 
-    @Column({ nullable: true, unique: true })
+    @Column({ nullable: true })
     correo: string;
 
     @Column({ default: true })
