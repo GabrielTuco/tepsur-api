@@ -123,12 +123,10 @@ export class GroupService implements GroupRepository {
                     const matricula = await Matricula.createQueryBuilder("m")
                         .innerJoinAndSelect("m.carrera", "c")
                         .innerJoinAndSelect("m.matriculaGruposGrupo", "mgg")
-                        .leftJoinAndSelect("m.ultimo_grupo", "ug")
-                        .leftJoinAndSelect("ug.horario", "h")
+                        //.leftJoinAndSelect("m.ultimo_grupo", "ug")
+                        //.leftJoinAndSelect("ug.horario", "h")
                         .where("m.uuid=:matriculaUuid", { matriculaUuid })
                         .getOne();
-
-                    console.log(matricula);
 
                     if (matricula) {
                         return { matricula, observaciones };
