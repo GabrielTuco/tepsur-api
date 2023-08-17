@@ -843,8 +843,14 @@ export class MatriculaService implements MatriculaRepository {
             );
             await matricula.save();
             await matricula.reload();
+            const savedMatricula = await Matricula.createQueryBuilder("m")
+                .innerJoinAndSelect("m.alumno", "a")
+                .innerJoinAndSelect("m.carrera", "c")
+                .innerJoinAndSelect("m.matriculaModulosModulo", "mmm")
+                .where("m.uuid=:matriculaUuid", { matriculaUuid })
+                .getOne();
 
-            return matricula;
+            return savedMatricula!;
         } catch (error) {
             throw error;
         }
