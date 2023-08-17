@@ -23,6 +23,7 @@ export class ScheduleService implements ScheduleRepository {
 
     public listAll = async (): Promise<Horario[]> => {
         try {
+            //Todo: filtrar horarios de carreras y especializades
             const horarios = await Horario.find({ where: { estado: true } });
 
             return horarios;
