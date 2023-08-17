@@ -85,6 +85,7 @@ export class UpdateMatriculaDto {
 export class UpdateMatriculaModulosDto {
     fechaInicio: Date;
     horarioUuid: string;
+    moduloUuid: string;
     modalidad: MODALIDAD;
     uuid: string;
 }

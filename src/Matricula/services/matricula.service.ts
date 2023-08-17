@@ -816,7 +816,7 @@ export class MatriculaService implements MatriculaRepository {
                             uuid: moduloData.horarioUuid,
                         });
                         const modulo = await Modulo.findOneBy({
-                            uuid: moduloData.uuid,
+                            uuid: moduloData.moduloUuid,
                         });
                         newMatriculaModulo.uuid = uuid();
                         newMatriculaModulo.modulo = modulo!;
