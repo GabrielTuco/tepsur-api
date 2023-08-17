@@ -128,6 +128,8 @@ export class GroupService implements GroupRepository {
                         .where("m.uuid=:matriculaUuid", { matriculaUuid })
                         .getOne();
 
+                    console.log(matricula);
+
                     if (matricula) {
                         return { matricula, observaciones };
                     } else return undefined;
