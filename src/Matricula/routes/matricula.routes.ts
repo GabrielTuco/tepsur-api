@@ -210,8 +210,8 @@ router.post(
             .optional()
             .isString()
             .isLength({ min: 9, max: 9 }),
-        body("alumno.correo", "No es un correo valido").isEmail(),
-        body("alumno.correo").custom(isAlumnoCorreoValid),
+        body("alumno.correo", "No es un correo valido").optional().isEmail(),
+        body("alumno.correo").optional().custom(isAlumnoCorreoValid),
         body("alumno.direccion").isObject(),
         body("alumno.direccion.direccionExacta").isString(),
         body("alumno.direccion.distrito").isString(),
