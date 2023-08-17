@@ -1,8 +1,5 @@
-import {
-    HorarioDTO,
-    PagoMatriculaData,
-    ScheduleDTO,
-} from "../../Matricula/interfaces/dtos";
+import { CreateScheduleDTO } from "../../Matricula/dto/createSchedule.dto";
+import { PagoMatriculaData } from "../../Matricula/interfaces/dtos";
 import { RegisterAlumnoDto } from "../../Student/interfaces/dtos";
 import { MODALIDAD } from "../../interfaces/enums";
 
@@ -17,7 +14,7 @@ export class MatEspeDTO {
     secretariaUuid: string;
     especializacionUuid: string;
     sedeUuid: string;
-    horario: ScheduleDTO;
+    horario: CreateScheduleDTO;
     fechaInscripcion: Date;
     fechaInicio: Date;
     pagoMatricula: PagoMatriculaData;

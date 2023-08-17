@@ -17,7 +17,6 @@ import {
     ModuleDTO,
     ModuloMatriculaDTO,
     PagoMatriculaData,
-    ScheduleDTO,
     TrasladoMatriculaDTO,
     UpdateMatriculaDto,
     UpdateCareerDto,
@@ -26,6 +25,7 @@ import { MODALIDAD } from "../../interfaces/enums";
 import { MatriculaEspecializacion } from "../../Especializacion/entity/MatriculaEspecializacion.entity";
 import { Pension } from "../../Pension/entity";
 import { CreateTarifaPensionDto } from "../dto/createTarifaPension.dto";
+import { CreateScheduleDTO } from "../dto/createSchedule.dto";
 
 export interface ModuleRepository {
     register(data: ModuleDTO): Promise<Modulo>;
@@ -63,7 +63,7 @@ export interface GroupRepository {
 }
 
 export interface ScheduleRepository {
-    register(data: ScheduleDTO): Promise<Horario>;
+    register(data: CreateScheduleDTO): Promise<Horario>;
     listAll(): Promise<Horario[]>;
     listBySecretary(s: string): Promise<Horario[]>;
     findByUuid(uuid: string): Promise<Horario>;
