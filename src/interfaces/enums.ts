@@ -54,3 +54,8 @@ export enum EstadoPagoPension {
     COMPROMISO = "COMPROMISO",
     COMPLETO = "COMPLETO",
 }
+
+export enum TIPO_HORARIO {
+    NORMAL = "normal",
+    ESPECIALIZACION = "especializacion",
+}

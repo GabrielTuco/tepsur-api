@@ -118,13 +118,15 @@ export class GroupService implements GroupRepository {
             if (!grupo) throw new NotFoundError("El grupo no existe");
             if (!secretaria) throw new NotFoundError("La secretaria existe");
 
+            console.log(matriculasUuid);
+
             const students = await Promise.all(
                 matriculasUuid.map(async ({ matriculaUuid, observaciones }) => {
                     const matricula = await Matricula.createQueryBuilder("m")
                         .innerJoinAndSelect("m.carrera", "c")
-                        .innerJoinAndSelect("m.matriculaGruposGrupo", "mgg")
-                        //.leftJoinAndSelect("m.ultimo_grupo", "ug")
-                        //.leftJoinAndSelect("ug.horario", "h")
+                        .leftJoinAndSelect("m.matriculaGruposGrupo", "mgg")
+                        .leftJoinAndSelect("m.ultimo_grupo", "ug")
+                        .leftJoinAndSelect("ug.horario", "h")
                         .where("m.uuid=:matriculaUuid", { matriculaUuid })
                         .getOne();
 

@@ -1,12 +1,11 @@
 import { v4 as uuid } from "uuid";
-import { Carrera, Grupo, Horario } from "../entity";
-import { ScheduleDTO } from "../interfaces/dtos";
+import { Grupo, Horario } from "../entity";
 import { ScheduleRepository } from "../interfaces/repositories";
-import { DatabaseError } from "../../errors/DatabaseError";
 import { NotFoundError } from "../../errors/NotFoundError";
+import { CreateScheduleDTO } from "../dto/createSchedule.dto";
 
 export class ScheduleService implements ScheduleRepository {
-    public register = async (data: ScheduleDTO): Promise<Horario> => {
+    public register = async (data: CreateScheduleDTO): Promise<Horario> => {
         try {
             const newHorario = new Horario();
 
@@ -14,6 +13,7 @@ export class ScheduleService implements ScheduleRepository {
             newHorario.dias = data.dias;
             newHorario.hora_inicio = data.horaInicio;
             newHorario.hora_fin = data.horaFin;
+            newHorario.tipo = data.tipo;
 
             return await newHorario.save();
         } catch (error) {

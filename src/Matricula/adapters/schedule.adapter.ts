@@ -1,5 +1,5 @@
+import { UpdateScheduleDTO } from "../dto/updateSchedule.dto";
 import { Horario } from "../entity";
-import { UpdateScheduleDTO } from "../interfaces/dtos";
 
 export const adaptedSchedule = (data: UpdateScheduleDTO): Partial<Horario> => {
     return {

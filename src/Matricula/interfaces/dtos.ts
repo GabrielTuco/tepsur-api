@@ -51,14 +51,6 @@ export interface GrupoWithStudents extends Partial<Grupo> {
     students: Matricula[];
 }
 
-export class ScheduleDTO {
-    dias: DIAS[];
-    horaInicio: string;
-    horaFin: string;
-}
-
-export type UpdateScheduleDTO = Partial<ScheduleDTO>;
-
 export class ModuloMatriculaDTO {
     uuid: string;
     modalidad: MODALIDAD;
