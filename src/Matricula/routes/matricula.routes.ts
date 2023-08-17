@@ -9,10 +9,12 @@ import {
     isAlumnoCorreoValid,
     isAlumnoDniValid,
 } from "../middlewares/validations";
+import { UbigeoController } from "../controllers/ubigeo.controller";
 
 const router = Router();
 
 const matriculaController = new MatriculaController();
+const ubigeoController = new UbigeoController();
 
 /**
  * @swagger
@@ -902,7 +904,7 @@ router.patch(
 router.get(
     "/utilidades/departamentos",
     [validateJWT],
-    matriculaController.getDepartments
+    ubigeoController.getDepartments
 );
 
 //TODO: mover
@@ -943,7 +945,7 @@ router.get(
 router.get(
     "/utilidades/provincias/:departamentoId",
     [validateJWT, param("departamentoId").exists(), validateFields],
-    matriculaController.getProvinces
+    ubigeoController.getProvinces
 );
 
 //TODO: mover
@@ -995,7 +997,7 @@ router.get(
         param("provinciaId").exists(),
         validateFields,
     ],
-    matriculaController.getDistricts
+    ubigeoController.getDistricts
 );
 
 /**

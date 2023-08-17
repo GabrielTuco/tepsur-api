@@ -17,7 +17,7 @@ import secretaryRoutes from "../Secretary/routes/secretary.routes";
 import roleRoutes from "../Auth/routes/role.routes";
 import authRoutes from "../Auth/routes/auth.routes";
 import teacherRoutes from "../Teacher/routes/teacher.routes";
-import adminRoutes from "../routes/admin.routes";
+import adminRoutes from "../Administrator/routes/admin.routes";
 import userRoutes from "../Auth/routes/user.routes";
 import sedeRoutes from "../Sede/routes/sede.routes";
 import studentRoutes from "../Student/routes/student.routes";

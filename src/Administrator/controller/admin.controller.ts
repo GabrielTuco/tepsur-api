@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { AdministratorService } from "../services/admin.service";
-import { DatabaseErrorBase } from "../errors/DatabaseErrorBase";
+import { AdministratorService } from "../service/admin.service";
+import { DatabaseErrorBase } from "../../errors/DatabaseErrorBase";
 
 export class AdministratorController {
     constructor(private readonly administratorService: AdministratorService) {}

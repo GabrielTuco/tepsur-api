@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from "typeorm";
-import { EntityBase } from "./EntityBase";
-import { Usuario } from "../Auth/entity/Usuario.entity";
-import { Sede } from "../Sede/entity/Sede.entity";
+import { EntityBase } from "../../entity/EntityBase";
+import { Usuario } from "../../Auth/entity/Usuario.entity";
+import { Sede } from "../../Sede/entity/Sede.entity";
 
 @Entity()
 export class Administrador extends EntityBase {

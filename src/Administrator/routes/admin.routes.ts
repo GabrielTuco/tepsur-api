@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { AdministratorController } from "../controllers/admin.controller";
+import { AdministratorController } from "../controller/admin.controller";
 import { body, param } from "express-validator";
-import { validateFields } from "../middlewares/validateFields";
-import { validateJWT } from "../middlewares/validateJWT";
-import { checkAuthRole } from "../middlewares/checkAuthRole";
-import { ROLES } from "../interfaces/enums";
-import { AdministratorService } from "../services/admin.service";
+import { validateFields } from "../../middlewares/validateFields";
+import { validateJWT } from "../../middlewares/validateJWT";
+import { checkAuthRole } from "../../middlewares/checkAuthRole";
+import { ROLES } from "../../interfaces/enums";
+import { AdministratorService } from "../service/admin.service";
 
 const router = Router();
 const adminService = new AdministratorService();

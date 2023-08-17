@@ -7,7 +7,7 @@ import { Docente } from "../Teacher/entity/Docente.entity";
 import { Usuario } from "../Auth/entity/Usuario.entity";
 import { Rol } from "../Auth/entity/Rol.entity";
 import { Sede } from "../Sede/entity/Sede.entity";
-import { Administrador } from "../entity/Administrador.entity";
+import { Administrador } from "../Administrator/entity/Administrador.entity";
 import { Alumno } from "../Student/entity/Alumno.entity";
 import {
     Carrera,

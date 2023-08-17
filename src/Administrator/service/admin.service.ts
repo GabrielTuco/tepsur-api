@@ -1,12 +1,12 @@
 import { v4 as uuid } from "uuid";
-import { Rol, Usuario } from "../Auth/entity";
-import { Administrador } from "../entity";
-import { Sede } from "../Sede/entity/Sede.entity";
-import { NotFoundError } from "../errors/NotFoundError";
-import { encryptPassword } from "../helpers/encryptPassword";
-import { CreateAdminDto } from "../dtos/createAdmin.dto";
-import { UpdateAdminDto } from "../dtos/updateAdmin.dto";
-import { AlreadyExistsError } from "../errors/AlreadyExistsError";
+import { Rol, Usuario } from "../../Auth/entity";
+import { Administrador } from "../../entity";
+import { Sede } from "../../Sede/entity/Sede.entity";
+import { NotFoundError } from "../../errors/NotFoundError";
+import { encryptPassword } from "../../helpers/encryptPassword";
+import { CreateAdminDto } from "../../dtos/createAdmin.dto";
+import { UpdateAdminDto } from "../../dtos/updateAdmin.dto";
+import { AlreadyExistsError } from "../../errors/AlreadyExistsError";
 
 export class AdministratorService {
     public register = async (data: CreateAdminDto) => {

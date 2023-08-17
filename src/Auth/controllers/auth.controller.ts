@@ -6,7 +6,7 @@ import { encryptPassword } from "../../helpers/encryptPassword";
 import { FindUserTypesDictionary } from "../interfaces/auth";
 import { SecretaryService } from "../../Secretary/services/secretary.service";
 import { TeacherService } from "../../Teacher/services/teacher.service";
-import { AdministratorService } from "../../services/admin.service";
+import { AdministratorService } from "../../Administrator/service/admin.service";
 import { StudentService } from "../../Student/services/student.service";
 import { ROLES } from "../../interfaces/enums";
 import { DatabaseError } from "../../errors/DatabaseError";

@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import fileUpload from "express-fileupload";
-import { DatabaseError } from "../../errors/DatabaseError";
 import { GradoEstudiosService } from "../services/gradoEstudios.service";
 import { MatriculaService } from "../services/matricula.service";
 import { ValidateDniService } from "../services/validateDNI.service";
@@ -332,49 +331,6 @@ export class MatriculaController {
                 });
             }
             return res.status(500).json({ msg: "Internal server error" });
-        }
-    }
-
-    //----------------------------Utitilies------------------------------------
-    public async getDepartments(_req: Request, res: Response) {
-        try {
-            const departaments = await ubigeoService.listDepartaments();
-            res.json(departaments);
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                msg: "Internal server error",
-            });
-        }
-    }
-
-    public async getProvinces(req: Request, res: Response) {
-        try {
-            const provinces = await ubigeoService.listProvinces(
-                req.params.departamentoId
-            );
-            res.json(provinces);
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                msg: "Internal server error",
-            });
-        }
-    }
-
-    public async getDistricts(req: Request, res: Response) {
-        try {
-            const { departamentoId, provinciaId } = req.params;
-            const districts = await ubigeoService.listDistricts(
-                departamentoId,
-                provinciaId
-            );
-            res.json(districts);
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                msg: "Internal server error",
-            });
         }
     }
 }
