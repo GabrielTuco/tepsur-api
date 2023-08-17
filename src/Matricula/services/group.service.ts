@@ -124,7 +124,7 @@ export class GroupService implements GroupRepository {
                         .innerJoinAndSelect("m.carrera", "c")
                         .innerJoinAndSelect("m.matriculaGruposGrupo", "mgg")
                         .leftJoinAndSelect("m.ultimo_grupo", "ug")
-                        .innerJoinAndSelect("ug.horario", "h")
+                        .leftJoinAndSelect("ug.horario", "h")
                         .where("m.uuid=:matriculaUuid", { matriculaUuid })
                         .getOne();
 
