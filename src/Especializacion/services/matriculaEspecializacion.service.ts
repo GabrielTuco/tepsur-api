@@ -8,8 +8,8 @@ import { MatEspeDTO } from "../interfaces/dtos";
 import { MatriculaEspecializacionRepository } from "../interfaces/repository";
 import { Especializacion } from "../entity/Especializacion.entity";
 import { Horario, MetodoPago, PagoMatricula } from "../../Matricula/entity";
-import { DatabaseError } from "../../errors/DatabaseError";
 import { NotFoundError } from "../../errors/NotFoundError";
+import { TIPO_HORARIO } from "../../interfaces/enums";
 
 const studentService = new StudentService();
 
@@ -71,6 +71,7 @@ export class MatriculaEspecilizacionService
             newHorario.hora_inicio = horario.horaInicio;
             newHorario.hora_fin = horario.horaFin;
             newHorario.dias = horario.dias;
+            newHorario.tipo = TIPO_HORARIO.ESPECIALIZACION;
 
             await queryRunner.manager.save(newHorario);
 

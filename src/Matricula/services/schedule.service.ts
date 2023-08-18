@@ -3,6 +3,7 @@ import { Grupo, Horario } from "../entity";
 import { ScheduleRepository } from "../interfaces/repositories";
 import { NotFoundError } from "../../errors/NotFoundError";
 import { CreateScheduleDTO } from "../dto/createSchedule.dto";
+import { TIPO_HORARIO } from "../../interfaces/enums";
 
 export class ScheduleService implements ScheduleRepository {
     public register = async (data: CreateScheduleDTO): Promise<Horario> => {
@@ -13,7 +14,7 @@ export class ScheduleService implements ScheduleRepository {
             newHorario.dias = data.dias;
             newHorario.hora_inicio = data.horaInicio;
             newHorario.hora_fin = data.horaFin;
-            newHorario.tipo = data.tipo;
+            newHorario.tipo = TIPO_HORARIO.NORMAL;
 
             return await newHorario.save();
         } catch (error) {
@@ -23,8 +24,9 @@ export class ScheduleService implements ScheduleRepository {
 
     public listAll = async (): Promise<Horario[]> => {
         try {
-            //Todo: filtrar horarios de carreras y especializades
-            const horarios = await Horario.find({ where: { estado: true } });
+            const horarios = await Horario.find({
+                where: { estado: true, tipo: TIPO_HORARIO.NORMAL },
+            });
 
             return horarios;
         } catch (error) {
