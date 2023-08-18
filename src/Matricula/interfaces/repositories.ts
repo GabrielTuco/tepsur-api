@@ -4,6 +4,7 @@ import {
     Grupo,
     Horario,
     Matricula,
+    MatriculaGruposGrupo,
     MetodoPago,
     Modulo,
     PagoMatricula,
@@ -57,7 +58,12 @@ export interface GroupRepository {
         year: string | undefined,
         month: string | undefined
     ): Promise<Grupo[]>;
-    listEstudents(uuid: string): Promise<Matricula[]>;
+    listEstudents(uuid: string): Promise<
+        {
+            matriculaGrupo: MatriculaGruposGrupo;
+            ultimoPago: Pension;
+        }[]
+    >;
     findByUuid(uuid: string): Promise<GrupoWithStudents>;
     findByName(n: string): Promise<Grupo>;
 }

@@ -10,6 +10,7 @@ import { Sede } from "../../Sede/entity";
 import { CONDICION_ALUMNO, ESTADO_GRUPO } from "../../interfaces/enums";
 import { PensionService } from "../../Pension/services/pension.service";
 import { NotFoundError } from "../../errors/NotFoundError";
+import { Pension } from "../../Pension/entity";
 
 const pensionService = new PensionService();
 export class GroupService implements GroupRepository {
@@ -307,7 +308,14 @@ export class GroupService implements GroupRepository {
      * @param {string} uuid Uuid del grupo
      * @returns {Promise<Matricula[]>} Listado de matriculados en el grupo
      */
-    public listEstudents = async (uuid: string): Promise<any[]> => {
+    public listEstudents = async (
+        uuid: string
+    ): Promise<
+        {
+            matriculaGrupo: MatriculaGruposGrupo;
+            ultimoPago: Pension;
+        }[]
+    > => {
         try {
             const grupo = await Grupo.findOneBy({ uuid });
             if (!grupo) throw new NotFoundError("Grupo no encontrado");
@@ -317,7 +325,7 @@ export class GroupService implements GroupRepository {
                     .innerJoinAndSelect("mg.matricula", "m")
                     .innerJoinAndSelect("m.alumno", "a")
                     .innerJoinAndSelect("mg.responsable", "r")
-                    .innerJoinAndSelect("r.sede", "s")
+                    .leftJoinAndSelect("r.sede", "s")
                     .leftJoinAndSelect("r.usuario", "u")
                     .where("mg.grupoUuid=:uuid", { uuid })
                     .getMany();
@@ -344,7 +352,7 @@ export class GroupService implements GroupRepository {
         }
     };
 
-    public findByUuid = async (uuid: string): Promise<GrupoWithStudents> => {
+    public findByUuid = async (uuid: string): Promise<any> => {
         try {
             const group = await Grupo.createQueryBuilder("g")
                 .innerJoinAndSelect("g.docente", "d")
