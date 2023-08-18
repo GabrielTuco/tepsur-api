@@ -36,7 +36,8 @@ export class GroupController {
 
             return res.json(grupo);
         } catch (error) {
-            if (error instanceof DatabaseError) {
+            console.log(error);
+            if (error instanceof DatabaseErrorBase) {
                 return res.status(error.codeStatus).json({
                     msg: error.message,
                     name: error.name,

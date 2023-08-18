@@ -118,8 +118,6 @@ export class GroupService implements GroupRepository {
             if (!grupo) throw new NotFoundError("El grupo no existe");
             if (!secretaria) throw new NotFoundError("La secretaria existe");
 
-            console.log(matriculasUuid);
-
             const students = await Promise.all(
                 matriculasUuid.map(async ({ matriculaUuid, observaciones }) => {
                     const matricula = await Matricula.createQueryBuilder("m")
@@ -163,7 +161,7 @@ export class GroupService implements GroupRepository {
                     ) {
                         throw new DatabaseError(
                             "No se puede agregar a un alumno que se encuentra en un grupo activo",
-                            406,
+                            400,
                             "Not aceptable"
                         );
                     }
@@ -192,7 +190,6 @@ export class GroupService implements GroupRepository {
 
             return studentsGrupo;
         } catch (error) {
-            console.log(error);
             throw error;
         }
     };

@@ -6,5 +6,6 @@ export const adaptedSchedule = (data: UpdateScheduleDTO): Partial<Horario> => {
         hora_inicio: data.horaInicio,
         hora_fin: data.horaFin,
         dias: data.dias,
+        tipo: data.tipo,
     };
 };
