@@ -292,14 +292,14 @@ export class MatriculaService implements MatriculaRepository {
 
             await queryRunner.manager.save(newMatricula);
 
+            await queryRunner.commitTransaction();
+
             //Registrar pensiones por cada modulo matriculado
             await this.registerPensiones(
                 newMatricula,
                 carreraUuid,
                 modulos.length
             );
-
-            await queryRunner.commitTransaction();
 
             return newMatricula;
         } catch (error) {
