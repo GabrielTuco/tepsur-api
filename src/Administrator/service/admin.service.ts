@@ -4,8 +4,8 @@ import { Administrador } from "../../entity";
 import { Sede } from "../../Sede/entity/Sede.entity";
 import { NotFoundError } from "../../errors/NotFoundError";
 import { encryptPassword } from "../../helpers/encryptPassword";
-import { CreateAdminDto } from "../../dtos/createAdmin.dto";
-import { UpdateAdminDto } from "../../dtos/updateAdmin.dto";
+import { CreateAdminDto } from "../dto/createAdmin.dto";
+import { UpdateAdminDto } from "../dto/updateAdmin.dto";
 import { AlreadyExistsError } from "../../errors/AlreadyExistsError";
 
 export class AdministratorService {
@@ -85,10 +85,6 @@ export class AdministratorService {
                 .leftJoinAndSelect("a.sede", "s")
                 .where("a.estado=true")
                 .getManyAndCount();
-            // if (!adminExists)
-            //     throw new NotFoundError(
-            //         "La persona no existe o se ha eliminado de la base de datos ;)"
-            //     );
 
             return { admins: adminExists[0], count: adminExists[1] };
         } catch (error) {

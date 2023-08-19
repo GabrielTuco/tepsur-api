@@ -1,6 +1,6 @@
 import { v4 as uuid } from "uuid";
 import { Carrera, Grupo, Matricula, MatriculaGruposGrupo } from "../entity";
-import { GroupDTO, GrupoWithStudents } from "../interfaces/dtos";
+import { GroupDTO } from "../interfaces/dtos";
 import { GroupRepository } from "../interfaces/repositories";
 import { Horario } from "../entity/Horario.entity";
 import { DatabaseError } from "../../errors/DatabaseError";
@@ -389,6 +389,7 @@ export class GroupService implements GroupRepository {
             if (!grupo) throw new NotFoundError("El grupo no existe");
 
             grupo.estado = ESTADO_GRUPO.CERRADO;
+
             await grupo.save();
             await grupo.reload();
             return grupo;

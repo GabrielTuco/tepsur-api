@@ -10,6 +10,7 @@ import { GradoEstudios, Matricula } from "../../Matricula/entity";
 import { Sede } from "../../Sede/entity";
 import { DireccionDto } from "../../Matricula/interfaces/dtos";
 import { RegisterAlumnoDto } from "../interfaces/dtos";
+import { NotFoundError } from "../../errors/NotFoundError";
 
 export class StudentService implements StudentRepository {
     public register = async (data: RegisterAlumnoDto): Promise<Alumno> => {
@@ -136,6 +137,7 @@ export class StudentService implements StudentRepository {
             throw error;
         }
     };
+
     public searchByDni = async (dni: string): Promise<Alumno> => {
         try {
             const alumno = await Alumno.findOneBy({ correo: dni });
@@ -312,5 +314,19 @@ export class StudentService implements StudentRepository {
         } catch (error) {
             throw error;
         }
+    };
+
+    public updateMatriculaModulos = async (
+        matriculaUuid: string,
+        moduloUuid: string
+    ) => {
+        try {
+            const matricula = await Matricula.createQueryBuilder("m")
+                .innerJoinAndSelect("m.matriculaModulosModulo", "mmm")
+                .where("m.uuid=:matriculaUuid", { matriculaUuid })
+                .getOne();
+
+            if (!matricula) throw new NotFoundError("La matricula no existe");
+        } catch (error) {}
     };
 }

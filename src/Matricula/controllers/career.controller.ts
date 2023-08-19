@@ -1,7 +1,5 @@
 import { Request, Response } from "express";
 import { CareerService } from "../services/career.service";
-import { DatabaseError } from "../../errors/DatabaseError";
-import { NotFoundError } from "../../errors/NotFoundError";
 import { DatabaseErrorBase } from "../../errors/DatabaseErrorBase";
 
 const careerService = new CareerService();

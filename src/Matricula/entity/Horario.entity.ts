@@ -2,7 +2,6 @@ import { Column, Entity, OneToMany } from "typeorm";
 import { EntityBase } from "../../entity";
 import { Grupo } from "./Grupo.entity";
 import { DIAS, TIPO_HORARIO } from "../../interfaces/enums";
-import { Matricula } from "./Matricula.entity";
 import { MatriculaModulosModulo } from "./MatriculaModulosModulo";
 
 @Entity()
