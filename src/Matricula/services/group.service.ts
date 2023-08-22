@@ -11,8 +11,10 @@ import { CONDICION_ALUMNO, ESTADO_GRUPO } from "../../interfaces/enums";
 import { PensionService } from "../../Pension/services/pension.service";
 import { NotFoundError } from "../../errors/NotFoundError";
 import { Pension } from "../../Pension/entity";
+import { StudentService } from "../../Student/services/student.service";
 
 const pensionService = new PensionService();
+const studentService = new StudentService();
 export class GroupService implements GroupRepository {
     /**
      * Servicio para registrar un nuevo grupo
@@ -385,10 +387,22 @@ export class GroupService implements GroupRepository {
 
     public closeGroup = async (grupoUuid: string): Promise<Grupo> => {
         try {
-            const grupo = await Grupo.findOneBy({ uuid: grupoUuid });
+            const grupo = await Grupo.createQueryBuilder("g")
+                .innerJoinAndSelect("g.modulo", "m")
+                .innerJoinAndSelect("g.matriculaGruposGrupo", "mgg")
+                .leftJoinAndSelect("mgg.matricula", "ma")
+                .where("g.uuid=:grupoUuid", { grupoUuid })
+                .getOne();
+
             if (!grupo) throw new NotFoundError("El grupo no existe");
 
             grupo.estado = ESTADO_GRUPO.CERRADO;
+            grupo.matriculaGruposGrupo.map(async (m) => {
+                await studentService.updateMatriculaModulos(
+                    m.matricula.uuid,
+                    grupo.modulo.uuid
+                );
+            });
 
             await grupo.save();
             await grupo.reload();
