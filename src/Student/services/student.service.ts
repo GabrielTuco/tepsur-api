@@ -318,7 +318,7 @@ export class StudentService implements StudentRepository {
 
     public updateMatriculaModulos = async (
         matriculaUuid: string,
-        moduloUuid: string
+        _moduloUuid: string
     ) => {
         try {
             const matricula = await Matricula.createQueryBuilder("m")
