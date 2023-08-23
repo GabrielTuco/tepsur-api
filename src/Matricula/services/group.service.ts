@@ -1,5 +1,11 @@
 import { v4 as uuid } from "uuid";
-import { Carrera, Grupo, Matricula, MatriculaGruposGrupo } from "../entity";
+import {
+    Carrera,
+    Grupo,
+    Matricula,
+    MatriculaGruposGrupo,
+    TarifaPensionCarrera,
+} from "../entity";
 import { GroupDTO } from "../interfaces/dtos";
 import { GroupRepository } from "../interfaces/repositories";
 import { Horario } from "../entity/Horario.entity";
@@ -12,6 +18,7 @@ import { PensionService } from "../../Pension/services/pension.service";
 import { NotFoundError } from "../../errors/NotFoundError";
 import { Pension } from "../../Pension/entity";
 import { StudentService } from "../../Student/services/student.service";
+import moment from "moment";
 
 const pensionService = new PensionService();
 const studentService = new StudentService();
@@ -112,7 +119,7 @@ export class GroupService implements GroupRepository {
         try {
             const grupo = await Grupo.findOne({
                 where: { uuid: grupoUuid },
-                relations: { horario: true },
+                relations: { horario: true, pensiones: true },
             });
             const secretaria = await Secretaria.findOneBy({
                 uuid: secretariaUuid,
@@ -183,6 +190,28 @@ export class GroupService implements GroupRepository {
 
                 await newMatriculaGrupo.save();
                 matricula.matriculaGruposGrupo.push(newMatriculaGrupo);
+
+                const tarifaPension =
+                    await TarifaPensionCarrera.createQueryBuilder("t")
+                        .innerJoinAndSelect("t.carrera", "c")
+                        .where("c.uuid=:uuid", { uuid: matricula.carrera.uuid })
+                        .getOne();
+
+                const fechaLimite = moment(grupo.fecha_inicio)
+                    .add(15, "days")
+                    .toDate();
+                const mesPension = fechaLimite.getMonth() + 1;
+
+                const newPension = await pensionService.register({
+                    matricula,
+                    grupo,
+                    monto: tarifaPension!.tarifa,
+                    fechaLimite,
+                    mes: mesPension,
+                });
+                grupo.pensiones.push(newPension);
+
+                await grupo.save();
                 await matricula.save();
             });
 

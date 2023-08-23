@@ -295,11 +295,11 @@ export class MatriculaService implements MatriculaRepository {
             await queryRunner.commitTransaction();
 
             //Registrar pensiones por cada modulo matriculado
-            await this.registerPensiones(
-                newMatricula,
-                carreraUuid,
-                modulos.length
-            );
+            // await this.registerPensiones(
+            //     newMatricula,
+            //     carreraUuid,
+            //     modulos.length
+            // );
 
             return newMatricula;
         } catch (error) {
@@ -494,15 +494,15 @@ export class MatriculaService implements MatriculaRepository {
                 }
             }
 
-            meses.map(async ({ mes, fechaLimite }) => {
-                const pension = await pensionService.register({
-                    matricula,
-                    mes,
-                    fechaLimite,
-                    monto: tarifaPension,
-                });
-                return pension;
-            });
+            // meses.map(async ({ mes, fechaLimite }) => {
+            //     const pension = await pensionService.register({
+            //         matricula,
+            //         mes,
+            //         fechaLimite,
+            //         monto: tarifaPension,
+            //     });
+            //     return pension;
+            // });
         } catch (error) {
             throw error;
         }

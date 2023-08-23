@@ -11,7 +11,7 @@ export class Pension extends EntityBase {
     @ManyToOne(() => Grupo, (grupo) => grupo.pensiones)
     grupo: Grupo;
 
-    @Column()
+    @Column({ nullable: true })
     mes: number;
 
     @Column()

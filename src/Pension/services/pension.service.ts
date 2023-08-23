@@ -17,6 +17,7 @@ export class PensionService implements PensionRepository {
 
             newPension.uuid = uuid();
             newPension.matricula = data.matricula;
+            newPension.grupo = data.grupo;
             newPension.mes = data.mes;
             newPension.fecha_limite = data.fechaLimite;
             newPension.monto = data.monto;
