@@ -2,7 +2,10 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from "typeorm";
 import { MetodoPago } from "../../Matricula/entity";
 import { Pension } from "./Pension.entity";
 import { EntityBase } from "../../entity";
-import { EstadoPagoPension } from "../../interfaces/enums";
+import {
+    EstadoPagoPension,
+    TIPO_ENTIDAD_FINANCIERA,
+} from "../../interfaces/enums";
 
 @Entity()
 export class PagoPension extends EntityBase {
@@ -24,6 +27,9 @@ export class PagoPension extends EntityBase {
 
     @Column()
     num_comprobante: string;
+
+    @Column({ type: "varchar", nullable: true })
+    entidad: TIPO_ENTIDAD_FINANCIERA;
 
     @Column({ type: "varchar", default: EstadoPagoPension.COMPLETO })
     estado: EstadoPagoPension;

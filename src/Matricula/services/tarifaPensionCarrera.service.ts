@@ -12,7 +12,7 @@ export class TarifaPensionCarreraService
     public async register(
         data: CreateTarifaPensionDto
     ): Promise<TarifaPensionCarrera> {
-        const { carreraUuid, sedeUuid, tarifa } = data;
+        const { carreraUuid, sedeUuid, tarifa, modalidad } = data;
         try {
             const sede = await Sede.findOneBy({ uuid: sedeUuid });
 
@@ -27,10 +27,14 @@ export class TarifaPensionCarreraService
             )
                 .innerJoin("t.carrera", "c")
                 .innerJoin("t.sede", "s")
-                .where("s.uuid=:sedeUuid and c.uuid=:carreraUuid", {
-                    sedeUuid,
-                    carreraUuid,
-                })
+                .where(
+                    "s.uuid=:sedeUuid and c.uuid=:carreraUuid and t.modalidad=:modalidad",
+                    {
+                        sedeUuid,
+                        carreraUuid,
+                        modalidad,
+                    }
+                )
                 .getOne();
 
             if (tarifaExists) {
@@ -44,7 +48,8 @@ export class TarifaPensionCarreraService
                 newTarifa.uuid = uuid();
                 newTarifa.sede = sede;
                 newTarifa.carrera = carrera;
-                newTarifa.tarifa = data.tarifa;
+                newTarifa.tarifa = tarifa;
+                newTarifa.modalidad = modalidad;
                 await newTarifa.save();
                 return newTarifa;
             }

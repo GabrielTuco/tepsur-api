@@ -1,6 +1,7 @@
 import { Column, Entity, ManyToOne } from "typeorm";
 import { EntityBase } from "../../entity";
 import { MetodoPago } from "./MetodoPago.entity";
+import { TIPO_ENTIDAD_FINANCIERA } from "../../interfaces/enums";
 
 @Entity()
 export class PagoMatricula extends EntityBase {
@@ -18,6 +19,9 @@ export class PagoMatricula extends EntityBase {
 
     @Column({ nullable: true })
     hora: string;
+
+    @Column({ type: "varchar", nullable: true })
+    entidad: TIPO_ENTIDAD_FINANCIERA;
 
     @Column({ nullable: true })
     foto_comprobante: string;

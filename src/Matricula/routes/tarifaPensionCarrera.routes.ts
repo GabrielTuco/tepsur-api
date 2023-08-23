@@ -23,6 +23,9 @@ const tarifaController = new TarifaPensionCarreraController();
  *                  format: uuid
  *              tarifa:
  *                  type: number
+ *              modalidad:
+ *                  type: string
+ *                  enum: [presencial,virtual]
  *      TarifaPensionResponse:
  *          properties:
  *              uuid:
@@ -32,6 +35,8 @@ const tarifaController = new TarifaPensionCarreraController();
  *                  $ref: '#/components/schemas/Career'
  *              tarifa:
  *                  type: number
+ *              modalidad:
+ *                  type: string
  */
 
 /**
