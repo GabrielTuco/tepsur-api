@@ -59,3 +59,12 @@ export enum TIPO_HORARIO {
     NORMAL = "normal",
     ESPECIALIZACION = "especializacion",
 }
+
+export enum TIPO_ENTIDAD_FINANCIERA {
+    YAPE = "yape",
+    BN = "banco de la nacion",
+    C_CUZCO = "caja cuzco",
+    C_AREQUIPA = "caja arequipa",
+    BCP = "bcp",
+    OFICINA = "oficina",
+}
