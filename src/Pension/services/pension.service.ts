@@ -8,7 +8,8 @@ import { PagoPension } from "../entity";
 import { Matricula, MetodoPago } from "../../Matricula/entity";
 import fileUpload from "express-fileupload";
 import { uploadImage } from "../../helpers/uploadImage";
-import { AlreadyExistsError } from "../../errors/AlreadyExistsError";
+import { NotFoundError } from "../../errors/NotFoundError";
+import { EstadoPagoPension } from "../../interfaces/enums";
 
 export class PensionService implements PensionRepository {
     public async register(data: RegisterPensionDTO): Promise<Pension> {
@@ -35,20 +36,21 @@ export class PensionService implements PensionRepository {
         data: RegisterPagoPensionDto
     ): Promise<PagoPension> {
         try {
-            const pagoPensionExists = await PagoPension.createQueryBuilder("p")
-                .innerJoinAndSelect("p.pension", "pe")
-                .where("pe.uuid=:uuid", { uuid: pensionUuid })
-                .getOne();
-
-            if (pagoPensionExists)
-                throw new AlreadyExistsError(
-                    "Ya se registro el pago de esta mensualidad"
-                );
-
             const pension = await Pension.findOneBy({ uuid: pensionUuid });
             const formaPago = await MetodoPago.findOneBy({
                 uuid: data.formaPagoUuid,
             });
+
+            if (!pension)
+                throw new NotFoundError("La pension a pagar no existe");
+
+            if (data.monto > pension.restante) {
+                throw new DatabaseError(
+                    "No es un monto valido",
+                    400,
+                    "Refused"
+                );
+            }
 
             const pagoPension = new PagoPension();
             pagoPension.uuid = uuid();
@@ -56,9 +58,18 @@ export class PensionService implements PensionRepository {
             pagoPension.forma_pago = formaPago!;
             pagoPension.fecha = data.fecha;
             pagoPension.hora = data.hora;
-            pagoPension.monto = pension!.monto;
+            pagoPension.monto = data.monto;
             pagoPension.num_comprobante = data.numComprobante;
+            pagoPension.entidad = data.entidad;
             await pagoPension.save();
+
+            if (data.monto < pension.monto) {
+                pension.restante = pension.restante - data.monto;
+            } else {
+                pension.restante = pension.restante - data.monto;
+                pension.estado = EstadoPagoPension.COMPLETO;
+            }
+            await pension.save();
 
             return pagoPension;
         } catch (error) {

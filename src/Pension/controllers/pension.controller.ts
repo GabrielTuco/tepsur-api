@@ -12,7 +12,7 @@ export class PensionController {
             const { alumno, pensiones } =
                 await this.pensionService.listPensionByDni(dni);
 
-            const data = pensiones.filter((p) => p.pago_pension === null);
+            const data = pensiones.filter((p) => p.pago_pensiones === null);
 
             return res.json({ alumno, pensiones: data });
         } catch (error) {

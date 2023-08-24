@@ -9,8 +9,7 @@ import {
 
 @Entity()
 export class PagoPension extends EntityBase {
-    @OneToOne(() => Pension, (pension) => pension.pago_pension)
-    @JoinColumn()
+    @ManyToOne(() => Pension, (pension) => pension.pago_pensiones)
     pension: Pension;
 
     @ManyToOne(() => MetodoPago, (metodoPago) => metodoPago.pagos_pension)
@@ -30,9 +29,6 @@ export class PagoPension extends EntityBase {
 
     @Column({ type: "varchar", nullable: true })
     entidad: TIPO_ENTIDAD_FINANCIERA;
-
-    @Column({ type: "varchar", default: EstadoPagoPension.COMPLETO })
-    estado: EstadoPagoPension;
 
     @Column({ nullable: true })
     foto_comprobante: string;

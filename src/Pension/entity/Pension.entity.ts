@@ -1,7 +1,8 @@
-import { Column, Entity, ManyToOne, OneToOne } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, OneToOne } from "typeorm";
 import { Grupo, Matricula } from "../../Matricula/entity";
 import { EntityBase } from "../../entity";
 import { PagoPension } from "./PagoPension.entity";
+import { EstadoPagoPension } from "../../interfaces/enums";
 
 @Entity()
 export class Pension extends EntityBase {
@@ -20,6 +21,12 @@ export class Pension extends EntityBase {
     @Column()
     monto: number;
 
-    @OneToOne(() => PagoPension, (pagoPension) => pagoPension.pension)
-    pago_pension: PagoPension;
+    @Column()
+    restante: number;
+
+    @Column({ type: "varchar", default: EstadoPagoPension.PENDIENTE })
+    estado: EstadoPagoPension;
+
+    @OneToMany(() => PagoPension, (pagoPension) => pagoPension.pension)
+    pago_pensiones: PagoPension[];
 }

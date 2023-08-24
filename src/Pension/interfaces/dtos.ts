@@ -1,4 +1,5 @@
 import { Grupo, Matricula } from "../../Matricula/entity";
+import { TIPO_ENTIDAD_FINANCIERA } from "../../interfaces/enums";
 
 export class RegisterPensionDTO {
     matricula: Matricula;
@@ -13,5 +14,7 @@ export class RegisterPagoPensionDto {
     fecha: Date;
     hora: string;
     numComprobante: string;
+    monto: number;
+    entidad: TIPO_ENTIDAD_FINANCIERA;
     // estado: EstadoPagoPension;
 }

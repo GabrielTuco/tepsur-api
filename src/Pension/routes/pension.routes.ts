@@ -3,7 +3,7 @@ import { validateJWT } from "../../middlewares/validateJWT";
 import { PensionController } from "../controllers/pension.controller";
 import { PensionService } from "../services/pension.service";
 import { checkAuthRole } from "../../middlewares/checkAuthRole";
-import { ROLES } from "../../interfaces/enums";
+import { ROLES, TIPO_ENTIDAD_FINANCIERA } from "../../interfaces/enums";
 import { body, param } from "express-validator";
 import { validateFields } from "../../middlewares/validateFields";
 
@@ -29,6 +29,13 @@ const pensionController = new PensionController(pensionService);
  *              numComprobante:
  *                  type: string
  *                  description: Numero de comprobante
+ *              monto:
+ *                  type: number
+ *                  description: El monto a pagar(puede ser menor o igual al monto de la pension)
+ *              entidad:
+ *                  type: string
+ *                  enum: [yape, banco de la nacion, caja cuzco, caja arequipa, bcp, oficina]
+ *                  description: La entidad financiera
  */
 
 /**
@@ -107,6 +114,8 @@ router.post(
         param("uuid").isUUID(4),
         body("formaPagoUuid").isNumeric(),
         body(["fecha", "hora", "numComprobante"]).isString(),
+        body("monto").isNumeric(),
+        body("entidad").isIn(Object.values(TIPO_ENTIDAD_FINANCIERA)),
         validateFields,
     ],
     pensionController.postPagoPension
