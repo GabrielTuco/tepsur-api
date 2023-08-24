@@ -125,7 +125,7 @@ export class PensionService implements PensionRepository {
             const pensiones = await Pension.createQueryBuilder("p")
                 .innerJoin("p.matricula", "m")
                 .innerJoin("m.alumno", "a")
-                .leftJoinAndSelect("p.pago_pension", "pp")
+                .leftJoinAndSelect("p.pago_pensiones", "pp")
                 .where("a.dni=:dni and m.estado='true'", { dni })
                 .getMany();
 
