@@ -229,4 +229,21 @@ export class PensionService implements PensionRepository {
             throw error;
         }
     }
+
+    public findPago = async (pagoUuid: string): Promise<PagoPension> => {
+        try {
+            const pago = await PagoPension.createQueryBuilder("p")
+                .innerJoinAndSelect("p.pension", "pe")
+                .innerJoinAndSelect("p.forma_pago", "fp")
+                .where("p.uuid=:pagoUuid", { pagoUuid })
+                .getOne();
+
+            if (!pago) {
+                throw new NotFoundError("No se pudo encontrar el pago");
+            }
+            return pago;
+        } catch (error) {
+            throw error;
+        }
+    };
 }

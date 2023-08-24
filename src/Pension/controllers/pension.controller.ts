@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { PensionService } from "../services/pension.service";
 import { DatabaseError } from "../../errors/DatabaseError";
 import fileUpload from "express-fileupload";
+import { DatabaseErrorBase } from "../../errors/DatabaseErrorBase";
 
 export class PensionController {
     constructor(private readonly pensionService: PensionService) {}
@@ -97,6 +98,25 @@ export class PensionController {
                     msg: error.message,
                     name: error.name,
                 });
+            }
+            return res.status(500).json({
+                msg: "Internal server error",
+            });
+        }
+    };
+
+    public getPago = async (req: Request, res: Response) => {
+        try {
+            const { uuid } = req.params;
+            const pago = await this.pensionService.findPago(uuid);
+
+            return res.json(pago);
+        } catch (error) {
+            console.log(error);
+            if (error instanceof DatabaseErrorBase) {
+                return res
+                    .status(error.codeStatus)
+                    .json({ msg: error.message, name: error.name });
             }
             return res.status(500).json({
                 msg: "Internal server error",

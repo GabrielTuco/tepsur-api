@@ -49,13 +49,13 @@ const pensionController = new PensionController(pensionService);
  * @swagger
  * /pensiones/pagos:
  *  get:
- *      summary: Pagar una pension
+ *      summary: Listado de pagos
  *      tags: [Pension]
  *      parameters:
  *          - $ref: '#/components/parameters/token'
  *      responses:
  *          200:
- *              description: El registro de la pension pagada
+ *              description: El listado de pagos
  *              content:
  *                  application/json:
  *                      schema:
@@ -73,6 +73,56 @@ router.get(
 );
 
 router.get("/:dni", [validateJWT], pensionController.getByDni);
+
+/**
+ * @swagger
+ * /pensiones/pago/{uuid}:
+ *  get:
+ *      summary: Pagar una pension
+ *      tags: [Pension]
+ *      parameters:
+ *          - $ref: '#/components/parameters/token'
+ *          - in: path
+ *            name: uuid
+ *            required: true
+ *            schema:
+ *              type: string
+ *              format : uuid
+ *      responses:
+ *          200:
+ *              description: El registro de pago buscado
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              pension:
+ *                                  type: object
+ *                              forma_pago:
+ *                                  type: object
+ *                              fecha:
+ *                                  type: string
+ *                                  format: date-time
+ *                              hora:
+ *                                  type: string
+ *                              monto:
+ *                                  type: number
+ *                              num_comprobante:
+ *                                  type: string
+ *          500:
+ *              description: Error de servidor
+ *
+ */
+router.get(
+    "/pago/:uuid",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
+        param("uuid").isUUID(4),
+        validateFields,
+    ],
+    pensionController.getListPagos
+);
 
 /**
  * @swagger

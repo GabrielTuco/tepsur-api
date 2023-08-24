@@ -11,3 +11,4 @@
 
 -   Las pensiones se registran cuando el alumno se registra en el grupo
 -   Tarifas son diferentes dependiendo la modalidad y la sede
+-   Pagos fraccionados de pensiones
