@@ -247,4 +247,27 @@ export class PensionService implements PensionRepository {
             throw error;
         }
     };
+
+    public findPensionGrupo = async (
+        matriculaUuid: string,
+        grupoUuid: string
+    ): Promise<Pension> => {
+        try {
+            const pension = await Pension.createQueryBuilder("p")
+                .innerJoinAndSelect("p.matricula", "m")
+                .leftJoinAndSelect("p.pago_pensiones", "pp")
+                .innerJoinAndSelect("p.grupo", "g")
+                .where("m.uuid=:matriculaUuid and g.uuid=:grupoUuid", {
+                    matriculaUuid,
+                    grupoUuid,
+                })
+                .getOne();
+
+            if (!pension) throw new NotFoundError("La pension no existe");
+
+            return pension;
+        } catch (error) {
+            throw error;
+        }
+    };
 }

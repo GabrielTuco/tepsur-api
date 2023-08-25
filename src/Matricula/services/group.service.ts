@@ -359,7 +359,7 @@ export class GroupService implements GroupRepository {
     ): Promise<
         {
             matriculaGrupo: MatriculaGruposGrupo;
-            ultimoPago: Pension;
+            pensionGrupo: Pension;
         }[]
     > => {
         try {
@@ -381,13 +381,14 @@ export class GroupService implements GroupRepository {
             // );
             const data = await Promise.all(
                 studentsByGrupo.map(async (matriculaGrupo) => {
-                    const ultimoPago = await pensionService.findUltimoPago(
-                        matriculaGrupo.matricula.uuid
+                    const pensionGrupo = await pensionService.findPensionGrupo(
+                        matriculaGrupo.matricula.uuid,
+                        grupo.uuid
                     );
 
                     return {
                         matriculaGrupo,
-                        ultimoPago,
+                        pensionGrupo,
                     };
                 })
             );

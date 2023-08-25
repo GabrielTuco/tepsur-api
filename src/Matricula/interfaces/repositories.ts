@@ -63,7 +63,7 @@ export interface GroupRepository {
     listEstudents(uuid: string): Promise<
         {
             matriculaGrupo: MatriculaGruposGrupo;
-            ultimoPago: Pension;
+            pensionGrupo: Pension;
         }[]
     >;
     findByUuid(uuid: string): Promise<GrupoWithStudents>;
