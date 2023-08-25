@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToOne, OneToMany } from "typeorm";
 import { EntityBase } from "../../entity";
-import { Grupo } from "./Grupo.entity";
-import { MatriculaModulosModulo } from "./MatriculaModulosModulo";
+import { Grupo } from "../../Matricula/entity/Grupo.entity";
+import { MatriculaModulosModulo } from "../../Matricula/entity/MatriculaModulosModulo";
 import { Carrera } from "./Carrera.entity";
 
 @Entity()

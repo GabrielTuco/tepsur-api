@@ -22,6 +22,7 @@ export class PensionService implements PensionRepository {
             newPension.mes = data.mes;
             newPension.fecha_limite = data.fechaLimite;
             newPension.monto = data.monto;
+            newPension.restante = data.monto;
 
             await newPension.save();
 

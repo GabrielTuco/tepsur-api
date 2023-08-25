@@ -1,11 +1,11 @@
 import { v4 as uuid } from "uuid";
-import { Carrera, Horario, Modulo } from "../entity";
-import { RegisterCareerDto, UpdateCareerDto } from "../interfaces/dtos";
-import { CareerRepository } from "../interfaces/repositories";
+import { Carrera, Horario, Modulo } from "../../Matricula/entity";
+import { CareerRepository } from "../../Matricula/interfaces/repositories";
 import { AppDataSource } from "../../db/dataSource";
 import { Sede } from "../../Sede/entity/Sede.entity";
 import { NotFoundError } from "../../errors/NotFoundError";
 import { AlreadyExistsError } from "../../errors/AlreadyExistsError";
+import { RegisterCareerDto, UpdateCareerDto } from "../dto";
 
 export class CareerService implements CareerRepository {
     public listBySede = async (sedeUuid: string): Promise<any[]> => {

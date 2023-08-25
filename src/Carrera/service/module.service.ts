@@ -1,11 +1,11 @@
 import { v4 as uuid } from "uuid";
 import { DatabaseError } from "../../errors/DatabaseError";
-import { Modulo } from "../entity";
-import { ModuleDTO } from "../interfaces/dtos";
-import { ModuleRepository } from "../interfaces/repositories";
+import { Modulo } from "../../Matricula/entity";
+import { ModuleRepository } from "../../Matricula/interfaces/repositories";
+import { RegisterModuleDto } from "../dto";
 
 export class ModuleService implements ModuleRepository {
-    public async register(data: ModuleDTO): Promise<Modulo> {
+    public async register(data: RegisterModuleDto): Promise<Modulo> {
         try {
             const modulo = new Modulo();
             modulo.uuid = uuid();

@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { body, param, query } from "express-validator";
 import { validateFields } from "../../middlewares/validateFields";
-import { CareerController } from "../controllers/career.controller";
+import { CareerController } from "../controller";
 import { validateJWT } from "../../middlewares/validateJWT";
 import { ROLES, TIPO_CARRERA } from "../../interfaces/enums";
 import { checkAuthRole } from "../../middlewares/checkAuthRole";

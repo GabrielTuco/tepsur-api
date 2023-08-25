@@ -1,11 +1,11 @@
 import { Column, Entity, JoinTable, ManyToMany, OneToMany } from "typeorm";
 import { EntityBase } from "../../entity/EntityBase";
 import { Modulo } from "./Modulo.entity";
-import { Grupo } from "./Grupo.entity";
-import { Matricula } from "./Matricula.entity";
+import { Grupo } from "../../Matricula/entity/Grupo.entity";
+import { Matricula } from "../../Matricula/entity/Matricula.entity";
 import { TIPO_CARRERA } from "../../interfaces/enums";
 import { Sede } from "../../Sede/entity";
-import { TarifaPensionCarrera } from "./TarifaPensionCarrera.entity";
+import { TarifaPensionCarrera } from "../../Matricula/entity/TarifaPensionCarrera.entity";
 
 @Entity()
 export class Carrera extends EntityBase {

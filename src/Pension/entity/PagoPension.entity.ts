@@ -1,11 +1,8 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from "typeorm";
+import { Column, Entity, ManyToOne } from "typeorm";
 import { MetodoPago } from "../../Matricula/entity";
 import { Pension } from "./Pension.entity";
 import { EntityBase } from "../../entity";
-import {
-    EstadoPagoPension,
-    TIPO_ENTIDAD_FINANCIERA,
-} from "../../interfaces/enums";
+import { TIPO_ENTIDAD_FINANCIERA } from "../../interfaces/enums";
 
 @Entity()
 export class PagoPension extends EntityBase {

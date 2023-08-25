@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { ModuleController } from "../controllers/module.controller";
+import { ModuleController } from "../controller/module.controller";
 import { body, param } from "express-validator";
 import { validateFields } from "../../middlewares/validateFields";
 

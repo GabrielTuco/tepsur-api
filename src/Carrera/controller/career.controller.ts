@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { CareerService } from "../services/career.service";
+import { CareerService } from "../service/career.service";
 import { DatabaseErrorBase } from "../../errors/DatabaseErrorBase";
 
 const careerService = new CareerService();

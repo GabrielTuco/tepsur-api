@@ -72,7 +72,35 @@ router.get(
     pensionController.getListPagos
 );
 
-router.get("/:dni", [validateJWT], pensionController.getByDni);
+/**
+ * @swagger
+ * /pensiones/{dni}:
+ *  get:
+ *      summary: Listado de pagos
+ *      tags: [Pension]
+ *      parameters:
+ *          - $ref: '#/components/parameters/token'
+ *          - in: path
+ *            name: dni
+ *            required: true
+ *            schema:
+ *              type: string
+ *      responses:
+ *          200:
+ *              description: La pension buscada
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                              type: object
+ *          500:
+ *              description: Error de servidor
+ *
+ */
+router.get(
+    "/:dni",
+    [validateJWT, checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE])],
+    pensionController.getByDni
+);
 
 /**
  * @swagger
@@ -121,7 +149,7 @@ router.get(
         param("uuid").isUUID(4),
         validateFields,
     ],
-    pensionController.getListPagos
+    pensionController.getPago
 );
 
 /**

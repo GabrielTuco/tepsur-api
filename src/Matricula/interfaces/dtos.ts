@@ -7,32 +7,10 @@ import {
 } from "../../interfaces/enums";
 import { Grupo, Matricula } from "../entity";
 
-export class ModuleDTO {
-    nombre: string;
-    duracionSemanas: string;
-    orden: number;
-    uuid?: string;
-}
-
 export class HorarioDTO {
     horaInicio: string;
     horaFin: string;
     dias: string[];
-}
-
-export class RegisterCareerDto {
-    nombre: string;
-    modulos: ModuleDTO[];
-    duracionMeses: number;
-    tipoCarrera: TIPO_CARRERA;
-    sedeUuid: string;
-}
-
-export class UpdateCareerDto {
-    nombre: string;
-    duracionMeses: number;
-    tipoCarrera: TIPO_CARRERA;
-    modulos: ModuleDTO[];
 }
 
 export class GroupDTO {

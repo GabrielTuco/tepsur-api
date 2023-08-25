@@ -1,11 +1,11 @@
 import { Column, Entity, ManyToOne, OneToMany } from "typeorm";
 import { EntityBase } from "../../entity/EntityBase";
-import { Carrera } from "./Carrera.entity";
+import { Carrera } from "../../Carrera/entity/Carrera.entity";
 import { Horario } from "./Horario.entity";
 import { Docente } from "../../Teacher/entity/Docente.entity";
 import { ESTADO_GRUPO, MODALIDAD } from "../../interfaces/enums";
 import { MatriculaGruposGrupo } from "./MatriculaGruposGrupo.entity";
-import { Modulo } from "./Modulo.entity";
+import { Modulo } from "../../Carrera/entity/Modulo.entity";
 import { Secretaria } from "../../Secretary/entity/Secretaria.entity";
 import { Sede } from "../../Sede/entity";
 import { Matricula } from "./Matricula.entity";

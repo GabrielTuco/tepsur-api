@@ -7,7 +7,7 @@ import {
     OneToOne,
 } from "typeorm";
 import { EntityBase } from "../../entity";
-import { Carrera } from "./Carrera.entity";
+import { Carrera } from "../../Carrera/entity/Carrera.entity";
 import { Alumno } from "../../Student/entity/Alumno.entity";
 import { Secretaria } from "../../Secretary/entity/Secretaria.entity";
 import { Sede } from "../../Sede/entity/Sede.entity";

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { ModuleService } from "../services/module.service";
+import { ModuleService } from "../service/module.service";
 import { DatabaseError } from "../../errors/DatabaseError";
 
 const moduleService = new ModuleService();

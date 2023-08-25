@@ -1,7 +1,7 @@
 import { BaseEntity, Column, Entity, ManyToOne, PrimaryColumn } from "typeorm";
 import { ESTADO_MODULO_MATRICULA, MODALIDAD } from "../../interfaces/enums";
 import { Matricula } from "./Matricula.entity";
-import { Modulo } from "./Modulo.entity";
+import { Modulo } from "../../Carrera/entity/Modulo.entity";
 import { Horario } from "./Horario.entity";
 
 @Entity()
