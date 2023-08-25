@@ -19,6 +19,7 @@ import { NotFoundError } from "../../errors/NotFoundError";
 import { Pension } from "../../Pension/entity";
 import { StudentService } from "../../Student/services/student.service";
 import moment from "moment";
+import { AppDataSource } from "../../db/dataSource";
 
 const pensionService = new PensionService();
 const studentService = new StudentService();
@@ -116,6 +117,10 @@ export class GroupService implements GroupRepository {
         grupoUuid: string,
         secretariaUuid: string
     ): Promise<any> => {
+        const queryRunner = AppDataSource.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+
         try {
             const grupo = await Grupo.findOne({
                 where: { uuid: grupoUuid },
@@ -188,7 +193,9 @@ export class GroupService implements GroupRepository {
                     matricula.ultimo_grupo = grupo;
                 }
 
-                await newMatriculaGrupo.save();
+                // await newMatriculaGrupo.save();
+                await queryRunner.manager.save(newMatriculaGrupo);
+
                 matricula.matriculaGruposGrupo.push(newMatriculaGrupo);
 
                 const tarifaPension =
@@ -211,18 +218,26 @@ export class GroupService implements GroupRepository {
                 });
                 grupo.pensiones.push(newPension);
 
-                await grupo.save();
-                await matricula.save();
+                // await grupo.save();
+                await queryRunner.manager.save(grupo);
+                // await matricula.save();
+                await queryRunner.manager.save(matricula);
             });
 
-            await grupo.save();
+            // await grupo.save();
+            await queryRunner.manager.save(grupo);
             await grupo.reload();
+
+            await queryRunner.commitTransaction();
 
             const studentsGrupo = await this.listEstudents(grupoUuid);
 
             return studentsGrupo;
         } catch (error) {
+            await queryRunner.rollbackTransaction();
             throw error;
+        } finally {
+            await queryRunner.release();
         }
     };
 
