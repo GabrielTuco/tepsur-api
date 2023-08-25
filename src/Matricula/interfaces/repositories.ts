@@ -11,25 +11,27 @@ import {
     TarifaPensionCarrera,
 } from "../entity";
 import {
-    RegisterCareerDto,
     GroupDTO,
     GrupoWithStudents,
     MatriculaDTO,
-    ModuleDTO,
     ModuloMatriculaDTO,
     PagoMatriculaData,
     TrasladoMatriculaDTO,
     UpdateMatriculaDto,
-    UpdateCareerDto,
 } from "./dtos";
 import { MODALIDAD } from "../../interfaces/enums";
 import { MatriculaEspecializacion } from "../../Especializacion/entity/MatriculaEspecializacion.entity";
 import { Pension } from "../../Pension/entity";
 import { CreateTarifaPensionDto } from "../dto/createTarifaPension.dto";
 import { CreateScheduleDTO } from "../dto/createSchedule.dto";
+import {
+    RegisterCareerDto,
+    RegisterModuleDto,
+    UpdateCareerDto,
+} from "../../Carrera/dto";
 
 export interface ModuleRepository {
-    register(data: ModuleDTO): Promise<Modulo>;
+    register(data: RegisterModuleDto): Promise<Modulo>;
     findByUuid(uuid: string): Promise<Modulo>;
     findByName(name: string): Promise<Modulo>;
 }
