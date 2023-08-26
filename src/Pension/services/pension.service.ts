@@ -172,6 +172,7 @@ export class PensionService implements PensionRepository {
                 .innerJoinAndSelect("m.alumno", "a")
                 .innerJoinAndSelect("p.grupo", "g")
                 .leftJoinAndSelect("p.pago_pensiones", "pp")
+                .leftJoinAndSelect("pp.forma_pago", "fp")
                 .where("p.uuid=:uuid", { uuid })
                 .getOne();
 
@@ -259,6 +260,7 @@ export class PensionService implements PensionRepository {
                 .innerJoinAndSelect("p.matricula", "m")
                 .innerJoinAndSelect("m.alumno", "a")
                 .leftJoinAndSelect("p.pago_pensiones", "pp")
+                .leftJoinAndSelect("pp.forma_pago", "fp")
                 .innerJoinAndSelect("p.grupo", "g")
                 .innerJoinAndSelect("g.modulo", "mo")
                 .where("m.uuid=:matriculaUuid and g.uuid=:grupoUuid", {
