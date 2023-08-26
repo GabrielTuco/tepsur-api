@@ -276,7 +276,7 @@ router.post(
  *
  */
 router.post(
-    "/traslado",
+    "/importar-matricula",
     [
         validateJWT,
         checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
