@@ -296,7 +296,7 @@ router.post(
             "alumno.gradoEstudiosUuid",
             "El valor debe ser un UUID valido"
         ).isNumeric(),
-        body("alumno.lugarNacimiento").isString(),
+        body("alumno.lugarNacimiento").optional().isString(),
         body("alumno.celular", "No es un numero de celular valido")
             .isString()
             .isLength({ min: 9, max: 9 }),
@@ -321,7 +321,7 @@ router.post(
         body("fechaInicio").isString(),
 
         //Pago de matricula
-        body("pagoMatricula").isObject(),
+        body("pagoMatricula").optional().isObject(),
         body("pagoMatricula.numComprobante").isString(),
         body("pagoMatricula.formaPagoUuid").isNumeric(),
         body("pagoMatricula.monto").isNumeric(),
