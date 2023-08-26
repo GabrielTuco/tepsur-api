@@ -301,7 +301,7 @@ router.post(
             .isString()
             .isLength({ min: 9, max: 9 }),
         body("alumno.correo", "No es un correo valido").optional().isEmail(),
-        body("alumno.direccion").isObject(),
+        body("alumno.direccion").optional().isObject(),
         body("alumno.direccion.direccionExacta").isString(),
         body("alumno.direccion.distrito").isString(),
         body("alumno.direccion.provincia").isString(),

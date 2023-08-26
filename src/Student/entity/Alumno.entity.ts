@@ -53,7 +53,7 @@ export class Alumno extends EntityBase {
     @JoinColumn()
     usuario: Usuario;
 
-    @OneToOne(() => Direccion)
+    @OneToOne(() => Direccion, { nullable: true })
     @JoinColumn()
     direccion: Direccion;
 
