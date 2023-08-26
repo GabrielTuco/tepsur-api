@@ -257,8 +257,10 @@ export class PensionService implements PensionRepository {
         try {
             const pension = await Pension.createQueryBuilder("p")
                 .innerJoinAndSelect("p.matricula", "m")
+                .innerJoinAndSelect("m.alumno", "a")
                 .leftJoinAndSelect("p.pago_pensiones", "pp")
                 .innerJoinAndSelect("p.grupo", "g")
+                .innerJoinAndSelect("g.modulo", "mo")
                 .where("m.uuid=:matriculaUuid and g.uuid=:grupoUuid", {
                     matriculaUuid,
                     grupoUuid,
