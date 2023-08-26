@@ -171,6 +171,7 @@ export class PensionService implements PensionRepository {
                 .innerJoinAndSelect("p.matricula", "m")
                 .innerJoinAndSelect("m.alumno", "a")
                 .innerJoinAndSelect("p.grupo", "g")
+                .innerJoinAndSelect("g.modulo", "mo")
                 .leftJoinAndSelect("p.pago_pensiones", "pp")
                 .leftJoinAndSelect("pp.forma_pago", "fp")
                 .where("p.uuid=:uuid", { uuid })
