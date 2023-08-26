@@ -29,6 +29,26 @@ export class PensionController {
         }
     };
 
+    public getByUuid = async (req: Request, res: Response) => {
+        try {
+            const { uuid } = req.params;
+
+            const pension = await this.pensionService.findByUuid(uuid);
+
+            return res.json(pension);
+        } catch (error) {
+            console.log(error);
+            if (error instanceof DatabaseErrorBase) {
+                return res
+                    .status(error.codeStatus)
+                    .json({ msg: error.message, name: error.name });
+            }
+            return res.status(500).json({
+                msg: "Internal server error",
+            });
+        }
+    };
+
     public postPagoPension = async (req: Request, res: Response) => {
         try {
             const { uuid } = req.params;
@@ -41,7 +61,7 @@ export class PensionController {
             return res.json(pagoPension);
         } catch (error) {
             console.log(error);
-            if (error instanceof DatabaseError) {
+            if (error instanceof DatabaseErrorBase) {
                 return res
                     .status(error.codeStatus)
                     .json({ msg: error.message, name: error.name });

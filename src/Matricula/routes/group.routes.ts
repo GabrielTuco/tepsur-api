@@ -434,6 +434,49 @@ router.get(
 
 /**
  * @swagger
+ * /group/pensiones-grupo/{uuid}:
+ *  get:
+ *      summary: Listado de las pensiones de los alumnos de un grupo
+ *      tags: [Group]
+ *      parameters:
+ *          - $ref: '#/components/parameters/token'
+ *          - in: path
+ *            name: uuid
+ *            schema:
+ *              type: string
+ *              format: uuid
+ *            required: true
+ *            description: El uuid del grupo
+ *      responses:
+ *          200:
+ *              description: El listado de las pensiones del grupo
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              matricula:
+ *                                  type: object
+ *                              pension:
+ *                                  type: object
+ *
+ *          500:
+ *              description: Error de servidor
+ *
+ */
+router.get(
+    "/pensiones-grupo/:uuid",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE, ROLES.DOCENTE]),
+        param("uuid").isUUID(4),
+        validateFields,
+    ],
+    groupController.getPensionesGrupo
+);
+
+/**
+ * @swagger
  * /group/find-by-uuid/{id}:
  *  get:
  *      summary: Buscar un grupo por uuid

@@ -167,13 +167,15 @@ export class PensionService implements PensionRepository {
 
     public async findByUuid(uuid: string): Promise<Pension> {
         try {
-            const pension = await Pension.findOneBy({ uuid });
-            if (!pension)
-                throw new DatabaseError(
-                    "La pension no existe",
-                    404,
-                    "Not found error"
-                );
+            const pension = await Pension.createQueryBuilder("p")
+                .innerJoinAndSelect("p.matricula", "m")
+                .innerJoinAndSelect("m.alumno", "a")
+                .innerJoinAndSelect("p.grupo", "g")
+                .leftJoinAndSelect("p.pago_pensiones", "pp")
+                .where("p.uuid=:uuid", { uuid })
+                .getOne();
+
+            if (!pension) throw new NotFoundError("La pension no existe");
 
             return pension;
         } catch (error) {

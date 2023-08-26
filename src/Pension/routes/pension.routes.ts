@@ -104,6 +104,42 @@ router.get(
 
 /**
  * @swagger
+ * /pensiones/find-by-uuid/{uuid}:
+ *  get:
+ *      summary: Buscar pension por uuid
+ *      tags: [Pension]
+ *      parameters:
+ *          - $ref: '#/components/parameters/token'
+ *          - in: path
+ *            name: uuid
+ *            required: true
+ *            schema:
+ *              type: string
+ *              format: uuid
+ *      responses:
+ *          200:
+ *              description: La pension buscada
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                              type: object
+ *          500:
+ *              description: Error de servidor
+ *
+ */
+router.get(
+    "/find-by-uuid/:uuid",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
+        param("uuid").isUUID(4),
+        validateFields,
+    ],
+    pensionController.getByUuid
+);
+
+/**
+ * @swagger
  * /pensiones/pago/{uuid}:
  *  get:
  *      summary: Pagar una pension

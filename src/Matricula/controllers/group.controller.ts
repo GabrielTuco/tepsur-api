@@ -120,6 +120,26 @@ export class GroupController {
         }
     }
 
+    public async getPensionesGrupo(req: Request, res: Response) {
+        try {
+            const { uuid } = req.params;
+            const pensionesGrupo = await groupService.listPensionesGrupo(uuid);
+
+            return res.json(pensionesGrupo);
+        } catch (error) {
+            console.log(error);
+            if (error instanceof DatabaseErrorBase) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                    name: error.name,
+                });
+            }
+            return res.status(500).json({
+                msg: "Internal Server Error, contact the administrator",
+            });
+        }
+    }
+
     public async getStudents(req: Request, res: Response) {
         try {
             const { id } = req.params;

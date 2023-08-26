@@ -23,6 +23,11 @@ import { AppDataSource } from "../../db/dataSource";
 
 const pensionService = new PensionService();
 const studentService = new StudentService();
+
+type StudentsWithPensionGrupo = {
+    matriculaGrupo: MatriculaGruposGrupo;
+    pensionGrupo: Pension;
+};
 export class GroupService implements GroupRepository {
     /**
      * Servicio para registrar un nuevo grupo
@@ -356,12 +361,7 @@ export class GroupService implements GroupRepository {
      */
     public listEstudents = async (
         uuid: string
-    ): Promise<
-        {
-            matriculaGrupo: MatriculaGruposGrupo;
-            pensionGrupo: Pension;
-        }[]
-    > => {
+    ): Promise<StudentsWithPensionGrupo[]> => {
         try {
             const grupo = await Grupo.findOneBy({ uuid });
             if (!grupo) throw new NotFoundError("Grupo no encontrado");
@@ -376,9 +376,6 @@ export class GroupService implements GroupRepository {
                     .where("mg.grupoUuid=:uuid", { uuid })
                     .getMany();
 
-            // const students = studentsByGrupo.map(
-            //     (student) => student.matricula
-            // );
             const data = await Promise.all(
                 studentsByGrupo.map(async (matriculaGrupo) => {
                     const pensionGrupo = await pensionService.findPensionGrupo(
@@ -389,6 +386,45 @@ export class GroupService implements GroupRepository {
                     return {
                         matriculaGrupo,
                         pensionGrupo,
+                    };
+                })
+            );
+
+            return data;
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    public listPensionesGrupo = async (grupoUuid: string) => {
+        try {
+            const students = await MatriculaGruposGrupo.createQueryBuilder(
+                "mgg"
+            )
+                .innerJoinAndSelect("mgg.matricula", "m")
+                .innerJoinAndSelect("m.alumno", "a")
+                .innerJoinAndSelect("mgg.grupo", "g")
+                .innerJoinAndSelect("mgg.responsable", "r")
+                .where("g.uuid=:grupoUuid", { grupoUuid })
+                .getMany();
+
+            const data = await Promise.all(
+                students.map(async (e) => {
+                    const pension = await Pension.createQueryBuilder("p")
+                        .innerJoinAndSelect("p.matricula", "m")
+                        .innerJoinAndSelect("p.grupo", "g")
+                        .where("m.uuid=:matriculaUuid and g.uuid=:grupoUuid", {
+                            matriculaUuid: e.matricula.uuid,
+                            grupoUuid,
+                        })
+                        .getOne();
+
+                    if (!pension)
+                        throw new NotFoundError("La pension no existe");
+
+                    return {
+                        matricula: e,
+                        pension,
                     };
                 })
             );
