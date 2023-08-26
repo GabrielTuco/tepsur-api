@@ -40,9 +40,11 @@ export class MatriculaController {
         }
     }
 
-    public async postTrasladoMatricula(req: Request, res: Response) {
+    public async postImportarMatricula(req: Request, res: Response) {
         try {
-            const matricula = await matriculaService.trasladoAlumno(req.body);
+            const matricula = await matriculaService.importarMatriculaExistente(
+                req.body
+            );
             return res.json(matricula);
         } catch (error) {
             console.log(error);

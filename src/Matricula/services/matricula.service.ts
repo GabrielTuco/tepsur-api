@@ -3,10 +3,8 @@ import fileUpload from "express-fileupload";
 import moment from "moment";
 import {
     Carrera,
-    Grupo,
     Horario,
     Matricula,
-    MatriculaGruposGrupo,
     MetodoPago,
     Modulo,
     PagoMatricula,
@@ -16,7 +14,6 @@ import {
     MatriculaDTO,
     PagoMatriculaData,
     ModuloMatriculaDTO,
-    TrasladoMatriculaDTO,
     UpdateMatriculaDto,
 } from "../interfaces/dtos";
 import { MatriculaRepository } from "../interfaces/repositories";
@@ -28,7 +25,6 @@ import { AppDataSource } from "../../db/dataSource";
 import { PensionService } from "../../Pension/services/pension.service";
 import { MatriculaModulosModulo } from "../entity/MatriculaModulosModulo";
 import {
-    CONDICION_ALUMNO,
     ESTADO_MODULO_MATRICULA,
     MODALIDAD,
     TIPO_CARRERA,
@@ -40,6 +36,7 @@ import { MatriculaEspecializacion } from "../../Especializacion/entity/Matricula
 import { Pension } from "../../Pension/entity";
 import { NotFoundError } from "../../errors/NotFoundError";
 import { AlreadyExistsError } from "../../errors/AlreadyExistsError";
+import { RegisterImportarMatriculaDto } from "../dto/registerImportarMatriculaDto";
 
 const pensionService = new PensionService();
 const studentService = new StudentService();
@@ -311,8 +308,8 @@ export class MatriculaService implements MatriculaRepository {
         }
     };
 
-    public trasladoAlumno = async (
-        data: TrasladoMatriculaDTO
+    public importarMatriculaExistente = async (
+        data: RegisterImportarMatriculaDto
     ): Promise<Matricula> => {
         const queryRunner = AppDataSource.createQueryRunner();
         await queryRunner.connect();
@@ -323,7 +320,7 @@ export class MatriculaService implements MatriculaRepository {
                 alumno,
                 carreraUuid,
                 fechaInicio,
-                grupoUuid,
+                // grupoUuid,
                 modulosCompletados,
                 pagoMatricula,
                 secretariaUuid,
@@ -382,17 +379,19 @@ export class MatriculaService implements MatriculaRepository {
 
             //TODO: Validar que los modulos pertenecen a la carrera
 
-            const newPagoMatricula = new PagoMatricula();
-            const metodoPago = await MetodoPago.findOneBy({
-                uuid: pagoMatricula.formaPagoUuid,
-            });
-            newPagoMatricula.uuid = uuid();
-            newPagoMatricula.num_comprobante = pagoMatricula.numComprobante;
-            newPagoMatricula.forma_pago = metodoPago!;
-            newPagoMatricula.monto = pagoMatricula.monto;
-            await queryRunner.manager.save(newPagoMatricula);
+            if (pagoMatricula) {
+                const newPagoMatricula = new PagoMatricula();
+                const metodoPago = await MetodoPago.findOneBy({
+                    uuid: pagoMatricula.formaPagoUuid,
+                });
+                newPagoMatricula.uuid = uuid();
+                newPagoMatricula.num_comprobante = pagoMatricula.numComprobante;
+                newPagoMatricula.forma_pago = metodoPago!;
+                newPagoMatricula.monto = pagoMatricula.monto;
+                await queryRunner.manager.save(newPagoMatricula);
 
-            newMatricula.pagoMatricula = newPagoMatricula;
+                newMatricula.pagoMatricula = newPagoMatricula;
+            }
 
             modulosCompletados.map(async (m) => {
                 const matriculaModulo = new MatriculaModulosModulo();
@@ -403,15 +402,6 @@ export class MatriculaService implements MatriculaRepository {
 
                 await queryRunner.manager.save(matriculaModulo);
             });
-
-            const matriculaGrupo = new MatriculaGruposGrupo();
-            matriculaGrupo.matricula = newMatricula;
-            matriculaGrupo.grupo = (await Grupo.findOneBy({
-                uuid: grupoUuid,
-            })) as Grupo;
-            matriculaGrupo.condicion = CONDICION_ALUMNO.NUEVO;
-
-            await queryRunner.manager.save(matriculaGrupo);
 
             await queryRunner.manager.save(newMatricula);
 
@@ -503,38 +493,6 @@ export class MatriculaService implements MatriculaRepository {
             //     });
             //     return pension;
             // });
-        } catch (error) {
-            throw error;
-        }
-    };
-
-    public setRandomGroup = async (horarioUuid: string): Promise<Grupo> => {
-        try {
-            const grupos = await Grupo.createQueryBuilder("g")
-                .innerJoinAndSelect("g.horario", "h")
-                .where("h.uuid=:id", { id: horarioUuid })
-                .getMany();
-
-            const gruposDisponibles: string[] = [];
-            grupos.map(async (g) => {
-                const alumnosMatriculados = await Matricula.createQueryBuilder(
-                    "m"
-                )
-                    .innerJoin("m.grupo", "g")
-                    .where("g.uuid=:id", { id: g.uuid })
-                    .getCount();
-
-                if (alumnosMatriculados < g.cupos_maximos) {
-                    gruposDisponibles.push(g.uuid);
-                }
-            });
-
-            const arrPos = Math.floor(Math.random() * gruposDisponibles.length);
-            const grupo = await Grupo.findOneBy({
-                uuid: gruposDisponibles[arrPos],
-            });
-
-            return grupo!;
         } catch (error) {
             throw error;
         }

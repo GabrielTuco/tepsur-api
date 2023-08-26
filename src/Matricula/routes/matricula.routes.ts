@@ -251,7 +251,7 @@ router.post(
 
 /**
  * @swagger
- * /matricula/traslado:
+ * /matricula/importar-matricula:
  *  post:
  *      summary: Hacer un traslado interno del alumno para registrarlo en el nuevo sistema
  *      tags: [Matricula]
@@ -309,7 +309,6 @@ router.post(
 
         //Datos academicos
         body("carreraUuid", "El valor debe ser un UUID valido").isUUID("4"),
-        body("grupoUuid", "El valor debe ser un UUID valido").isUUID("4"),
         body("moduloActualUuid", "El valor debe ser un UUID valido")
             .optional()
             .isUUID("4"),
@@ -328,7 +327,7 @@ router.post(
         body("pagoMatricula.monto").isNumeric(),
         validateFields,
     ],
-    matriculaController.postTrasladoMatricula
+    matriculaController.postImportarMatricula
 );
 
 /**

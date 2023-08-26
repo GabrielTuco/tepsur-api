@@ -16,7 +16,6 @@ import {
     MatriculaDTO,
     ModuloMatriculaDTO,
     PagoMatriculaData,
-    TrasladoMatriculaDTO,
     UpdateMatriculaDto,
 } from "./dtos";
 import { MODALIDAD } from "../../interfaces/enums";
@@ -29,6 +28,7 @@ import {
     RegisterModuleDto,
     UpdateCareerDto,
 } from "../../Carrera/dto";
+import { RegisterImportarMatriculaDto } from "../dto/registerImportarMatriculaDto";
 
 export interface ModuleRepository {
     register(data: RegisterModuleDto): Promise<Modulo>;
@@ -87,7 +87,6 @@ export interface MatriculaRepository {
         carreraUuid: string,
         modulosMatriculados: number
     ): Promise<void>;
-    setRandomGroup(horarioUuid: string): Promise<Grupo>;
     setModulesForMatricula(
         matriculaUuid: string,
         modulosMatricula: ModuloMatriculaDTO[]
@@ -123,7 +122,9 @@ export interface MatriculaRepository {
         matriculaUuid: string,
         moduloUuid: string
     ): Promise<Matricula>;
-    trasladoAlumno(data: TrasladoMatriculaDTO): Promise<Matricula>;
+    importarMatriculaExistente(
+        data: RegisterImportarMatriculaDto
+    ): Promise<Matricula>;
 }
 
 export interface MetodoPagoRepository {

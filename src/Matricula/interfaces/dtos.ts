@@ -67,18 +67,6 @@ export class RegisterMatriculaModuloDto {
     horarioUuid: string;
 }
 
-export class TrasladoMatriculaDTO {
-    alumno: RegisterAlumnoDto;
-    carreraUuid: string;
-    grupoUuid: string;
-    moduloActualUuid: string;
-    modulosCompletados: string[];
-    secretariaUuid: string;
-    sedeUuid: string;
-    pagoMatricula: PagoMatriculaData;
-    fechaInicio: Date;
-}
-
 export class DireccionDto {
     direccionExacta: string;
     distrito: string;
