@@ -64,11 +64,11 @@ export class PensionService implements PensionRepository {
             pagoPension.entidad = data.entidad;
             await pagoPension.save();
 
-            if (data.monto < pension.monto) {
-                pension.restante = pension.restante - data.monto;
-            } else {
-                pension.restante = pension.restante - data.monto;
+            if (data.monto === pension.restante) {
+                pension.restante = 0;
                 pension.estado = EstadoPagoPension.COMPLETO;
+            } else if (data.monto < pension.restante) {
+                pension.restante = pension.restante - data.monto;
             }
             await pension.save();
 
