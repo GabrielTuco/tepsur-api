@@ -683,6 +683,7 @@ export class MatriculaService implements MatriculaRepository {
             newPagoMatricula.monto = data.monto;
             newPagoMatricula.fecha = data.fecha;
             newPagoMatricula.hora = data.hora;
+            newPagoMatricula.entidad = data.entidad;
             await newPagoMatricula.save();
 
             matricula.pagoMatricula = newPagoMatricula;

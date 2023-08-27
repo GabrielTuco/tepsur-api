@@ -2,7 +2,12 @@ import { Router } from "express";
 import { MatriculaController } from "../controllers/matricula.controller";
 import { validateJWT } from "../../middlewares/validateJWT";
 import { checkAuthRole } from "../../middlewares/checkAuthRole";
-import { MODALIDAD, ROLES, TIPO_MATRICULA } from "../../interfaces/enums";
+import {
+    MODALIDAD,
+    ROLES,
+    TIPO_ENTIDAD_FINANCIERA,
+    TIPO_MATRICULA,
+} from "../../interfaces/enums";
 import { body, param, query } from "express-validator";
 import { validateFields } from "../../middlewares/validateFields";
 import {
@@ -404,6 +409,8 @@ router.post(
  *                              type: number
  *                          monto:
  *                              type: number
+ *                          entidad:
+ *                              type: string
  *      responses:
  *          200:
  *              description: El pago de matricula registrado
@@ -424,6 +431,7 @@ router.patch(
         body("numComprobante").isString(),
         body("formaPagoUuid").isNumeric(),
         body("monto").isNumeric(),
+        body("entidad").isIn(Object.values(TIPO_ENTIDAD_FINANCIERA)),
         validateFields,
     ],
     matriculaController.patchPagoMatricula

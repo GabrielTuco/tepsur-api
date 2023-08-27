@@ -3,6 +3,7 @@ import {
     DIAS,
     MODALIDAD,
     TIPO_CARRERA,
+    TIPO_ENTIDAD_FINANCIERA,
     TIPO_MATRICULA,
 } from "../../interfaces/enums";
 import { Grupo, Matricula } from "../entity";
@@ -80,6 +81,7 @@ export class PagoMatriculaData {
     monto: number;
     fecha: Date;
     hora: string;
+    entidad: TIPO_ENTIDAD_FINANCIERA;
 }
 
 export class GradoEstudiosDTO {

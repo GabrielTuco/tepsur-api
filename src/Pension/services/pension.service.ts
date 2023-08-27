@@ -117,12 +117,7 @@ export class PensionService implements PensionRepository {
     ): Promise<{ alumno: Alumno; pensiones: Pension[] }> {
         try {
             const alumno = await Alumno.findOneBy({ dni });
-            if (!alumno)
-                throw new DatabaseError(
-                    "El alumno no existe",
-                    404,
-                    "Not found error"
-                );
+            if (!alumno) throw new NotFoundError("El alumno no existe");
             const pensiones = await Pension.createQueryBuilder("p")
                 .innerJoin("p.matricula", "m")
                 .innerJoin("m.alumno", "a")
