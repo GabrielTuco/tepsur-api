@@ -263,6 +263,53 @@ router.patch(
 
 /**
  * @swagger
+ * /group/remove-student:
+ *  patch:
+ *      summary: Eliminar de un grupo a un estudiante
+ *      tags: [Group]
+ *      parameters:
+ *         - $ref: '#/components/parameters/token'
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          matriculaUuid:
+ *                              type: string
+ *                              format: uuid
+ *                          grupoUuid:
+ *                              type: string
+ *                              format: uuid
+ *      responses:
+ *          200:
+ *              description: Mensaje de confirmacion
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              msg:
+ *                                  type: string
+ *          500:
+ *              description: Error de servidor
+ *
+ */
+router.patch(
+    "/remove-student",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
+        body("matriculaUuid").isUUID(4),
+        body("grupoUuid").isUUID("4"),
+        validateFields,
+    ],
+    groupController.patchRemoveStudent
+);
+
+/**
+ * @swagger
  * /group:
  *  get:
  *      summary: Listado de grupos

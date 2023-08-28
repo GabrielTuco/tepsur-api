@@ -246,6 +246,40 @@ export class GroupService implements GroupRepository {
         }
     };
 
+    public removeStudent = async (matriculaUuid: string, grupoUuid: string) => {
+        try {
+            const matriculaGrupo =
+                await MatriculaGruposGrupo.createQueryBuilder("mgg")
+                    .innerJoinAndSelect("mgg.matricula", "m")
+                    .innerJoinAndSelect("mgg.grupo", "g")
+                    .where("m.uuid=:matriculaUuid and g.uuid=:grupoUuid", {
+                        matriculaUuid,
+                        grupoUuid,
+                    })
+                    .getOne();
+
+            if (matriculaGrupo) {
+                await MatriculaGruposGrupo.remove(matriculaGrupo);
+            }
+
+            const pensionGrupo = await Pension.createQueryBuilder("p")
+                .innerJoinAndSelect("p.matricula", "m")
+                .innerJoinAndSelect("p.grupo", "g")
+                .where("m.uuid=:matriculaUuid and g.uuid=:grupoUuid", {
+                    matriculaUuid,
+                    grupoUuid,
+                })
+                .getOne();
+
+            if (pensionGrupo) {
+                await Pension.remove(pensionGrupo);
+            }
+            return { msg: "Eliminado" };
+        } catch (error) {
+            throw error;
+        }
+    };
+
     public listGroups = async (
         year: string | undefined,
         month: string | undefined

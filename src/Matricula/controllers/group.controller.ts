@@ -50,6 +50,28 @@ export class GroupController {
         }
     }
 
+    public async patchRemoveStudent(req: Request, res: Response) {
+        try {
+            const { matriculasUuid, grupoUuid } = req.body;
+            const grupo = await groupService.removeStudent(
+                matriculasUuid,
+                grupoUuid
+            );
+            return res.json(grupo);
+        } catch (error) {
+            console.log(error);
+            if (error instanceof DatabaseErrorBase) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                    name: error.name,
+                });
+            }
+            return res.status(500).json({
+                msg: "Internal Server Error, contact the administrator",
+            });
+        }
+    }
+
     public async getAll(req: Request, res: Response) {
         try {
             const { year, month } = req.query;
