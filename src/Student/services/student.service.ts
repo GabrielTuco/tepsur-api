@@ -286,7 +286,7 @@ export class StudentService implements StudentRepository {
 
     public registerStudent = async (
         alumno: RegisterAlumnoDto,
-        newDireccionAlumno: Direccion,
+        newDireccionAlumno: Direccion | null,
         newUserAlumno: Usuario
     ) => {
         try {
@@ -306,7 +306,7 @@ export class StudentService implements StudentRepository {
             newAlumno.celular = alumno.celular;
             newAlumno.celular_referencia = alumno.celularReferencia;
             newAlumno.correo = alumno.correo;
-            newAlumno.direccion = newDireccionAlumno;
+            newAlumno.direccion = newDireccionAlumno!;
             newAlumno.grado_estudios = gradoEstudios!;
             newAlumno.usuario = newUserAlumno;
 

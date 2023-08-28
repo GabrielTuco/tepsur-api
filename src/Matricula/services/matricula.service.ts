@@ -37,6 +37,7 @@ import { Pension } from "../../Pension/entity";
 import { NotFoundError } from "../../errors/NotFoundError";
 import { AlreadyExistsError } from "../../errors/AlreadyExistsError";
 import { RegisterImportarMatriculaDto } from "../dto/registerImportarMatriculaDto";
+import { Direccion } from "../../entity";
 
 const pensionService = new PensionService();
 const studentService = new StudentService();
@@ -320,7 +321,6 @@ export class MatriculaService implements MatriculaRepository {
                 alumno,
                 carreraUuid,
                 fechaInicio,
-                // grupoUuid,
                 modulosCompletados,
                 pagoMatricula,
                 secretariaUuid,
@@ -328,10 +328,13 @@ export class MatriculaService implements MatriculaRepository {
             } = data;
 
             //Registro de datos personales del estudiante
-            const newDireccion = await studentService.registerAddressStudent(
-                alumno.direccion
-            );
-            await queryRunner.manager.save(newDireccion);
+            let newDireccion: Direccion | null = null;
+            if (alumno.direccion) {
+                newDireccion = await studentService.registerAddressStudent(
+                    alumno.direccion
+                );
+                await queryRunner.manager.save(newDireccion);
+            }
 
             const newUser = await studentService.registerUserStudent(
                 alumno.dni
@@ -393,16 +396,20 @@ export class MatriculaService implements MatriculaRepository {
                 newMatricula.pagoMatricula = newPagoMatricula;
             }
 
-            modulosCompletados.map(async (m) => {
-                const matriculaModulo = new MatriculaModulosModulo();
-                matriculaModulo.uuid = uuid();
-                matriculaModulo.modulo = (await Modulo.findOneBy({
-                    uuid: m,
-                })) as Modulo;
-                matriculaModulo.estado = ESTADO_MODULO_MATRICULA.CULMINADO;
+            const modulos = await Promise.all(
+                modulosCompletados.map(async (mod) => {
+                    const modulo = await Modulo.findOneBy({ uuid: mod });
 
-                await queryRunner.manager.save(matriculaModulo);
-            });
+                    const matriculaModulo = new MatriculaModulosModulo();
+                    matriculaModulo.uuid = uuid();
+                    matriculaModulo.modulo = modulo!;
+                    matriculaModulo.estado = ESTADO_MODULO_MATRICULA.CULMINADO;
+
+                    await queryRunner.manager.save(matriculaModulo);
+                    return matriculaModulo;
+                })
+            );
+            newMatricula.matriculaModulosModulo = modulos;
 
             await queryRunner.manager.save(newMatricula);
 
