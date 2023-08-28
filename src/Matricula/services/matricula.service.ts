@@ -395,6 +395,7 @@ export class MatriculaService implements MatriculaRepository {
 
             modulosCompletados.map(async (m) => {
                 const matriculaModulo = new MatriculaModulosModulo();
+                matriculaModulo.uuid = uuid();
                 matriculaModulo.modulo = (await Modulo.findOneBy({
                     uuid: m,
                 })) as Modulo;

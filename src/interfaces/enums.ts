@@ -66,5 +66,6 @@ export enum TIPO_ENTIDAD_FINANCIERA {
     C_CUZCO = "caja cuzco",
     C_AREQUIPA = "caja arequipa",
     BCP = "bcp",
+    BBVA = "bbva",
     OFICINA = "oficina",
 }
