@@ -11,6 +11,7 @@ import { DireccionDto } from "../../Matricula/interfaces/dtos";
 import { RegisterAlumnoDto } from "../interfaces/dtos";
 import { NotFoundError } from "../../errors/NotFoundError";
 import { ESTADO_MODULO_MATRICULA } from "../../interfaces/enums";
+import { MatriculaModulosModulo } from "../../Matricula/entity/MatriculaModulosModulo";
 
 export class StudentService implements StudentRepository {
     public register = async (data: RegisterAlumnoDto): Promise<Alumno> => {
@@ -321,27 +322,20 @@ export class StudentService implements StudentRepository {
         moduloUuid: string
     ) => {
         try {
-            const matricula = await Matricula.createQueryBuilder("m")
-                .innerJoinAndSelect("m.matriculaModulosModulo", "mmm")
+            const matricula = await MatriculaModulosModulo.createQueryBuilder(
+                "mmm"
+            )
+                .innerJoinAndSelect("mmm.matricula", "m")
                 .innerJoinAndSelect("mmm.modulo", "mo")
-                .where("m.uuid=:matriculaUuid", { matriculaUuid })
+                .where("m.uuid=:matriculaUuid and mo.uuid=:moduloUuid", {
+                    matriculaUuid,
+                    moduloUuid,
+                })
                 .getOne();
 
             if (!matricula) throw new NotFoundError("La matricula no existe");
 
-            const modulo = matricula.matriculaModulosModulo.find(
-                (m) => m.modulo.uuid === moduloUuid
-            );
-
-            const indexModulo = matricula.matriculaModulosModulo.indexOf(
-                modulo!
-            );
-            console.log(matricula.matriculaModulosModulo);
-
-            console.log(indexModulo);
-
-            matricula.matriculaModulosModulo[indexModulo].estado =
-                ESTADO_MODULO_MATRICULA.CULMINADO;
+            matricula.estado = ESTADO_MODULO_MATRICULA.CULMINADO;
 
             await matricula.save();
             await matricula.reload();
