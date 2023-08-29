@@ -198,7 +198,6 @@ export class GroupService implements GroupRepository {
                     matricula.ultimo_grupo = grupo;
                 }
 
-                // await newMatriculaGrupo.save();
                 await queryRunner.manager.save(newMatriculaGrupo);
 
                 matricula.matriculaGruposGrupo.push(newMatriculaGrupo);
@@ -223,20 +222,16 @@ export class GroupService implements GroupRepository {
                 });
                 grupo.pensiones.push(newPension);
 
-                // await grupo.save();
                 await queryRunner.manager.save(grupo);
-                // await matricula.save();
                 await queryRunner.manager.save(matricula);
             });
 
-            // await grupo.save();
             await queryRunner.manager.save(grupo);
             await grupo.reload();
 
-            await queryRunner.commitTransaction();
-
             const studentsGrupo = await this.listEstudents(grupoUuid);
 
+            await queryRunner.commitTransaction();
             return studentsGrupo;
         } catch (error) {
             await queryRunner.rollbackTransaction();
