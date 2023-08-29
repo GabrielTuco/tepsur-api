@@ -16,7 +16,7 @@ import { Sede } from "../../Sede/entity";
 import { CONDICION_ALUMNO, ESTADO_GRUPO } from "../../interfaces/enums";
 import { PensionService } from "../../Pension/services/pension.service";
 import { NotFoundError } from "../../errors/NotFoundError";
-import { Pension } from "../../Pension/entity";
+import { PagoPension, Pension } from "../../Pension/entity";
 import { StudentService } from "../../Student/services/student.service";
 import moment from "moment";
 import { AppDataSource } from "../../db/dataSource";
@@ -243,32 +243,35 @@ export class GroupService implements GroupRepository {
 
     public removeStudent = async (matriculaUuid: string, grupoUuid: string) => {
         try {
-            const matriculaGrupo =
-                await MatriculaGruposGrupo.createQueryBuilder("mgg")
-                    .innerJoinAndSelect("mgg.matricula", "m")
-                    .innerJoinAndSelect("mgg.grupo", "g")
-                    .where("m.uuid=:matriculaUuid and g.uuid=:grupoUuid", {
-                        matriculaUuid,
-                        grupoUuid,
-                    })
-                    .getOne();
+            const matriculaGrupo = await MatriculaGruposGrupo.findOne({
+                where: {
+                    matricula: { uuid: matriculaUuid },
+                    grupo: { uuid: grupoUuid },
+                },
+            });
 
-            if (matriculaGrupo) {
-                await MatriculaGruposGrupo.remove(matriculaGrupo);
+            if (!matriculaGrupo) {
+                throw new Error("Este alumno no está en este grupo");
             }
 
-            const pensionGrupo = await Pension.createQueryBuilder("p")
-                .innerJoinAndSelect("p.matricula", "m")
-                .innerJoinAndSelect("p.grupo", "g")
-                .where("m.uuid=:matriculaUuid and g.uuid=:grupoUuid", {
-                    matriculaUuid,
-                    grupoUuid,
-                })
-                .getOne();
+            await MatriculaGruposGrupo.remove(matriculaGrupo);
 
-            if (pensionGrupo) {
-                await Pension.remove(pensionGrupo);
+            const pensionGrupo = await Pension.findOne({
+                where: {
+                    matricula: { uuid: matriculaUuid },
+                    grupo: { uuid: grupoUuid },
+                },
+            });
+
+            if (!pensionGrupo) {
+                throw new Error(
+                    "No se pudo encontrar la pensión de este alumno"
+                );
             }
+            await PagoPension.delete({ pension: { uuid: pensionGrupo.uuid } });
+
+            await Pension.remove(pensionGrupo);
+
             return { msg: "Eliminado" };
         } catch (error) {
             throw error;
