@@ -336,6 +336,10 @@ export class StudentService implements StudentRepository {
             const indexModulo = matricula.matriculaModulosModulo.indexOf(
                 modulo!
             );
+            console.log(matricula.matriculaModulosModulo);
+
+            console.log(indexModulo);
+
             matricula.matriculaModulosModulo[indexModulo].estado =
                 ESTADO_MODULO_MATRICULA.CULMINADO;
 
@@ -343,6 +347,8 @@ export class StudentService implements StudentRepository {
             await matricula.reload();
 
             return matricula;
-        } catch (error) {}
+        } catch (error) {
+            throw error;
+        }
     };
 }
