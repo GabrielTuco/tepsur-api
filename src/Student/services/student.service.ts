@@ -6,7 +6,12 @@ import { DatabaseError } from "../../errors/DatabaseError";
 import { Alumno } from "../entity/Alumno.entity";
 import { StudentRepository } from "../interfaces/repositories";
 import { encryptPassword } from "../../helpers/encryptPassword";
-import { GradoEstudios, Matricula } from "../../Matricula/entity";
+import {
+    GradoEstudios,
+    Grupo,
+    Horario,
+    Matricula,
+} from "../../Matricula/entity";
 import { DireccionDto } from "../../Matricula/interfaces/dtos";
 import { RegisterAlumnoDto } from "../interfaces/dtos";
 import { NotFoundError } from "../../errors/NotFoundError";
@@ -319,7 +324,8 @@ export class StudentService implements StudentRepository {
 
     public updateMatriculaModulos = async (
         matriculaUuid: string,
-        moduloUuid: string
+        moduloUuid: string,
+        grupo: Grupo
     ) => {
         try {
             const matricula = await MatriculaModulosModulo.createQueryBuilder(
@@ -327,6 +333,7 @@ export class StudentService implements StudentRepository {
             )
                 .innerJoinAndSelect("mmm.matricula", "m")
                 .innerJoinAndSelect("mmm.modulo", "mo")
+                .leftJoinAndSelect("mmm.horario", "h")
                 .where("m.uuid=:matriculaUuid and mo.uuid=:moduloUuid", {
                     matriculaUuid,
                     moduloUuid,
@@ -334,8 +341,16 @@ export class StudentService implements StudentRepository {
                 .getOne();
 
             if (!matricula) throw new NotFoundError("La matricula no existe");
+            const horario = await Horario.findOneBy({
+                uuid: grupo.horario.uuid,
+            });
+
+            if (!horario) throw new NotFoundError("Horario no encontrado");
 
             matricula.estado = ESTADO_MODULO_MATRICULA.CULMINADO;
+            matricula.fecha_inicio = grupo.fecha_inicio;
+            matricula.modalidad = grupo.modalidad;
+            matricula.horario = horario;
 
             await matricula.save();
             await matricula.reload();

@@ -502,6 +502,7 @@ export class GroupService implements GroupRepository {
         try {
             const grupo = await Grupo.createQueryBuilder("g")
                 .innerJoinAndSelect("g.modulo", "m")
+                .innerJoinAndSelect("g.horario", "h")
                 .innerJoinAndSelect("g.matriculaGruposGrupo", "mgg")
                 .leftJoinAndSelect("mgg.matricula", "ma")
                 .where("g.uuid=:grupoUuid", { grupoUuid })
@@ -513,7 +514,8 @@ export class GroupService implements GroupRepository {
             grupo.matriculaGruposGrupo.map(async (m) => {
                 await studentService.updateMatriculaModulos(
                     m.matricula.uuid,
-                    grupo.modulo.uuid
+                    grupo.modulo.uuid,
+                    grupo
                 );
             });
 
