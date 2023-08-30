@@ -412,21 +412,10 @@ export class GroupService implements GroupRepository {
                     .leftJoinAndSelect("mg.responsable", "r")
                     .leftJoinAndSelect("r.sede", "s")
                     .leftJoinAndSelect("r.usuario", "u")
-                    .where("g.uuid=:uuid", { uuid: grupo.uuid })
+                    // .where("g.uuid=:uuid", { uuid: grupo.uuid })
                     .getMany();
 
-            const studentsByGrupo2 =
-                await MatriculaGruposGrupo.createQueryBuilder("mg")
-                    .innerJoinAndSelect("mg.matricula", "m")
-                    .innerJoinAndSelect("mg.grupo", "g")
-                    .innerJoinAndSelect("m.alumno", "a")
-                    .leftJoinAndSelect("mg.responsable", "r")
-                    .leftJoinAndSelect("r.sede", "s")
-                    .leftJoinAndSelect("r.usuario", "u")
-                    .where("g.uuid=:uuid", { uuid: grupo.uuid })
-                    .getQueryAndParameters();
-
-            console.log(studentsByGrupo2);
+            console.log();
 
             const data = await Promise.all(
                 studentsByGrupo.map(async (matriculaGrupo) => {
