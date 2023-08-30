@@ -327,9 +327,9 @@ router.post(
 
         //Pago de matricula
         body("pagoMatricula").optional().isObject(),
-        body("pagoMatricula.numComprobante").isString(),
-        body("pagoMatricula.formaPagoUuid").isNumeric(),
-        body("pagoMatricula.monto").isNumeric(),
+        body("pagoMatricula.numComprobante").optional().isString(),
+        body("pagoMatricula.formaPagoUuid").optional().isNumeric(),
+        body("pagoMatricula.monto").optional().isNumeric(),
         validateFields,
     ],
     matriculaController.postImportarMatricula
