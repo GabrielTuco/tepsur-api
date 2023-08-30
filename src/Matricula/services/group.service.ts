@@ -181,7 +181,7 @@ export class GroupService implements GroupRepository {
                             ESTADO_GRUPO.EN_CURSO
                         ) {
                             throw new DatabaseError(
-                                "No se puede agregar a un alumno que se encuentra en un grupo activo",
+                                "No se puede agregar a un alumno que se encuentra en un grupo abierto",
                                 400,
                                 "Not aceptable"
                             );
@@ -408,11 +408,12 @@ export class GroupService implements GroupRepository {
             const studentsByGrupo =
                 await MatriculaGruposGrupo.createQueryBuilder("mg")
                     .innerJoinAndSelect("mg.matricula", "m")
+                    .innerJoinAndSelect("mg.grupo", "g")
                     .innerJoinAndSelect("m.alumno", "a")
-                    .innerJoinAndSelect("mg.responsable", "r")
+                    .leftJoinAndSelect("mg.responsable", "r")
                     .leftJoinAndSelect("r.sede", "s")
                     .leftJoinAndSelect("r.usuario", "u")
-                    .where("mg.grupoUuid=:uuid", { uuid })
+                    .where("g.uuid=:uuid", { uuid })
                     .getMany();
 
             const data = await Promise.all(
