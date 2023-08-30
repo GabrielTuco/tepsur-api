@@ -410,7 +410,7 @@ export class GroupService implements GroupRepository {
                     .innerJoinAndSelect("mg.matricula", "m")
                     .innerJoinAndSelect("mg.grupo", "g")
                     .innerJoinAndSelect("m.alumno", "a")
-                    // .leftJoinAndSelect("mg.responsable", "r")
+                    .leftJoinAndSelect("mg.responsable", "r")
                     // .leftJoinAndSelect("r.sede", "s")
                     // .leftJoinAndSelect("r.usuario", "u")
                     .where("g.uuid=:uuid", { uuid: grupo.uuid })
