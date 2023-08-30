@@ -827,14 +827,31 @@ export class MatriculaService implements MatriculaRepository {
                 .leftJoinAndSelect("pm.forma_pago", "fp")
                 .leftJoinAndSelect("m.ultimo_grupo", "ug")
                 .where(
+                    `(LOWER(a.dni) LIKE '%' || :query || '%'
+                    OR LOWER(a.nombres) LIKE '%' || :query || '%'
+                    OR LOWER(a.ape_paterno) LIKE '%' || :query || '%'
+                    OR LOWER(a.ape_materno) LIKE '%' || :query || '%')
+                    AND m.estado=TRUE and ug.estado='cerrado'`,
+                    { query: query.toLowerCase() }
+                )
+                .getMany();
+
+            const matriculas2 = await Matricula.createQueryBuilder("m")
+                .innerJoinAndSelect("m.alumno", "a")
+                .innerJoinAndSelect("m.carrera", "c")
+                .leftJoinAndSelect("m.pagoMatricula", "pm")
+                .leftJoinAndSelect("pm.forma_pago", "fp")
+                .leftJoinAndSelect("m.ultimo_grupo", "ug")
+                .where(
                     `LOWER(a.dni) LIKE '%' || :query || '%'
                     OR LOWER(a.nombres) LIKE '%' || :query || '%'
                     OR LOWER(a.ape_paterno) LIKE '%' || :query || '%'
                     OR LOWER(a.ape_materno) LIKE '%' || :query || '%'
-                    AND m.estado='true' and ug.estado='cerrado' OR m.ultimoGrupoUuid is null`,
+                    AND m.estado=TRUE and ug.estado='cerrado'`,
                     { query: query.toLowerCase() }
                 )
-                .getMany();
+                .getQueryAndParameters();
+            console.log(matriculas2);
 
             const data = await Promise.all(
                 matriculas.map(async (m) => {

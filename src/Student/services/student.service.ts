@@ -347,7 +347,12 @@ export class StudentService implements StudentRepository {
 
             if (!horario) throw new NotFoundError("Horario no encontrado");
 
-            matricula.estado = ESTADO_MODULO_MATRICULA.CULMINADO;
+            if (matricula.estado !== ESTADO_MODULO_MATRICULA.MATRICULADO) {
+                matricula.estado = ESTADO_MODULO_MATRICULA.CULMINADO;
+            } else {
+                matricula.estado =
+                    ESTADO_MODULO_MATRICULA.MATRICULADO_CULMINADO;
+            }
             matricula.fecha_inicio = grupo.fecha_inicio;
             matricula.modalidad = grupo.modalidad;
             matricula.horario = horario;

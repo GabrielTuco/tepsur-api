@@ -114,15 +114,17 @@ export class PensionService implements PensionRepository {
 
     public async listPensionByDni(
         dni: string
-    ): Promise<{ alumno: Alumno; pensiones: Pension[] }> {
+    ): Promise<{ alumno: Alumno; pensiones: any[] }> {
         try {
             const alumno = await Alumno.findOneBy({ dni });
             if (!alumno) throw new NotFoundError("El alumno no existe");
+
             const pensiones = await Pension.createQueryBuilder("p")
                 .innerJoin("p.matricula", "m")
                 .innerJoin("m.alumno", "a")
                 .leftJoinAndSelect("p.pago_pensiones", "pp")
-                .where("a.dni=:dni and m.estado='true'", { dni })
+                .leftJoinAndSelect("pp.forma_pago", "fp")
+                .where("a.dni=:dni and m.estado=TRUE", { dni })
                 .getMany();
 
             return { alumno, pensiones };

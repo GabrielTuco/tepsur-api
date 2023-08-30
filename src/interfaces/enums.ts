@@ -44,6 +44,7 @@ export enum DIAS {
 
 export enum ESTADO_MODULO_MATRICULA {
     MATRICULADO = "matriculado", //Indica que el modulo se registro en la matricula para su asignacion a un grupo
+    MATRICULADO_CULMINADO = "matriculado_culminado",
     EN_CURSO = "en_curso", //Indica que el modulo actualmente se esta llevando
     CULMINADO = "culminado", //Indica que el modulo ya fue culminado por el alumno
     POR_LLEVAR = "por_llevar", //Indica que el modulo aun esta pendiente por llevar

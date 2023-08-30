@@ -734,7 +734,6 @@ router.get(
  *            name: query
  *            schema:
  *              type: string
- *            required: true
  *            description: Query de busqueda de alumno(dni o nombre o algun apellido)
  *      responses:
  *          200:
@@ -764,7 +763,7 @@ router.get(
     [
         validateJWT,
         checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
-        query("query").isString(),
+        query("query").optional().isString(),
         validateFields,
     ],
     matriculaController.getFindByQuery

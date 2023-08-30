@@ -13,9 +13,9 @@ export class PensionController {
             const { alumno, pensiones } =
                 await this.pensionService.listPensionByDni(dni);
 
-            const data = pensiones.filter((p) => p.pago_pensiones === null);
+            // const data = pensiones.filter((p) => p.pago_pensiones === null);
 
-            return res.json({ alumno, pensiones: data });
+            return res.json({ alumno, pensiones });
         } catch (error) {
             console.log(error);
             if (error instanceof DatabaseError) {
