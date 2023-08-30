@@ -412,7 +412,7 @@ export class GroupService implements GroupRepository {
                     .leftJoinAndSelect("mg.responsable", "r")
                     .leftJoinAndSelect("r.sede", "s")
                     .leftJoinAndSelect("r.usuario", "u")
-                    // .where("g.uuid=:uuid", { uuid: grupo.uuid })
+                    .where("g.uuid=:uuid", { uuid: grupo.uuid })
                     .getMany();
 
             console.log();
