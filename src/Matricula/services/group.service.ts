@@ -236,9 +236,9 @@ export class GroupService implements GroupRepository {
             await queryRunner.manager.save(grupo);
             await grupo.reload();
 
-            const studentsGrupo = await this.listEstudents(grupo.uuid);
-
             await queryRunner.commitTransaction();
+
+            const studentsGrupo = await this.listEstudents(grupo.uuid);
             return studentsGrupo;
         } catch (error) {
             await queryRunner.rollbackTransaction();
