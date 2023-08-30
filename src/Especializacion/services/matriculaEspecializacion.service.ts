@@ -127,6 +127,8 @@ export class MatriculaEspecilizacionService
                     .innerJoinAndSelect("a.direccion", "dir")
                     .innerJoinAndSelect("a.grado_estudios", "ge")
                     .innerJoinAndSelect("m.secretaria", "s")
+                    .innerJoinAndSelect("s.usuario", "u")
+                    .innerJoinAndSelect("s.sede", "sed")
                     .innerJoinAndSelect("m.especializacion", "e")
                     .innerJoinAndSelect("m.horario", "h")
                     .leftJoinAndSelect("m.docente", "d")
