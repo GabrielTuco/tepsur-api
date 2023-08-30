@@ -213,14 +213,14 @@ export class GroupService implements GroupRepository {
                     .toDate();
                 const mesPension = fechaLimite.getMonth() + 1;
 
-                const newPension = await pensionService.register({
-                    matricula,
-                    grupo,
-                    monto: tarifaPension!.tarifa,
-                    fechaLimite,
-                    mes: mesPension,
-                });
-                grupo.pensiones.push(newPension);
+                // const newPension = await pensionService.register({
+                //     matricula,
+                //     grupo,
+                //     monto: tarifaPension!.tarifa,
+                //     fechaLimite,
+                //     mes: mesPension,
+                // });
+                // grupo.pensiones.push(newPension);
 
                 await queryRunner.manager.save(grupo);
                 await queryRunner.manager.save(matricula);
