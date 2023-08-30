@@ -236,7 +236,7 @@ export class GroupService implements GroupRepository {
             await queryRunner.manager.save(grupo);
             await grupo.reload();
 
-            const studentsGrupo = await this.listEstudents(grupoUuid);
+            const studentsGrupo = await this.listEstudents(grupo.uuid);
 
             await queryRunner.commitTransaction();
             return studentsGrupo;
@@ -410,11 +410,13 @@ export class GroupService implements GroupRepository {
                     .innerJoinAndSelect("mg.matricula", "m")
                     .innerJoinAndSelect("mg.grupo", "g")
                     .innerJoinAndSelect("m.alumno", "a")
-                    .leftJoinAndSelect("mg.responsable", "r")
-                    .leftJoinAndSelect("r.sede", "s")
-                    .leftJoinAndSelect("r.usuario", "u")
-                    .where("g.uuid=:uuid", { uuid })
+                    // .leftJoinAndSelect("mg.responsable", "r")
+                    // .leftJoinAndSelect("r.sede", "s")
+                    // .leftJoinAndSelect("r.usuario", "u")
+                    .where("g.uuid=:uuid", { uuid: grupo.uuid })
                     .getMany();
+
+            console.log(studentsByGrupo);
 
             const data = await Promise.all(
                 studentsByGrupo.map(async (matriculaGrupo) => {
