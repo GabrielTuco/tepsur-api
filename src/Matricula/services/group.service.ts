@@ -148,9 +148,8 @@ export class GroupService implements GroupRepository {
                         .where("m.uuid=:matriculaUuid", { matriculaUuid })
                         .getOne();
 
-                    if (matricula) {
-                        return { matricula, observaciones };
-                    } else return undefined;
+                    if (matricula) return { matricula, observaciones };
+                    else return undefined;
                 })
             );
             type MatriculaWithObservaciones = {
@@ -163,70 +162,76 @@ export class GroupService implements GroupRepository {
                     element !== undefined
             );
 
-            studentsArray.map(async ({ matricula, observaciones }) => {
-                const newMatriculaGrupo = new MatriculaGruposGrupo();
-                newMatriculaGrupo.uuid = uuid();
-                newMatriculaGrupo.matricula = matricula;
-                newMatriculaGrupo.grupo = grupo;
-                newMatriculaGrupo.responsable = secretaria;
-                newMatriculaGrupo.observacion = observaciones;
+            await Promise.all(
+                studentsArray.map(async ({ matricula, observaciones }) => {
+                    const newMatriculaGrupo = new MatriculaGruposGrupo();
+                    newMatriculaGrupo.uuid = uuid();
+                    newMatriculaGrupo.matricula = matricula;
+                    newMatriculaGrupo.grupo = grupo;
+                    newMatriculaGrupo.responsable = secretaria;
+                    newMatriculaGrupo.observacion = observaciones;
 
-                if (!matricula.ultimo_grupo) {
-                    matricula.ultimo_grupo = grupo;
-                    newMatriculaGrupo.condicion = CONDICION_ALUMNO.NUEVO;
-                } else {
-                    //si no es nuevo ver que horarios y modulos ha llevado establecer si continua o es cambio de horario
-                    if (
-                        matricula.ultimo_grupo.estado === ESTADO_GRUPO.EN_CURSO
-                    ) {
-                        throw new DatabaseError(
-                            "No se puede agregar a un alumno que se encuentra en un grupo activo",
-                            400,
-                            "Not aceptable"
-                        );
-                    }
-                    if (
-                        matricula.ultimo_grupo.horario.uuid ===
-                        grupo.horario.uuid
-                    ) {
-                        newMatriculaGrupo.condicion = CONDICION_ALUMNO.CONTINUA;
+                    if (!matricula.ultimo_grupo) {
+                        matricula.ultimo_grupo = grupo;
+                        newMatriculaGrupo.condicion = CONDICION_ALUMNO.NUEVO;
                     } else {
-                        newMatriculaGrupo.condicion =
-                            CONDICION_ALUMNO.CAMBIO_HORARIO;
+                        //si no es nuevo ver que horarios y modulos ha llevado establecer si continua o es cambio de horario
+                        if (
+                            matricula.ultimo_grupo.estado ===
+                            ESTADO_GRUPO.EN_CURSO
+                        ) {
+                            throw new DatabaseError(
+                                "No se puede agregar a un alumno que se encuentra en un grupo activo",
+                                400,
+                                "Not aceptable"
+                            );
+                        }
+                        if (
+                            matricula.ultimo_grupo.horario.uuid ===
+                            grupo.horario.uuid
+                        ) {
+                            newMatriculaGrupo.condicion =
+                                CONDICION_ALUMNO.CONTINUA;
+                        } else {
+                            newMatriculaGrupo.condicion =
+                                CONDICION_ALUMNO.CAMBIO_HORARIO;
+                        }
+
+                        matricula.ultimo_grupo = grupo;
                     }
 
-                    matricula.ultimo_grupo = grupo;
-                }
+                    await queryRunner.manager.save(newMatriculaGrupo);
 
-                await queryRunner.manager.save(newMatriculaGrupo);
+                    matricula.matriculaGruposGrupo.push(newMatriculaGrupo);
 
-                matricula.matriculaGruposGrupo.push(newMatriculaGrupo);
+                    const tarifaPension =
+                        await TarifaPensionCarrera.createQueryBuilder("t")
+                            .innerJoinAndSelect("t.carrera", "c")
+                            .where("c.uuid=:uuid", {
+                                uuid: matricula.carrera.uuid,
+                            })
+                            .getOne();
 
-                const tarifaPension =
-                    await TarifaPensionCarrera.createQueryBuilder("t")
-                        .innerJoinAndSelect("t.carrera", "c")
-                        .where("c.uuid=:uuid", { uuid: matricula.carrera.uuid })
-                        .getOne();
+                    const fechaLimite = moment(grupo.fecha_inicio)
+                        .add(15, "days")
+                        .toDate();
+                    const mesPension = fechaLimite.getMonth() + 1;
 
-                const fechaLimite = moment(grupo.fecha_inicio)
-                    .add(15, "days")
-                    .toDate();
-                const mesPension = fechaLimite.getMonth() + 1;
+                    const newPension = await pensionService.register({
+                        matricula,
+                        grupo,
+                        monto: tarifaPension!.tarifa,
+                        fechaLimite,
+                        mes: mesPension,
+                    });
 
-                const newPension = await pensionService.register({
-                    matricula,
-                    grupo,
-                    monto: tarifaPension!.tarifa,
-                    fechaLimite,
-                    mes: mesPension,
-                });
+                    await queryRunner.manager.save(newPension);
+                    grupo.pensiones.push(newPension);
 
-                await queryRunner.manager.save(newPension);
-                grupo.pensiones.push(newPension);
-
-                await queryRunner.manager.save(grupo);
-                await queryRunner.manager.save(matricula);
-            });
+                    await queryRunner.manager.save(grupo);
+                    await queryRunner.manager.save(matricula);
+                })
+            );
 
             await queryRunner.manager.save(grupo);
             await grupo.reload();

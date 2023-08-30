@@ -12,7 +12,7 @@ import { NotFoundError } from "../../errors/NotFoundError";
 import { EstadoPagoPension } from "../../interfaces/enums";
 
 export class PensionService implements PensionRepository {
-    public async register(data: RegisterPensionDTO): Promise<Pension> {
+    public register = async (data: RegisterPensionDTO): Promise<Pension> => {
         try {
             const newPension = new Pension();
 
@@ -30,7 +30,7 @@ export class PensionService implements PensionRepository {
         } catch (error) {
             throw error;
         }
-    }
+    };
 
     public async pagarPension(
         pensionUuid: string,
