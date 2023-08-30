@@ -831,7 +831,7 @@ export class MatriculaService implements MatriculaRepository {
                     OR LOWER(a.nombres) LIKE '%' || :query || '%'
                     OR LOWER(a.ape_paterno) LIKE '%' || :query || '%'
                     OR LOWER(a.ape_materno) LIKE '%' || :query || '%')
-                    AND m.estado=TRUE and ug.estado='cerrado'`,
+                    AND m.estado=TRUE and (ug.estado='cerrado' or m.ultimo_grupo is null)`,
                     { query: query.toLowerCase() }
                 )
                 .getMany();
