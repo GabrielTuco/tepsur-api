@@ -335,7 +335,6 @@ export class GroupService implements GroupRepository {
                 .leftJoinAndSelect("g.modulo", "m")
                 .leftJoinAndSelect("g.sede", "se")
                 .leftJoinAndSelect("g.matriculaGruposGrupo", "mgg")
-                // .where("s.uuid=:secretariaUuid", { secretariaUuid })
                 .where(
                     `s.uuid=:secretariaUuid and EXTRACT(YEAR from g.fecha_inicio)=:year ${
                         month
@@ -411,12 +410,23 @@ export class GroupService implements GroupRepository {
                     .innerJoinAndSelect("mg.grupo", "g")
                     .innerJoinAndSelect("m.alumno", "a")
                     .leftJoinAndSelect("mg.responsable", "r")
-                    // .leftJoinAndSelect("r.sede", "s")
-                    // .leftJoinAndSelect("r.usuario", "u")
+                    .leftJoinAndSelect("r.sede", "s")
+                    .leftJoinAndSelect("r.usuario", "u")
                     .where("g.uuid=:uuid", { uuid: grupo.uuid })
                     .getMany();
 
-            console.log(studentsByGrupo);
+            const studentsByGrupo2 =
+                await MatriculaGruposGrupo.createQueryBuilder("mg")
+                    .innerJoinAndSelect("mg.matricula", "m")
+                    .innerJoinAndSelect("mg.grupo", "g")
+                    .innerJoinAndSelect("m.alumno", "a")
+                    .leftJoinAndSelect("mg.responsable", "r")
+                    .leftJoinAndSelect("r.sede", "s")
+                    .leftJoinAndSelect("r.usuario", "u")
+                    .where("g.uuid=:uuid", { uuid: grupo.uuid })
+                    .getQueryAndParameters();
+
+            console.log(studentsByGrupo2);
 
             const data = await Promise.all(
                 studentsByGrupo.map(async (matriculaGrupo) => {

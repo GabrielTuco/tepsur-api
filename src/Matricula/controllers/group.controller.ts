@@ -33,7 +33,6 @@ export class GroupController {
                 grupoUuid,
                 secretariaUuid
             );
-            console.log(grupo);
 
             return res.json(grupo);
         } catch (error) {
