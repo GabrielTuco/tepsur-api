@@ -90,21 +90,27 @@
                                 <td><b>Horario</b></td>
                                 <td><b>Fecha inicio</b></td>
                             </tr>
-                            <% matriculaModulosModulo.forEach(e => { %>
                             <tr>
-                                <td><%= e.modulo.nombre %></td>
-                                <td><%= e.modalidad %></td>
                                 <td>
-                                    <%= e.horario.hora_inicio + " " +
-                                    e.horario.hora_fin %>
+                                    <%= matriculaModulosModulo[0].modulo.nombre
+                                    %>
+                                </td>
+                                <td>
+                                    <%= matriculaModulosModulo[0].modalidad %>
+                                </td>
+                                <td>
+                                    <%=
+                                    matriculaModulosModulo[0].horario.hora_inicio
+                                    + " " +
+                                    matriculaModulosModulo[0].horario.hora_fin
+                                    %>
                                 </td>
                                 <td>
                                     <%= new
-                                    Date(e.fecha_inicio).toLocaleString().split(",")[0]
+                                    Date(matriculaModulosModulo[0].fecha_inicio).toLocaleString().split(",")[0]
                                     %>
                                 </td>
                             </tr>
-                            <% }) %>
                         </table>
                     </td>
                 </tr>
