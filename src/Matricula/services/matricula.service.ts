@@ -206,6 +206,7 @@ export class MatriculaService implements MatriculaRepository {
                 );
                 await queryRunner.manager.save(newMatricula);
 
+                //Registrar modulo restante con estado por llevar
                 const totalModulosCarrera = carrera!.modulos;
                 const modulosRestantes = totalModulosCarrera!.map((modulo) => {
                     const moduloExistsInArray = newModulosToMatricula.find(
@@ -403,6 +404,41 @@ export class MatriculaService implements MatriculaRepository {
                 })
             );
             newMatricula.matriculaModulosModulo = modulos;
+
+            //Registrar modulo restante con estado por llevar
+            const totalModulosCarrera = carrera!.modulos;
+            const modulosRestantes = totalModulosCarrera!.map((modulo) => {
+                const moduloExistsInArray = modulos.find(
+                    (m) => m.uuid === modulo.uuid
+                );
+                if (!moduloExistsInArray) {
+                    return modulo;
+                }
+            });
+
+            const modulosRestantesWithoutNulls = modulosRestantes!.filter(
+                (element): element is Modulo => element !== undefined
+            );
+
+            if (modulosRestantesWithoutNulls.length > 0) {
+                const modulosRestantesData = await Promise.all(
+                    modulosRestantesWithoutNulls.map(async (modulo) => {
+                        const matriculaModulo = new MatriculaModulosModulo();
+                        matriculaModulo.uuid = uuid();
+                        matriculaModulo.matricula = newMatricula;
+                        matriculaModulo.modulo = modulo;
+                        matriculaModulo.estado =
+                            ESTADO_MODULO_MATRICULA.POR_LLEVAR;
+                        await queryRunner.manager.save(matriculaModulo);
+                        return matriculaModulo;
+                    })
+                );
+
+                newMatricula.matriculaModulosModulo = [
+                    ...newMatricula.matriculaModulosModulo,
+                    ...modulosRestantesData,
+                ];
+            }
 
             await queryRunner.manager.save(newMatricula);
 
