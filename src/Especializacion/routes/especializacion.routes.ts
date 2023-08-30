@@ -93,6 +93,55 @@ router.get(
 
 /**
  * @swagger
+ * /especializacion/list-by-sede/{uuid}:
+ *  get:
+ *      summary: Listado de especializaciones
+ *      tags: [Especializacion]
+ *      parameters:
+ *          - $ref: '#/components/parameters/token'
+ *          - in: path
+ *            name: uuid
+ *            required: true
+ *            schema:
+ *              type: string
+ *              format: uuid
+ *            description: El uuid de la sede
+ *      responses:
+ *          200:
+ *              description: El listado de especializaciones
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: array
+ *                          $ref: '#/components/schemas/Especializacion'
+ *          401:
+ *              description: Token de autenticacion faltante
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              msg:
+ *                                  type: string
+ *                                  description: El error de autenticacion
+ *                                  example: "Se debe enviar el token de autenticacion"
+ *          500:
+ *              description: Error de servidor
+ *
+ */
+router.get(
+    "/list-by-sede/:uuid",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
+        param("uuid").isUUID(4),
+        validateFields,
+    ],
+    especializacionController.getListBySede
+);
+
+/**
+ * @swagger
  * /especializacion/{uuid}:
  *  get:
  *      summary: Busqueda de una especializacion por uuid

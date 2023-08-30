@@ -1,6 +1,7 @@
-import { Column, Entity, OneToMany } from "typeorm";
+import { Column, Entity, ManyToMany, OneToMany } from "typeorm";
 import { EntityBase } from "../../entity";
 import { MatriculaEspecializacion } from "./MatriculaEspecializacion.entity";
+import { Sede } from "../../Sede/entity";
 
 @Entity()
 export class Especializacion extends EntityBase {
@@ -15,6 +16,9 @@ export class Especializacion extends EntityBase {
 
     @Column({ default: true })
     estado: boolean;
+
+    @ManyToMany(() => Sede, (sede) => sede.especializaciones)
+    sedes: Sede[];
 
     @OneToMany(
         () => MatriculaEspecializacion,
