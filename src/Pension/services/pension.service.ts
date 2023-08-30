@@ -24,7 +24,7 @@ export class PensionService implements PensionRepository {
             newPension.monto = data.monto;
             newPension.restante = data.monto;
 
-            await newPension.save();
+            // await newPension.save();
 
             return newPension;
         } catch (error) {
