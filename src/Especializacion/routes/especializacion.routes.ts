@@ -32,10 +32,14 @@ const especializacionController = new EspecializacionController(
  *              precio:
  *                  type: number
  *                  description: La tarifa/precio de la especializacion
+ *              sedeUuid:
+ *                  type: string
+ *                  format: uuid
  *          required:
  *              - nombre
  *              - duracionSemanas
  *              - precio
+ *              - sedeUuid
  *  parameters:
  *      uuid:
  *          in: path
@@ -229,6 +233,7 @@ router.post(
         body("nombre").isString(),
         body("duracionSemanas").isNumeric(),
         body("precio").isNumeric(),
+        body("sedeUuid").isUUID(4),
         validateFields,
     ],
     especializacionController.postEspecializacion

@@ -11,7 +11,10 @@ export class EspecializacionService implements EspecializacionRepository {
         data: RegisterEspecializacionDto
     ): Promise<Especializacion> => {
         try {
-            const sede = await Sede.findOneBy({ uuid: data.sedeUuid });
+            const sede = await Sede.findOne({
+                where: { uuid: data.sedeUuid },
+                relations: { especializaciones: true },
+            });
             if (!sede) throw new NotFoundError("La sede no existe");
 
             const especializacion = new Especializacion();
@@ -19,9 +22,11 @@ export class EspecializacionService implements EspecializacionRepository {
             especializacion.nombre = data.nombre;
             especializacion.duracion_semanas = data.duracionSemanas;
             especializacion.precio = data.precio;
-            especializacion.sedes.push(sede);
 
             await especializacion.save();
+
+            sede.especializaciones.push(especializacion);
+            await sede.save();
 
             return especializacion;
         } catch (error) {
