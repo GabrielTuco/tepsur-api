@@ -32,7 +32,7 @@
     "pdfkit-construct": "^1.2.3",
     "pdfkit-table": "^0.1.99",
     "pg": "^8.10.0",
-    "puppeteer": "^20.8.3",
+    "puppeteer": "^21.1.1",
     "reflect-metadata": "^0.1.13",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^4.6.2",
