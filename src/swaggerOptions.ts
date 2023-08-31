@@ -13,7 +13,7 @@ export const options: SwaggerOptions = {
                 url: "http://localhost:5000/api",
             },
             {
-                url: "https://tepsur-api-production.up.railway.app/api",
+                url: "https://tepsur-api.onrender.com/api",
             },
             {
                 url: "https://arnoldolanda-potential-fiesta-7x4jqrgw7gq3xqjw-5000.preview.app.github.dev/api",
