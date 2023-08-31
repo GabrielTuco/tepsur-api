@@ -46,11 +46,14 @@ export class Sede extends EntityBase {
     @JoinColumn()
     administrador: Administrador;
 
-    @ManyToMany(() => Carrera)
+    @ManyToMany(() => Carrera, (carrera) => carrera.sedes)
     @JoinTable()
     carreras: Carrera[];
 
-    @ManyToMany(() => Especializacion)
+    @ManyToMany(
+        () => Especializacion,
+        (especializacion) => especializacion.sedes
+    )
     @JoinTable()
     especializaciones: Especializacion[];
 

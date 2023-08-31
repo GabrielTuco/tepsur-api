@@ -30,9 +30,11 @@ export class EspecializacionService implements EspecializacionRepository {
     };
     public listAll = async (): Promise<Especializacion[]> => {
         try {
-            const especializaciones = await Especializacion.find({
-                relations: { sedes: true },
-            });
+            const especializaciones = await Especializacion.createQueryBuilder(
+                "e"
+            )
+                .innerJoinAndSelect("e.sedes", "s")
+                .getMany();
 
             return especializaciones;
         } catch (error) {
