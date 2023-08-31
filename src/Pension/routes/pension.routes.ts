@@ -104,6 +104,45 @@ router.get(
 
 /**
  * @swagger
+ * /pensiones:
+ *  get:
+ *      summary: Listado de pagos por sede mes y anio
+ *      tags: [Pension]
+ *      parameters:
+ *          - $ref: '#/components/parameters/token'
+ *          - in: query
+ *            name: year
+ *            schema:
+ *              type: number
+ *            required: true
+ *            description: Año de filtrado
+ *          - in: query
+ *            name: month
+ *            schema:
+ *              type: number
+ *            required: false
+ *            description: Mes de filtrado
+ *      responses:
+ *          200:
+ *              description: La pension buscada
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: array
+ *                          items:
+ *                              type: object
+ *          500:
+ *              description: Error de servidor
+ *
+ */
+router.get(
+    "/",
+    [validateJWT, checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE])],
+    pensionController.getBySede
+);
+
+/**
+ * @swagger
  * /pensiones/find-by-uuid/{uuid}:
  *  get:
  *      summary: Buscar pension por uuid

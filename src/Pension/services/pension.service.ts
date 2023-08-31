@@ -135,6 +135,31 @@ export class PensionService implements PensionRepository {
         }
     }
 
+    public async listPensionesBySede(year: string, month: string | undefined) {
+        try {
+            const pensiones = await Pension.createQueryBuilder("p")
+                .innerJoin("p.matricula", "m")
+                .innerJoin("m.alumno", "a")
+                .innerJoinAndSelect("p.grupo", "g")
+                .innerJoinAndSelect("g.modulo", "mo")
+                .leftJoinAndSelect("p.pago_pensiones", "pp")
+                .leftJoinAndSelect("pp.forma_pago", "fp")
+                .where(
+                    `EXTRACT(YEAR from g.fecha_inicio)=:year ${
+                        month
+                            ? "and EXTRACT(MONTH from g.fecha_inicio)=:month "
+                            : ""
+                    }`,
+                    { year, month }
+                )
+                .getMany();
+
+            return pensiones;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     public async findUltimoPago(matriculaUuid: string) {
         try {
             const matricula = await Matricula.findOneBy({

@@ -29,6 +29,28 @@ export class PensionController {
         }
     };
 
+    public getBySede = async (req: Request, res: Response) => {
+        try {
+            const { year, month } = req.query;
+            const pensiones = await this.pensionService.listPensionesBySede(
+                year!.toString(),
+                month?.toString()
+            );
+
+            return res.json(pensiones);
+        } catch (error) {
+            console.log(error);
+            if (error instanceof DatabaseError) {
+                return res
+                    .status(error.codeStatus)
+                    .json({ msg: error.message, name: error.name });
+            }
+            return res.status(500).json({
+                msg: "Internal server error",
+            });
+        }
+    };
+
     public getByUuid = async (req: Request, res: Response) => {
         try {
             const { uuid } = req.params;
