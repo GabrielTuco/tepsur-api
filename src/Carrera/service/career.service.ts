@@ -10,14 +10,13 @@ import { RegisterCareerDto, UpdateCareerDto } from "../dto";
 export class CareerService implements CareerRepository {
     public listBySede = async (sedeUuid: string): Promise<any[]> => {
         try {
-            const sede = await Sede.find({ where: { uuid: sedeUuid } });
+            const sede = await Sede.findOne({ where: { uuid: sedeUuid } });
 
             const sedeExists = await Sede.createQueryBuilder("s")
                 .leftJoinAndSelect("s.carreras", "c")
                 .leftJoinAndSelect("c.modulos", "m")
-                .where("s.uuid=:uuid", { uuid: sedeUuid })
+                .where("s.uuid=:uuid", { uuid: sede!.uuid })
                 .getOne();
-
             if (!sedeExists) throw new NotFoundError("La sede no existe");
 
             const carreras = sedeExists.carreras.map((carrera) => ({
