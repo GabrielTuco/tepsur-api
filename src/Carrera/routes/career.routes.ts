@@ -43,7 +43,7 @@ const careerController = new CareerController();
  *                          orden:
  *                              type: number
  *                              description: El orden en el que se lleva el modulo
- *               tarifas:
+ *              tarifas:
  *                  type: object
  *                  properties:
  *                      presencial:

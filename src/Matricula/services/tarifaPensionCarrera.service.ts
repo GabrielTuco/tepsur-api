@@ -19,6 +19,7 @@ export class TarifaPensionCarreraService
             const carrera = await Carrera.findOne({
                 where: { uuid: carreraUuid },
             });
+
             if (!sede) throw new NotFoundError("La sede no existe");
             if (!carrera) throw new NotFoundError("La carrera no existe");
 
@@ -39,8 +40,8 @@ export class TarifaPensionCarreraService
 
             if (tarifaExists) {
                 tarifaExists.tarifa = tarifa;
-                //await tarifaExists.save();
-                //await tarifaExists.reload();
+                await tarifaExists.save();
+                await tarifaExists.reload();
 
                 return tarifaExists;
             } else {
@@ -50,7 +51,7 @@ export class TarifaPensionCarreraService
                 newTarifa.carrera = carrera;
                 newTarifa.tarifa = tarifa;
                 newTarifa.modalidad = modalidad;
-                //await newTarifa.save();
+                await newTarifa.save();
                 return newTarifa;
             }
         } catch (error) {

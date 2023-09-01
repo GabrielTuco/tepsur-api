@@ -95,6 +95,12 @@ export class CareerService implements CareerRepository {
 
             sede.carreras.push(newCareer);
 
+            // await queryRunner.manager.save(tarifaVirtual);
+            // await queryRunner.manager.save(tarifaPresencial);
+
+            await queryRunner.manager.save(sede);
+            await queryRunner.commitTransaction();
+
             const tarifaVirtual =
                 await this.tarifaPensionCarreraService.register({
                     carreraUuid: newCareer.uuid,
@@ -108,14 +114,8 @@ export class CareerService implements CareerRepository {
                     carreraUuid: newCareer.uuid,
                     modalidad: MODALIDAD.PRESENCIAL,
                     sedeUuid: sede.uuid,
-                    tarifa: tarifas.virtual,
+                    tarifa: tarifas.presencial,
                 });
-
-            await queryRunner.manager.save(tarifaVirtual);
-            await queryRunner.manager.save(tarifaPresencial);
-
-            await queryRunner.manager.save(sede);
-            await queryRunner.commitTransaction();
 
             return newCareer;
         } catch (error) {
