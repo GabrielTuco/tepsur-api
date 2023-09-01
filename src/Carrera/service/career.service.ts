@@ -42,6 +42,7 @@ export class CareerService implements CareerRepository {
         try {
             const carreras = await Carrera.createQueryBuilder("c")
                 .leftJoinAndSelect("c.modulos", "m")
+                .where("c.estado='activo'")
                 .getMany();
 
             return carreras;

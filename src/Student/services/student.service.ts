@@ -17,8 +17,11 @@ import { RegisterAlumnoDto } from "../interfaces/dtos";
 import { NotFoundError } from "../../errors/NotFoundError";
 import { ESTADO_MODULO_MATRICULA } from "../../interfaces/enums";
 import { MatriculaModulosModulo } from "../../Matricula/entity/MatriculaModulosModulo";
+import { PensionService } from "../../Pension/services/pension.service";
 
 export class StudentService implements StudentRepository {
+    constructor(private readonly pensionService: PensionService) {}
+
     public register = async (data: RegisterAlumnoDto): Promise<Alumno> => {
         try {
             const {
@@ -107,7 +110,7 @@ export class StudentService implements StudentRepository {
         }
     };
 
-    public searchByUuid = async (uuid: string): Promise<Alumno> => {
+    public searchByUuid = async (uuid: string): Promise<any> => {
         try {
             const alumno = await Alumno.createQueryBuilder("a")
                 .innerJoinAndSelect("a.matriculas", "m")
@@ -123,22 +126,14 @@ export class StudentService implements StudentRepository {
                 .where("a.uuid=:uuid", { uuid })
                 .getOne();
 
-            const alumno2 = await Alumno.findOne({
-                where: { uuid },
-                relations: {
-                    usuario: true,
-                    grado_estudios: true,
-                    direccion: true,
-                },
-            });
             if (!alumno) {
-                throw new DatabaseError(
-                    "No se puedo encontrar el registro",
-                    404,
-                    ""
-                );
+                throw new NotFoundError("No se puedo encontrar el registro");
             }
-            return alumno;
+
+            const { pensiones } = await this.pensionService.listPensionByDni(
+                alumno.dni
+            );
+            return { ...alumno, pensiones };
         } catch (error) {
             throw error;
         }
