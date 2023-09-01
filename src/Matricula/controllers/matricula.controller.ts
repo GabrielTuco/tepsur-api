@@ -3,7 +3,7 @@ import fileUpload from "express-fileupload";
 import { GradoEstudiosService } from "../services/gradoEstudios.service";
 import { MatriculaService } from "../services/matricula.service";
 import { ValidateDniService } from "../services/validateDNI.service";
-import { UbigeoService } from "../services/ubigeo.service";
+import { UbigeoService } from "../../services/ubigeo.service";
 import { generatePDF } from "../helpers/generatePDF";
 import yargs from "yargs";
 import { Alumno } from "../../Student/entity";

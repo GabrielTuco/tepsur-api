@@ -9,9 +9,9 @@ import { NotFoundError } from "../../errors/NotFoundError";
 export class TarifaPensionCarreraService
     implements TarifaPensionCarreraRepository
 {
-    public async register(
+    public register = async (
         data: CreateTarifaPensionDto
-    ): Promise<TarifaPensionCarrera> {
+    ): Promise<TarifaPensionCarrera> => {
         const { carreraUuid, sedeUuid, tarifa, modalidad } = data;
         try {
             const sede = await Sede.findOneBy({ uuid: sedeUuid });
@@ -39,8 +39,8 @@ export class TarifaPensionCarreraService
 
             if (tarifaExists) {
                 tarifaExists.tarifa = tarifa;
-                await tarifaExists.save();
-                await tarifaExists.reload();
+                //await tarifaExists.save();
+                //await tarifaExists.reload();
 
                 return tarifaExists;
             } else {
@@ -50,14 +50,15 @@ export class TarifaPensionCarreraService
                 newTarifa.carrera = carrera;
                 newTarifa.tarifa = tarifa;
                 newTarifa.modalidad = modalidad;
-                await newTarifa.save();
+                //await newTarifa.save();
                 return newTarifa;
             }
         } catch (error) {
             throw error;
         }
-    }
-    public async listAll(): Promise<TarifaPensionCarrera[]> {
+    };
+
+    public listAll = async (): Promise<TarifaPensionCarrera[]> => {
         try {
             const tarifas = await TarifaPensionCarrera.find({
                 relations: { carrera: true },
@@ -66,9 +67,11 @@ export class TarifaPensionCarreraService
         } catch (error) {
             throw error;
         }
-    }
+    };
 
-    public async listBySede(sedeUuid: string): Promise<TarifaPensionCarrera[]> {
+    public listBySede = async (
+        sedeUuid: string
+    ): Promise<TarifaPensionCarrera[]> => {
         try {
             const tarifas = await TarifaPensionCarrera.createQueryBuilder("t")
                 .innerJoinAndSelect("t.sede", "s")
@@ -80,9 +83,9 @@ export class TarifaPensionCarreraService
         } catch (error) {
             throw error;
         }
-    }
+    };
 
-    public async findByUuid(uuid: string): Promise<TarifaPensionCarrera> {
+    public findByUuid = async (uuid: string): Promise<TarifaPensionCarrera> => {
         try {
             const tarifa = await TarifaPensionCarrera.findOne({
                 where: { uuid },
@@ -92,10 +95,11 @@ export class TarifaPensionCarreraService
         } catch (error) {
             throw error;
         }
-    }
-    public async findByCarreraUuid(
+    };
+
+    public findByCarreraUuid = async (
         carreraUuid: string
-    ): Promise<TarifaPensionCarrera> {
+    ): Promise<TarifaPensionCarrera> => {
         try {
             const carrera = await Carrera.findOne({
                 where: { uuid: carreraUuid },
@@ -111,11 +115,12 @@ export class TarifaPensionCarreraService
         } catch (error) {
             throw error;
         }
-    }
-    public async update(
+    };
+
+    public update = async (
         uuid: string,
         data: { tarifa: number }
-    ): Promise<TarifaPensionCarrera> {
+    ): Promise<TarifaPensionCarrera> => {
         try {
             const tarifa = await TarifaPensionCarrera.findOneBy({ uuid });
             if (!tarifa) throw new Error("Tarifa not found");
@@ -127,8 +132,9 @@ export class TarifaPensionCarreraService
         } catch (error) {
             throw error;
         }
-    }
-    public async delete(uuid: string): Promise<TarifaPensionCarrera> {
+    };
+
+    public delete = async (uuid: string): Promise<TarifaPensionCarrera> => {
         try {
             const tarifa = await TarifaPensionCarrera.findOneBy({ uuid });
             await TarifaPensionCarrera.remove(tarifa!);
@@ -137,5 +143,5 @@ export class TarifaPensionCarreraService
         } catch (error) {
             throw error;
         }
-    }
+    };
 }

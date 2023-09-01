@@ -1,5 +1,5 @@
-import { AppDataSource } from "../../db/dataSource";
-import { UbigeoRepository } from "../interfaces/repositories";
+import { AppDataSource } from "../db/dataSource";
+import { UbigeoRepository } from "../Matricula/interfaces/repositories";
 
 export class UbigeoService implements UbigeoRepository {
     public async listDepartaments(): Promise<any> {

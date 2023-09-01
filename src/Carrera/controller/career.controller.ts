@@ -1,8 +1,10 @@
 import { Request, Response } from "express";
 import { CareerService } from "../service/career.service";
 import { DatabaseErrorBase } from "../../errors/DatabaseErrorBase";
+import { TarifaPensionCarreraService } from "../../Matricula/services/tarifaPensionCarrera.service";
 
-const careerService = new CareerService();
+const tarifaPensionService = new TarifaPensionCarreraService();
+const careerService = new CareerService(tarifaPensionService);
 
 export class CareerController {
     public async getCareers(_req: Request, res: Response) {

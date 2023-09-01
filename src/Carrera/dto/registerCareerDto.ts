@@ -7,4 +7,8 @@ export class RegisterCareerDto {
     duracionMeses: number;
     tipoCarrera: TIPO_CARRERA;
     sedeUuid: string;
+    tarifas: {
+        presencial: number;
+        virtual: number;
+    };
 }

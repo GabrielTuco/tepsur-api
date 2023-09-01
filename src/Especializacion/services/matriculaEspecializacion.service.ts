@@ -117,6 +117,7 @@ export class MatriculaEspecilizacionService
             await queryRunner.release();
         }
     };
+
     public listAll = async (
         year: string | undefined,
         month: string | undefined
@@ -152,6 +153,7 @@ export class MatriculaEspecilizacionService
             throw error;
         }
     };
+
     public findByUuid = async (
         uuid: string
     ): Promise<MatriculaEspecializacion> => {
@@ -178,6 +180,7 @@ export class MatriculaEspecilizacionService
             throw error;
         }
     };
+
     public update = async (
         uuid: string,
         data: UpdateMatEspeDto
@@ -191,6 +194,7 @@ export class MatriculaEspecilizacionService
                 data.alumno
             );
 
+            await matricula.save();
             await matricula.reload();
 
             return matricula;
@@ -198,6 +202,7 @@ export class MatriculaEspecilizacionService
             throw error;
         }
     };
+
     public delete = async (
         _uuid: string
     ): Promise<MatriculaEspecializacion> => {

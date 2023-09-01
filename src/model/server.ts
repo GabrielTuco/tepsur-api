@@ -33,6 +33,7 @@ import {
     tarifaPensionCarreraRoutes,
 } from "../Matricula/routes";
 import pensionRoutes from "../Pension/routes/pension.routes";
+import ubigeoRoutes from "../routes/ubigeo.routes";
 import { swaggerCustomCss } from "../swagger-custom-styles";
 import { DataSource } from "typeorm";
 
@@ -56,6 +57,7 @@ interface Paths {
     metodoPago: string;
     tarifaPension: string;
     pension: string;
+    utilidades: string;
 }
 
 class Server implements ServerBase {
@@ -85,6 +87,7 @@ class Server implements ServerBase {
             metodoPago: "/api/metodo-pago",
             tarifaPension: "/api/tarifa-pension",
             pension: "/api/pensiones",
+            utilidades: "/api/utilidades",
         }
     ) {
         //Cloudinary config
@@ -171,6 +174,7 @@ class Server implements ServerBase {
         this.app.use(this.paths.student, studentRoutes);
         this.app.use(this.paths.tarifaPension, tarifaPensionCarreraRoutes);
         this.app.use(this.paths.pension, pensionRoutes);
+        this.app.use(this.paths.utilidades, ubigeoRoutes);
     }
 
     listen() {

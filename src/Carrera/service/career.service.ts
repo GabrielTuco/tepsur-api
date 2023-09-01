@@ -6,8 +6,14 @@ import { Sede } from "../../Sede/entity/Sede.entity";
 import { NotFoundError } from "../../errors/NotFoundError";
 import { AlreadyExistsError } from "../../errors/AlreadyExistsError";
 import { RegisterCareerDto, UpdateCareerDto } from "../dto";
+import { TarifaPensionCarreraService } from "../../Matricula/services/tarifaPensionCarrera.service";
+import { MODALIDAD } from "../../interfaces/enums";
 
 export class CareerService implements CareerRepository {
+    constructor(
+        private readonly tarifaPensionCarreraService: TarifaPensionCarreraService
+    ) {}
+
     public listBySede = async (sedeUuid: string): Promise<any[]> => {
         try {
             const sede = await Sede.findOne({ where: { uuid: sedeUuid } });
@@ -49,7 +55,14 @@ export class CareerService implements CareerRepository {
         await queryRunner.connect();
         await queryRunner.startTransaction();
 
-        const { nombre, modulos, duracionMeses, tipoCarrera, sedeUuid } = data;
+        const {
+            nombre,
+            modulos,
+            duracionMeses,
+            tipoCarrera,
+            sedeUuid,
+            tarifas,
+        } = data;
         try {
             const modulosExists: Modulo[] = await Promise.all(
                 modulos.map(async (moduloData) => {
@@ -81,6 +94,25 @@ export class CareerService implements CareerRepository {
             await queryRunner.manager.save(newCareer);
 
             sede.carreras.push(newCareer);
+
+            const tarifaVirtual =
+                await this.tarifaPensionCarreraService.register({
+                    carreraUuid: newCareer.uuid,
+                    modalidad: MODALIDAD.VIRTUAL,
+                    sedeUuid: sede.uuid,
+                    tarifa: tarifas.virtual,
+                });
+
+            const tarifaPresencial =
+                await this.tarifaPensionCarreraService.register({
+                    carreraUuid: newCareer.uuid,
+                    modalidad: MODALIDAD.PRESENCIAL,
+                    sedeUuid: sede.uuid,
+                    tarifa: tarifas.virtual,
+                });
+
+            await queryRunner.manager.save(tarifaVirtual);
+            await queryRunner.manager.save(tarifaPresencial);
 
             await queryRunner.manager.save(sede);
             await queryRunner.commitTransaction();

@@ -14,12 +14,10 @@ import {
     isAlumnoCorreoValid,
     isAlumnoDniValid,
 } from "../middlewares/validations";
-import { UbigeoController } from "../controllers/ubigeo.controller";
 
 const router = Router();
 
 const matriculaController = new MatriculaController();
-const ubigeoController = new UbigeoController();
 
 /**
  * @swagger
@@ -876,134 +874,6 @@ router.patch(
         validateFields,
     ],
     matriculaController.putUpdateMatricula
-);
-
-//TODO: mover
-/**
- * @swagger
- * /matricula/utilidades/departamentos:
- *  get:
- *      summary: Listado de departamentos del peru
- *      tags: [Matricula]
- *      parameters:
- *          - $ref: '#/components/parameters/token'
- *      responses:
- *          200:
- *              description: Listado de departamentos del peru
- *              content:
- *                  application/json:
- *                       schema:
- *                          type: array
- *                          items:
- *                              type: object
- *                              properties:
- *                                  ubigeoId:
- *                                      type: string
- *                                      description: El codigo de ubigeo
- *                                  departamento:
- *                                      type: string
- *                                      description: El nombre del departamento
- *          500:
- *              description: Error de servidor
- *
- */
-router.get(
-    "/utilidades/departamentos",
-    [validateJWT],
-    ubigeoController.getDepartments
-);
-
-//TODO: mover
-/**
- * @swagger
- * /matricula/utilidades/provincias/{departamentoId}:
- *  get:
- *      summary: Listado de provincias de un departamento
- *      tags: [Matricula]
- *      parameters:
- *          - $ref: '#/components/parameters/token'
- *          - in: path
- *            name: departamentoId
- *            schema:
- *              type: string
- *            required: true
- *            description: El codigo de ubigeo del departamento
- *      responses:
- *          200:
- *              description: Listado de provincias de un departamento
- *              content:
- *                  application/json:
- *                       schema:
- *                          type: array
- *                          items:
- *                              type: object
- *                              properties:
- *                                  ubigeoId:
- *                                      type: string
- *                                      description: El codigo de ubigeo
- *                                  provincia:
- *                                      type: string
- *                                      description: El nombre de la provincia
- *          500:
- *              description: Error de servidor
- *
- */
-router.get(
-    "/utilidades/provincias/:departamentoId",
-    [validateJWT, param("departamentoId").exists(), validateFields],
-    ubigeoController.getProvinces
-);
-
-//TODO: mover
-/**
- * @swagger
- * /matricula/utilidades/distritos/{departamentoId}/{provinciaId}:
- *  get:
- *      summary: Listado de distritos de un departamento
- *      tags: [Matricula]
- *      parameters:
- *          - $ref: '#/components/parameters/token'
- *          - in: path
- *            name: departamentoId
- *            schema:
- *              type: string
- *            required: true
- *            description: El codigo de ubigeo del departamento
- *          - in: path
- *            name: provinciaId
- *            schema:
- *              type: string
- *            required: true
- *            description: El codigo de ubigeo de la provincia del departamento
- *      responses:
- *          200:
- *              description: Listado de provincias de un departamento
- *              content:
- *                  application/json:
- *                       schema:
- *                          type: array
- *                          items:
- *                              type: object
- *                              properties:
- *                                  ubigeoId:
- *                                      type: string
- *                                      description: El codigo de ubigeo
- *                                  distrito:
- *                                      type: string
- *                                      description: El nombre del distrito
- *          500:
- *              description: Error de servidor
- *
- */
-router.get(
-    "/utilidades/distritos/:departamentoId/:provinciaId",
-    [
-        validateJWT,
-        param("departamentoId").exists(),
-        param("provinciaId").exists(),
-        validateFields,
-    ],
-    ubigeoController.getDistricts
 );
 
 /**
