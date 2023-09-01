@@ -6,10 +6,12 @@ import { param, query } from "express-validator";
 import { validateFields } from "../../middlewares/validateFields";
 import { StudentService } from "../services/student.service";
 import { StudentController } from "../controllers/student.controller";
+import { PensionService } from "../../Pension/services/pension.service";
 
 const router = Router();
 
-const studentService = new StudentService();
+const pensionService = new PensionService();
+const studentService = new StudentService(pensionService);
 const studentController = new StudentController(studentService);
 
 /**

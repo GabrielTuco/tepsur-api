@@ -22,7 +22,7 @@ import moment from "moment";
 import { AppDataSource } from "../../db/dataSource";
 
 const pensionService = new PensionService();
-const studentService = new StudentService();
+const studentService = new StudentService(pensionService);
 
 type StudentsWithPensionGrupo = {
     matriculaGrupo: MatriculaGruposGrupo;

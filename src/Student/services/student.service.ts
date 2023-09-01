@@ -18,6 +18,7 @@ import { NotFoundError } from "../../errors/NotFoundError";
 import { ESTADO_MODULO_MATRICULA } from "../../interfaces/enums";
 import { MatriculaModulosModulo } from "../../Matricula/entity/MatriculaModulosModulo";
 import { PensionService } from "../../Pension/services/pension.service";
+import { AlreadyExistsError } from "../../errors/AlreadyExistsError";
 
 export class StudentService implements StudentRepository {
     constructor(private readonly pensionService: PensionService) {}
@@ -209,12 +210,8 @@ export class StudentService implements StudentRepository {
                 .where("a.uuid=:uuid", { uuid })
                 .getOne();
 
-            if (!alumno)
-                throw new DatabaseError(
-                    "El alumno no existe",
-                    404,
-                    "Not found error"
-                );
+            if (!alumno) throw new NotFoundError("El alumno no existe");
+
             const gradoEstudios = await GradoEstudios.findOneBy({
                 uuid: gradoEstudiosUuid,
             });
@@ -229,10 +226,8 @@ export class StudentService implements StudentRepository {
             if (alumno.correo !== correo) {
                 const correoExists = await Alumno.findOneBy({ correo });
                 if (correoExists)
-                    throw new DatabaseError(
-                        "El correo ya esta registrado",
-                        403,
-                        "Already exists"
+                    throw new AlreadyExistsError(
+                        "El correo ya esta registrado"
                     );
                 else alumno.correo = correo!;
             }

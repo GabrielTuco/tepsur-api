@@ -10,12 +10,14 @@ import { AdministratorService } from "../../Administrator/service/admin.service"
 import { StudentService } from "../../Student/services/student.service";
 import { ROLES } from "../../interfaces/enums";
 import { DatabaseError } from "../../errors/DatabaseError";
+import { PensionService } from "../../Pension/services/pension.service";
 
 const userService = new UserService();
 const secretaryService = new SecretaryService();
 const teacherService = new TeacherService();
 const administratorService = new AdministratorService();
-const alumnoService = new StudentService();
+const pensionService = new PensionService();
+const alumnoService = new StudentService(pensionService);
 
 declare module "express-serve-static-core" {
     interface Request {

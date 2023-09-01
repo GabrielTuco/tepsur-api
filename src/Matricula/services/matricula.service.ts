@@ -40,7 +40,7 @@ import { RegisterImportarMatriculaDto } from "../dto/registerImportarMatriculaDt
 import { Direccion } from "../../entity";
 
 const pensionService = new PensionService();
-const studentService = new StudentService();
+const studentService = new StudentService(pensionService);
 export class MatriculaService implements MatriculaRepository {
     public register = async (data: MatriculaDTO): Promise<Matricula> => {
         const queryRunner = AppDataSource.createQueryRunner();

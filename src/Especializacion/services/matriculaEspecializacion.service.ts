@@ -11,8 +11,10 @@ import { NotFoundError } from "../../errors/NotFoundError";
 import { TIPO_HORARIO } from "../../interfaces/enums";
 import { CreateMatEspeDto } from "../../Matricula/dto/createMatriculaEspecializacion.dto";
 import { UpdateMatEspeDto } from "../../Matricula/dto/updateMatriculaEspecializacion.dto";
+import { PensionService } from "../../Pension/services/pension.service";
 
-const studentService = new StudentService();
+const pensionService = new PensionService();
+const studentService = new StudentService(pensionService);
 
 export class MatriculaEspecilizacionService
     implements MatriculaEspecializacionRepository
