@@ -399,6 +399,7 @@ export class MatriculaService implements MatriculaRepository {
 
                     const matriculaModulo = new MatriculaModulosModulo();
                     matriculaModulo.uuid = uuid();
+                    matriculaModulo.matricula = newMatricula;
                     matriculaModulo.modulo = modulo!;
                     matriculaModulo.estado = ESTADO_MODULO_MATRICULA.CULMINADO;
 
@@ -447,7 +448,9 @@ export class MatriculaService implements MatriculaRepository {
 
             await queryRunner.commitTransaction();
 
-            return newMatricula;
+            const { matricula } = await this.findByUuid(newMatricula.uuid);
+
+            return matricula;
         } catch (error) {
             console.log(error);
             await queryRunner.rollbackTransaction();
