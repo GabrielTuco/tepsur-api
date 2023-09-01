@@ -1,7 +1,8 @@
+import { CreateMatEspeDto } from "../../Matricula/dto/createMatriculaEspecializacion.dto";
+import { UpdateMatEspeDto } from "../../Matricula/dto/updateMatriculaEspecializacion.dto";
 import { RegisterEspecializacionDto } from "../dto/registerEspecializacion.dto";
 import { Especializacion } from "../entity/Especializacion.entity";
 import { MatriculaEspecializacion } from "../entity/MatriculaEspecializacion.entity";
-import { MatEspeDTO } from "./dtos";
 
 export interface EspecializacionRepository {
     register(data: RegisterEspecializacionDto): Promise<Especializacion>;
@@ -15,12 +16,12 @@ export interface EspecializacionRepository {
 }
 
 export interface MatriculaEspecializacionRepository {
-    register(data: MatEspeDTO): Promise<MatriculaEspecializacion>;
+    register(data: CreateMatEspeDto): Promise<MatriculaEspecializacion>;
     listAll(year: string, month: string): Promise<MatriculaEspecializacion[]>;
     findByUuid(uuid: string): Promise<MatriculaEspecializacion>;
     update(
         uuid: string,
-        data: Partial<MatEspeDTO>
+        data: UpdateMatEspeDto
     ): Promise<MatriculaEspecializacion>;
     delete(uuid: string): Promise<MatriculaEspecializacion>;
 }

@@ -4,12 +4,13 @@ import { Sede } from "../../Sede/entity";
 import { StudentService } from "../../Student/services/student.service";
 import { AppDataSource } from "../../db/dataSource";
 import { MatriculaEspecializacion } from "../entity/MatriculaEspecializacion.entity";
-import { MatEspeDTO } from "../interfaces/dtos";
 import { MatriculaEspecializacionRepository } from "../interfaces/repository";
 import { Especializacion } from "../entity/Especializacion.entity";
 import { Horario, MetodoPago, PagoMatricula } from "../../Matricula/entity";
 import { NotFoundError } from "../../errors/NotFoundError";
 import { TIPO_HORARIO } from "../../interfaces/enums";
+import { CreateMatEspeDto } from "../../Matricula/dto/createMatriculaEspecializacion.dto";
+import { UpdateMatEspeDto } from "../../Matricula/dto/updateMatriculaEspecializacion.dto";
 
 const studentService = new StudentService();
 
@@ -17,7 +18,7 @@ export class MatriculaEspecilizacionService
     implements MatriculaEspecializacionRepository
 {
     public register = async (
-        data: MatEspeDTO
+        data: CreateMatEspeDto
     ): Promise<MatriculaEspecializacion> => {
         const queryRunner = AppDataSource.createQueryRunner();
         await queryRunner.connect();
@@ -179,15 +180,17 @@ export class MatriculaEspecilizacionService
     };
     public update = async (
         uuid: string,
-        data: Partial<MatEspeDTO>
+        data: UpdateMatEspeDto
     ): Promise<MatriculaEspecializacion> => {
         try {
-            const matricula = await MatriculaEspecializacion.findOneBy({
-                uuid,
-            });
+            const matricula = await this.findByUuid(uuid);
             if (!matricula) throw new NotFoundError("La matricula no existe");
 
-            await MatriculaEspecializacion.update({ uuid }, data);
+            matricula.alumno = await studentService.updateInfo(
+                matricula.alumno.uuid,
+                data.alumno
+            );
+
             await matricula.reload();
 
             return matricula;

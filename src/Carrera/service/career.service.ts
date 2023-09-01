@@ -15,7 +15,7 @@ export class CareerService implements CareerRepository {
             const sedeExists = await Sede.createQueryBuilder("s")
                 .leftJoinAndSelect("s.carreras", "c")
                 .leftJoinAndSelect("c.modulos", "m")
-                .where("s.uuid=:uuid", { uuid: sede!.uuid })
+                .where("s.uuid=:uuid and estado='activo'", { uuid: sede!.uuid })
                 .getOne();
             if (!sedeExists) throw new NotFoundError("La sede no existe");
 
