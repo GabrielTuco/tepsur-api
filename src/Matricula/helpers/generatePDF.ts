@@ -25,7 +25,7 @@ export async function generatePDF({ url }: { url: string }) {
     } else {
         browser = await puppeteer.connect({
             browserWSEndpoint:
-                "wss://browserless-production-3059.up.railway.app",
+                "wss://browserless-production-cc28.up.railway.app/",
             // headless: "new",
             defaultViewport: {
                 width: 500,
