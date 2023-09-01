@@ -346,7 +346,10 @@ export class MatriculaService implements MatriculaRepository {
             const secretaria = await Secretaria.findOneBy({
                 uuid: secretariaUuid,
             });
-            const carrera = await Carrera.findOneBy({ uuid: carreraUuid });
+            const carrera = await Carrera.findOne({
+                where: { uuid: carreraUuid },
+                relations: { modulos: true },
+            });
             const sede = await Sede.findOne({
                 where: { uuid: sedeUuid },
                 relations: { carreras: true },
