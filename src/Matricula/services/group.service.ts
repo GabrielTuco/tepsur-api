@@ -207,8 +207,9 @@ export class GroupService implements GroupRepository {
                     const tarifaPension =
                         await TarifaPensionCarrera.createQueryBuilder("t")
                             .innerJoinAndSelect("t.carrera", "c")
-                            .where("c.uuid=:uuid", {
+                            .where("c.uuid=:uuid and t.modalidad=:modalidad", {
                                 uuid: matricula.carrera.uuid,
+                                modalidad: grupo.modalidad,
                             })
                             .getOne();
 
