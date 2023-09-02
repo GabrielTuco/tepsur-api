@@ -774,6 +774,8 @@ export class MatriculaService implements MatriculaRepository {
                     .where("ma.uuid=:uuid", { uuid: data?.uuid })
                     .getMany();
 
+            console.log(data);
+
             //if (!data) throw new NotFoundError("La matricula no existe");
 
             if (data) data!.matriculaModulosModulo = matriculaModulosModulo;

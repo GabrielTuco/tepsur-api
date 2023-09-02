@@ -248,7 +248,9 @@ export class MatriculaController {
                 .parseSync();
 
             if (!!argv.develop) host = "http://localhost:5000/api";
-            else host = "https://tepsur-api-production.up.railway.app/api";
+            else
+                host =
+                    "https://apiplataformatepsur-production.up.railway.app/api";
 
             const url = `${host}/matricula/generate-ficha/${req.params.id}`;
             const pdfBuffer = await generatePDF({ url });
