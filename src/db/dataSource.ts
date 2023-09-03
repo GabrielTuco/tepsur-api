@@ -30,9 +30,9 @@ import { MatriculaEspecializacion } from "../Especializacion/entity/MatriculaEsp
 export const AppDataSource = new DataSource({
     type: "postgres",
     ...dataSourceOptions,
-    ssl: {
-        rejectUnauthorized: false,
-    },
+    // ssl: {
+    //     rejectUnauthorized: false,
+    // },
     synchronize: true,
     logging: false,
     entities: [

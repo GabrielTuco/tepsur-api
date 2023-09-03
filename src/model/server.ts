@@ -9,6 +9,7 @@ import swaggerUi from "swagger-ui-express";
 import swaggerJSDoc from "swagger-jsdoc";
 import { v2 as cloudinary } from "cloudinary";
 import fileUpload from "express-fileupload";
+import exceljs from "exceljs";
 import { options } from "../swaggerOptions";
 
 import { AppDataSource } from "../db/dataSource";
@@ -36,29 +37,7 @@ import pensionRoutes from "../Pension/routes/pension.routes";
 import ubigeoRoutes from "../routes/ubigeo.routes";
 import { swaggerCustomCss } from "../swagger-custom-styles";
 import { DataSource } from "typeorm";
-
-interface Paths {
-    auth: string;
-    index: string;
-    role: string;
-    secretary: string;
-    teacher: string;
-    student: string;
-    admin: string;
-    user: string;
-    sede: string;
-    module: string;
-    career: string;
-    schedule: string;
-    group: string;
-    matricula: string;
-    especializacion: string;
-    matriculaEspe: string;
-    metodoPago: string;
-    tarifaPension: string;
-    pension: string;
-    utilidades: string;
-}
+import { Paths } from "../interfaces/routePaths";
 
 class Server implements ServerBase {
     cloudinary: any;
@@ -155,6 +134,48 @@ class Server implements ServerBase {
             swaggerUi.serve,
             swaggerUi.setup(specs, swaggerCustomCss)
         );
+
+        //Crear excel pruebas
+        this.app.get("/create-excel-test", (_req, res) => {
+            try {
+                let workbook = new exceljs.Workbook();
+
+                const sheet = workbook.addWorksheet("test");
+                sheet.columns = [
+                    { header: "col 1", key: "col1", width: 30 },
+                    { header: "col 2", key: "col2", width: 30 },
+                    { header: "col 3", key: "col3", width: 30 },
+                    { header: "col 4", key: "col4", width: 30 },
+                ];
+
+                sheet.addRow({
+                    col1: "TEST1",
+                    col2: "TEST2",
+                    col3: "TEST3",
+                    col4: "TEST4",
+                });
+
+                sheet.addRow({
+                    col1: "TEXTO1",
+                    col2: "TEXTO2",
+                    col3: "TEXTO3",
+                    col4: "TEXTO4",
+                });
+
+                res.setHeader(
+                    "Content-Type",
+                    "application/vnd.openxmlformats-officedocument.spreadsheet.sheet"
+                );
+                res.setHeader(
+                    "Content-Disposition",
+                    "attachment;filename=" + "test.xlsx"
+                );
+
+                workbook.xlsx.write(res);
+            } catch (error) {
+                console.log(error);
+            }
+        });
 
         this.app.use(this.paths.auth, authRoutes);
         this.app.use(this.paths.secretary, secretaryRoutes);
