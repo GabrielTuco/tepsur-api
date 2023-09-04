@@ -220,7 +220,7 @@ export class StudentService implements StudentRepository {
                 sexo,
             } = data;
 
-            console.log("DIRECCION->", direccion);
+            // console.log("DIRECCION->", direccion);
 
             const alumno = await Alumno.createQueryBuilder("a")
                 .innerJoinAndSelect("a.grado_estudios", "g")
@@ -228,11 +228,24 @@ export class StudentService implements StudentRepository {
                 .where("a.uuid=:uuid", { uuid })
                 .getOne();
 
+            const direccionDb = await Direccion.findOneBy({
+                uuid: alumno?.direccion.uuid,
+            });
+
             if (!alumno) throw new NotFoundError("El alumno no existe");
+            if (!direccionDb) throw new NotFoundError("La direccion no existe");
 
             const gradoEstudios = await GradoEstudios.findOneBy({
                 uuid: gradoEstudiosUuid,
             });
+
+            direccionDb.direccion_exacta = direccion!.direccionExacta;
+            direccionDb.provincia = direccion!.provincia;
+            direccionDb.distrito = direccion!.distrito;
+            direccionDb.departamento = direccion!.departamento;
+
+            await direccionDb.save();
+            // await direccionDb.reload();
 
             alumno.dni = dni!;
             alumno.nombres = nombres!;
@@ -250,10 +263,7 @@ export class StudentService implements StudentRepository {
                 else alumno.correo = correo!;
             }
             alumno.lugar_residencia = lugarResidencia!;
-            alumno.direccion.direccion_exacta = direccion?.direccionExacta!;
-            alumno.direccion.distrito = direccion?.distrito!;
-            alumno.direccion.provincia = direccion?.provincia!;
-            alumno.direccion.departamento = direccion?.departamento!;
+            alumno.direccion = direccionDb;
             alumno.grado_estudios = gradoEstudios!;
 
             await alumno.save();
