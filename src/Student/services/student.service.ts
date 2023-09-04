@@ -220,6 +220,8 @@ export class StudentService implements StudentRepository {
                 sexo,
             } = data;
 
+            console.log("DIRECCION->", direccion);
+
             const alumno = await Alumno.createQueryBuilder("a")
                 .innerJoinAndSelect("a.grado_estudios", "g")
                 .innerJoinAndSelect("a.direccion", "d")

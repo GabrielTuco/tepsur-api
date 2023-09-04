@@ -846,8 +846,6 @@ export class MatriculaService implements MatriculaRepository {
                 matriculaUuid
             );
 
-            console.log(JSON.stringify(savedMatricula, null, 4));
-
             return savedMatricula!;
         } catch (error) {
             throw error;
