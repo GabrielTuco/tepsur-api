@@ -218,6 +218,7 @@ export class StudentService implements StudentRepository {
                 lugarResidencia,
                 nombres,
                 sexo,
+                edad,
             } = data;
 
             // console.log("DIRECCION->", direccion);
@@ -254,6 +255,7 @@ export class StudentService implements StudentRepository {
             alumno.celular = celular!;
             alumno.celular_referencia = celularReferencia!;
             alumno.sexo = sexo!;
+            alumno.edad = edad!;
             if (alumno.correo !== correo) {
                 const correoExists = await Alumno.findOneBy({ correo });
                 if (correoExists)
