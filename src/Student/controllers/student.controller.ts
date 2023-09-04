@@ -27,6 +27,7 @@ export class StudentController {
             });
         }
     };
+
     public getListBySede = async (req: Request, res: Response) => {
         try {
             const { sede } = req.query;

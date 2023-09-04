@@ -98,11 +98,12 @@ export class PensionService implements PensionRepository {
     ): Promise<Pension[]> {
         try {
             const pensiones = await Pension.createQueryBuilder("p")
-                .innerJoinAndSelect("p.matricula", "m")
-                .innerJoinAndSelect("m.alumno", "a")
-                .innerJoinAndSelect("a.direccion", "d")
-                .innerJoinAndSelect("a.grado_estudios", "ge")
-                .innerJoinAndSelect("m.secretaria", "s")
+                .innerJoin("p.matricula", "m")
+                .innerJoin("m.alumno", "a")
+                .innerJoinAndSelect("p.grupo", "g")
+                .innerJoinAndSelect("g.modulo", "mo")
+                .leftJoinAndSelect("p.pago_pensiones", "pp")
+                .leftJoinAndSelect("pp.forma_pago", "fp")
                 .where("m.uuid=:uuid", { uuid: matriculaUuid })
                 .getMany();
 
@@ -114,7 +115,7 @@ export class PensionService implements PensionRepository {
 
     public async listPensionByDni(
         dni: string
-    ): Promise<{ alumno: Alumno; pensiones: any[] }> {
+    ): Promise<{ alumno: Alumno; pensiones: Pension[] }> {
         try {
             const alumno = await Alumno.findOneBy({ dni });
             if (!alumno) throw new NotFoundError("El alumno no existe");

@@ -1,4 +1,4 @@
-export const formatedTime = (date: Date): string => {
+export const formatedDate = (date: Date): string => {
     const newDate = new Date(date);
     const days = newDate.toLocaleDateString();
     const month = newDate.getMonth() + 1;
@@ -6,5 +6,3 @@ export const formatedTime = (date: Date): string => {
 
     return `${days}/${month}/${year}`;
 };
-
-console.log(formatedTime(new Date()));

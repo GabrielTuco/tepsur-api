@@ -21,7 +21,8 @@ import { StudentService } from "../../Student/services/student.service";
 import moment from "moment";
 import { AppDataSource } from "../../db/dataSource";
 import exceljs from "exceljs";
-import { formatDate } from "../helpers/formatDate";
+import { formatDate, getDateFormatWH } from "../helpers/formatDate";
+import { formatedTime } from "../../helpers/formatTime";
 
 const pensionService = new PensionService();
 const studentService = new StudentService(pensionService);
@@ -445,30 +446,107 @@ export class GroupService implements GroupRepository {
         grupoUuid: string
     ): Promise<{ workbook: exceljs.Workbook; nombreArchivo: string }> => {
         try {
-            const grupo = await Grupo.findOneBy({ uuid: grupoUuid });
+            const grupo = await Grupo.findOne({
+                where: { uuid: grupoUuid },
+                relations: { carrera: true, modulo: true, docente: true },
+            });
             if (!grupo) throw new NotFoundError("El grupo no existe");
 
             const data = await this.listEstudents(grupoUuid);
 
+            const { docente, modulo, carrera } = grupo;
             let workbook = new exceljs.Workbook();
+            const sheet = workbook.addWorksheet();
 
-            const sheet = workbook.addWorksheet("test");
-            sheet.columns = [
-                { header: "Nro", key: "orden", width: 30 },
-                { header: "APELLIDOS Y NOMBRES", key: "nombre", width: 30 },
-                { header: "DNI", key: "dni", width: 30 },
-                { header: "N° CELULAR", key: "celular", width: 30 },
-                { header: "SEDE", key: "sede", width: 30 },
-                { header: "CONDICION", key: "condicion", width: 30 },
-                { header: "OBS.", key: "observaciones", width: 30 },
-                { header: "COD. BOUCHER", key: "boucher", width: 30 },
-                { header: "FECHA", key: "fecha", width: 30 },
-                { header: "HORA", key: "hora", width: 30 },
-                { header: "MONTO", key: "monto", width: 30 },
-                { header: "FORMA DE PAGO", key: "forma_pago", width: 30 },
-                { header: "ENTIDAD", key: "entidad", width: 30 },
-            ];
+            sheet.mergeCells("A1:E3");
+            sheet.getCell("A1").value = carrera.nombre.toUpperCase();
+            sheet.getCell("A1").border = {
+                top: { style: "thin" },
+                left: { style: "thin" },
+                bottom: { style: "thin" },
+                right: { style: "thin" },
+            };
+
+            sheet.mergeCells("F1:G1");
+            sheet.getCell("F1").value = "MODULO";
+            sheet.getCell("H1").value = modulo.nombre.toUpperCase();
+            sheet.getCell("F1").border = {
+                top: { style: "thin" },
+                left: { style: "thin" },
+                bottom: { style: "thin" },
+                right: { style: "thin" },
+            };
+            sheet.getCell("H1").border = {
+                top: { style: "thin" },
+                left: { style: "thin" },
+                bottom: { style: "thin" },
+                right: { style: "thin" },
+            };
+
+            sheet.mergeCells("F2:G2");
+            sheet.getCell("F2").value = "DOCENTE";
+            sheet.getCell("H2").value =
+                `${docente.ape_paterno} ${docente.ape_materno} ${docente.nombres}`.toUpperCase();
+            sheet.getCell("F2").border = {
+                top: { style: "thin" },
+                left: { style: "thin" },
+                bottom: { style: "thin" },
+                right: { style: "thin" },
+            };
+            sheet.getCell("H2").border = {
+                top: { style: "thin" },
+                left: { style: "thin" },
+                bottom: { style: "thin" },
+                right: { style: "thin" },
+            };
+
+            sheet.mergeCells("F3:G3");
+            sheet.getCell("F3").value = "INICIO";
+            sheet.getCell("H3").value = grupo.modulo.nombre.toUpperCase();
+            sheet.getCell("F3").border = {
+                top: { style: "thin" },
+                left: { style: "thin" },
+                bottom: { style: "thin" },
+                right: { style: "thin" },
+            };
+            sheet.getCell("H3").border = {
+                top: { style: "thin" },
+                left: { style: "thin" },
+                bottom: { style: "thin" },
+                right: { style: "thin" },
+            };
+
+            sheet.mergeCells("A6:G6");
+            sheet.getCell("A6").value = "DATOS DEL ALUMNO";
+            sheet.getCell("A6").border = {
+                top: { style: "thin" },
+                left: { style: "thin" },
+                bottom: { style: "thin" },
+                right: { style: "thin" },
+            };
+            sheet.getCell("A6").fill = {
+                type: "pattern",
+                pattern: "solid",
+                fgColor: { argb: "ECB938" },
+            };
+
+            sheet.mergeCells("H6:M6");
+            sheet.getCell("H6").value = "DATOS DEL PAGO";
+            sheet.getCell("H6").border = {
+                top: { style: "thin" },
+                left: { style: "thin" },
+                bottom: { style: "thin" },
+                right: { style: "thin" },
+            };
+            sheet.getCell("H6").fill = {
+                type: "pattern",
+                pattern: "solid",
+                fgColor: { argb: "ECB938" },
+            };
+
             let orden: number = 1;
+
+            const rowsData: (string | number)[][] = [];
 
             data.map(({ matriculaGrupo, pensionGrupo }) => {
                 const { matricula, condicion, grupo, observacion } =
@@ -478,37 +556,81 @@ export class GroupService implements GroupRepository {
                 const { alumno, sede } = matricula;
                 const nombreCompleto = `${alumno.ape_materno} ${alumno.ape_materno} ${alumno.nombres}`;
 
-                let documentoString = "";
-                let fechaString = "";
-                let horaString = "";
-                let montoString = "";
-                let modoString = "";
-                let entidadString = "";
+                if (pago_pensiones.length > 1) {
+                    return pago_pensiones.map((p, i) => {
+                        if (i === 0) {
+                            rowsData.push([
+                                orden++,
+                                nombreCompleto,
+                                alumno.dni,
+                                alumno.celular,
+                                sede.nombre,
+                                condicion,
+                                observacion,
+                                p.num_comprobante,
+                                getDateFormatWH(p.fecha),
+                                p.hora,
+                                `S/. ${p.monto}`,
+                                p.forma_pago.description,
+                                p.entidad,
+                            ]);
+                        } else {
+                            rowsData.push([
+                                "",
+                                "",
+                                "",
+                                "",
+                                "",
+                                "",
+                                "",
+                                p.num_comprobante,
+                                getDateFormatWH(p.fecha),
+                                p.hora,
+                                `S/. ${p.monto}`,
+                                p.forma_pago.description,
+                                p.entidad,
+                            ]);
+                        }
+                    });
+                }
 
-                pago_pensiones.map((row) => {
-                    documentoString += row.num_comprobante + "\n";
-                    fechaString += formatDate(row.fecha) + "\n";
-                    horaString += row.fecha.toLocaleTimeString() + "\n";
-                    montoString += "S/. " + row.monto + "\n";
-                    modoString += "";
-                    entidadString += row.entidad + "\n";
-                });
+                rowsData.push([
+                    orden++,
+                    nombreCompleto,
+                    alumno.dni,
+                    alumno.celular,
+                    sede.nombre,
+                    condicion,
+                    observacion,
+                    pago_pensiones[0].num_comprobante,
+                    getDateFormatWH(pago_pensiones[0].fecha),
+                    pago_pensiones[0].hora,
+                    `S/. ${pago_pensiones[0].monto}`,
+                    pago_pensiones[0].forma_pago.description,
+                    pago_pensiones[0].entidad,
+                ]);
+            });
 
-                sheet.addRow({
-                    orden: orden++,
-                    nombre: nombreCompleto,
-                    dni: alumno.dni,
-                    celular: alumno.celular,
-                    sede: sede.nombre,
-                    condicion: condicion,
-                    observaciones: observacion,
-                    boucher: documentoString,
-                    fecha: fechaString,
-                    hora: horaString,
-                    monto: montoString,
-                    forma_pago: modoString,
-                    entidad: entidadString,
-                });
+            sheet.addTable({
+                name: "alumnosPensiones",
+                ref: "A7",
+                headerRow: true,
+                columns: [
+                    { name: "Nro" },
+                    { name: "APELLIDOS Y NOMBRES" },
+                    { name: "DNI" },
+                    { name: "N° CELULAR" },
+                    { name: "SEDE" },
+                    { name: "CONDICION" },
+                    { name: "OBS." },
+                    { name: "COD. BOUCHER" },
+                    { name: "FECHA" },
+                    { name: "HORA" },
+                    { name: "MONTO" },
+                    { name: "FORMA DE PAGO" },
+                    { name: "ENTIDAD" },
+                ],
+                rows: rowsData,
             });
 
             return { workbook, nombreArchivo: grupo.nombre };
@@ -616,3 +738,19 @@ export class GroupService implements GroupRepository {
         }
     };
 }
+
+// sheet.columns = [
+//     { header: "Nro", key: "orden", width: 5 },
+//     { header: "APELLIDOS Y NOMBRES", key: "nombre", width: 30 },
+//     { header: "DNI", key: "dni", width: 9 },
+//     { header: "N° CELULAR", key: "celular", width: 11 },
+//     { header: "SEDE", key: "sede", width: 30 },
+//     { header: "CONDICION", key: "condicion", width: 12 },
+//     { header: "OBS.", key: "observaciones", width: 30 },
+//     { header: "COD. BOUCHER", key: "boucher", width: 40 },
+//     { header: "FECHA", key: "fecha", width: 40 },
+//     { header: "HORA", key: "hora", width: 40 },
+//     { header: "MONTO", key: "monto", width: 40 },
+//     { header: "FORMA DE PAGO", key: "forma_pago", width: 40 },
+//     { header: "ENTIDAD", key: "entidad", width: 40 },
+// ];

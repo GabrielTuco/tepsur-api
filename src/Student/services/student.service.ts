@@ -131,10 +131,20 @@ export class StudentService implements StudentRepository {
                 throw new NotFoundError("No se puedo encontrar el registro");
             }
 
-            const { pensiones } = await this.pensionService.listPensionByDni(
-                alumno.dni
+            const data = await Promise.all(
+                alumno.matriculas.map(async (m) => {
+                    const pensiones =
+                        await this.pensionService.listPensionByMatricula(
+                            m.uuid
+                        );
+                    return {
+                        ...m,
+                        pensiones,
+                    };
+                })
             );
-            return { ...alumno, pensiones };
+
+            return { ...alumno, matriculas: data };
         } catch (error) {
             throw error;
         }
