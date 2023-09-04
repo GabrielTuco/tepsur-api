@@ -936,8 +936,6 @@ export class MatriculaService implements MatriculaRepository {
                 .where("m.uuid=:uuid", { uuid })
                 .getOne();
 
-            console.log(matricula);
-
             if (!matricula) throw new NotFoundError("La matricula no existe");
 
             const { pensiones } = await pensionService.listPensionByDni(
