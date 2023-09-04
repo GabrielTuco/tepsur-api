@@ -634,5 +634,16 @@ router.put(
     groupController.putCloseGroup
 );
 
+router.get(
+    "/export/students-list/:uuid",
+    [
+        //validateJWT,
+        //checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
+        param("uuid", "No es un uuid valido").isUUID(4),
+        validateFields,
+    ],
+    groupController.getExportStudents
+);
+
 export default router;
 //Todo agregar el mes y el anio al listar por sede secretaria y listado general

@@ -168,7 +168,36 @@ export class GroupController {
 
             return res.json(students);
         } catch (error) {
-            if (error instanceof DatabaseError) {
+            if (error instanceof DatabaseErrorBase) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                    name: error.name,
+                });
+            }
+            return res.status(500).json({
+                msg: "Internal Server Error, contact the administrator",
+            });
+        }
+    }
+
+    public async getExportStudents(req: Request, res: Response) {
+        try {
+            const { uuid } = req.params;
+            const { workbook, nombreArchivo } =
+                await groupService.exportStudentsList(uuid);
+            res.setHeader(
+                "Content-Type",
+                "application/vnd.openxmlformats-officedocument.spreadsheet.sheet"
+            );
+            res.setHeader(
+                "Content-Disposition",
+                "attachment;filename=" + `${nombreArchivo.trim()}.xlsx`
+            );
+
+            workbook.xlsx.write(res);
+        } catch (error) {
+            console.log(error);
+            if (error instanceof DatabaseErrorBase) {
                 return res.status(error.codeStatus).json({
                     msg: error.message,
                     name: error.name,
@@ -198,6 +227,7 @@ export class GroupController {
             });
         }
     }
+
     public async getByName(req: Request, res: Response) {
         try {
             const { name } = req.params;

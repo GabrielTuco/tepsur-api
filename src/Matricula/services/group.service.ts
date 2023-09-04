@@ -20,6 +20,8 @@ import { PagoPension, Pension } from "../../Pension/entity";
 import { StudentService } from "../../Student/services/student.service";
 import moment from "moment";
 import { AppDataSource } from "../../db/dataSource";
+import exceljs from "exceljs";
+import { formatDate } from "../helpers/formatDate";
 
 const pensionService = new PensionService();
 const studentService = new StudentService(pensionService);
@@ -394,9 +396,9 @@ export class GroupService implements GroupRepository {
     };
 
     /**
-     * Servicio para obtener el listado de los alumnos matriculados en un grupo
+     * Servicio para obtener el listado de los alumnos matriculados con sus respectivas pensiones en un grupo
      * @param {string} uuid Uuid del grupo
-     * @returns {Promise<Matricula[]>} Listado de matriculados en el grupo
+     * @returns {Promise<StudentsWithPensionGrupo[]>} Listado de alumnos matriculados en el grupo
      */
     public listEstudents = async (
         uuid: string
@@ -410,6 +412,7 @@ export class GroupService implements GroupRepository {
                     .innerJoinAndSelect("mg.matricula", "m")
                     .innerJoinAndSelect("mg.grupo", "g")
                     .innerJoinAndSelect("m.alumno", "a")
+                    .innerJoinAndSelect("m.sede", "matse")
                     .leftJoinAndSelect("mg.responsable", "r")
                     .leftJoinAndSelect("r.sede", "s")
                     .leftJoinAndSelect("r.usuario", "u")
@@ -433,6 +436,82 @@ export class GroupService implements GroupRepository {
             );
 
             return data;
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    public exportStudentsList = async (
+        grupoUuid: string
+    ): Promise<{ workbook: exceljs.Workbook; nombreArchivo: string }> => {
+        try {
+            const grupo = await Grupo.findOneBy({ uuid: grupoUuid });
+            if (!grupo) throw new NotFoundError("El grupo no existe");
+
+            const data = await this.listEstudents(grupoUuid);
+
+            let workbook = new exceljs.Workbook();
+
+            const sheet = workbook.addWorksheet("test");
+            sheet.columns = [
+                { header: "Nro", key: "orden", width: 30 },
+                { header: "APELLIDOS Y NOMBRES", key: "nombre", width: 30 },
+                { header: "DNI", key: "dni", width: 30 },
+                { header: "N° CELULAR", key: "celular", width: 30 },
+                { header: "SEDE", key: "sede", width: 30 },
+                { header: "CONDICION", key: "condicion", width: 30 },
+                { header: "OBS.", key: "observaciones", width: 30 },
+                { header: "COD. BOUCHER", key: "boucher", width: 30 },
+                { header: "FECHA", key: "fecha", width: 30 },
+                { header: "HORA", key: "hora", width: 30 },
+                { header: "MONTO", key: "monto", width: 30 },
+                { header: "FORMA DE PAGO", key: "forma_pago", width: 30 },
+                { header: "ENTIDAD", key: "entidad", width: 30 },
+            ];
+            let orden: number = 1;
+
+            data.map(({ matriculaGrupo, pensionGrupo }) => {
+                const { matricula, condicion, grupo, observacion } =
+                    matriculaGrupo;
+                const { pago_pensiones } = pensionGrupo;
+
+                const { alumno, sede } = matricula;
+                const nombreCompleto = `${alumno.ape_materno} ${alumno.ape_materno} ${alumno.nombres}`;
+
+                let documentoString = "";
+                let fechaString = "";
+                let horaString = "";
+                let montoString = "";
+                let modoString = "";
+                let entidadString = "";
+
+                pago_pensiones.map((row) => {
+                    documentoString += row.num_comprobante + "\n";
+                    fechaString += formatDate(row.fecha) + "\n";
+                    horaString += row.fecha.toLocaleTimeString() + "\n";
+                    montoString += "S/. " + row.monto + "\n";
+                    modoString += "";
+                    entidadString += row.entidad + "\n";
+                });
+
+                sheet.addRow({
+                    orden: orden++,
+                    nombre: nombreCompleto,
+                    dni: alumno.dni,
+                    celular: alumno.celular,
+                    sede: sede.nombre,
+                    condicion: condicion,
+                    observaciones: observacion,
+                    boucher: documentoString,
+                    fecha: fechaString,
+                    hora: horaString,
+                    monto: montoString,
+                    forma_pago: modoString,
+                    entidad: entidadString,
+                });
+            });
+
+            return { workbook, nombreArchivo: grupo.nombre };
         } catch (error) {
             throw error;
         }

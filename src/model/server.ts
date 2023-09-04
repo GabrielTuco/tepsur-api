@@ -135,48 +135,6 @@ class Server implements ServerBase {
             swaggerUi.setup(specs, swaggerCustomCss)
         );
 
-        //Crear excel pruebas
-        this.app.get("/create-excel-test", (_req, res) => {
-            try {
-                let workbook = new exceljs.Workbook();
-
-                const sheet = workbook.addWorksheet("test");
-                sheet.columns = [
-                    { header: "col 1", key: "col1", width: 30 },
-                    { header: "col 2", key: "col2", width: 30 },
-                    { header: "col 3", key: "col3", width: 30 },
-                    { header: "col 4", key: "col4", width: 30 },
-                ];
-
-                sheet.addRow({
-                    col1: "TEST1",
-                    col2: "TEST2",
-                    col3: "TEST3",
-                    col4: "TEST4",
-                });
-
-                sheet.addRow({
-                    col1: "TEXTO1",
-                    col2: "TEXTO2",
-                    col3: "TEXTO3",
-                    col4: "TEXTO4",
-                });
-
-                res.setHeader(
-                    "Content-Type",
-                    "application/vnd.openxmlformats-officedocument.spreadsheet.sheet"
-                );
-                res.setHeader(
-                    "Content-Disposition",
-                    "attachment;filename=" + "test.xlsx"
-                );
-
-                workbook.xlsx.write(res);
-            } catch (error) {
-                console.log(error);
-            }
-        });
-
         this.app.use(this.paths.auth, authRoutes);
         this.app.use(this.paths.secretary, secretaryRoutes);
         this.app.use(this.paths.role, roleRoutes);
