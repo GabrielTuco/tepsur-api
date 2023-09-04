@@ -842,12 +842,9 @@ export class MatriculaService implements MatriculaRepository {
             await matricula.save();
             await matricula.reload();
 
-            const savedMatricula = await Matricula.createQueryBuilder("m")
-                .innerJoinAndSelect("m.alumno", "a")
-                .innerJoinAndSelect("m.carrera", "c")
-                .innerJoinAndSelect("m.matriculaModulosModulo", "mmm")
-                .where("m.uuid=:matriculaUuid", { matriculaUuid })
-                .getOne();
+            const { matricula: savedMatricula } = await this.findByUuid(
+                matriculaUuid
+            );
 
             console.log(JSON.stringify(savedMatricula, null, 4));
 
