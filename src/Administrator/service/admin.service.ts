@@ -98,7 +98,7 @@ export class AdministratorService {
                 .innerJoinAndSelect("a.usuario", "u")
                 .innerJoinAndSelect("u.rol", "r")
                 .leftJoinAndSelect("a.sede", "s")
-                .where("u.uuid= :id and a.estado=true", { id: adminUuid })
+                .where("a.uuid=:id and a.estado=true", { id: adminUuid })
                 .getOne();
             if (!adminExists)
                 throw new NotFoundError(
@@ -155,12 +155,21 @@ export class AdministratorService {
     public deleteAdmin = async (adminUuid: string) => {
         try {
             const admin = await this.searchByUuid(adminUuid);
-            if (!admin) {
-                throw new NotFoundError("EL administrador no existe");
+            const sede = await Sede.findOne({
+                relations: { administrador: true },
+                where: { administrador: { uuid: adminUuid } },
+            });
+
+            if (!sede) {
+                throw new NotFoundError("La sede no existe");
             }
+
+            sede.administrador = null;
             admin.estado = false;
 
-            return admin.save();
+            await Promise.all([admin.save(), sede.save()]);
+
+            return admin;
         } catch (error) {
             throw error;
         }
