@@ -72,13 +72,19 @@ export class StudentService implements StudentRepository {
         }
     };
 
-    public listBySede = async (sedeUuid: string): Promise<any[]> => {
+    public listBySede = async (
+        sedeUuid: string,
+        year: string | undefined
+    ): Promise<any[]> => {
         try {
             const alumnos = await Alumno.createQueryBuilder("a")
                 .innerJoin("a.matriculas", "m")
                 .innerJoinAndSelect("m.sede", "s")
                 .innerJoinAndSelect("a.direccion", "d")
-                .where("s.uuid=:uuid", { uuid: sedeUuid })
+                .where(
+                    "s.uuid=:uuid and EXTRACT(YEAR from m.fecha_inscripcion)=:year",
+                    { uuid: sedeUuid, year }
+                )
                 .distinct(true)
                 .getMany();
 

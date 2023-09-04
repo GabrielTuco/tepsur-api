@@ -6,7 +6,10 @@ import { RegisterAlumnoDto } from "./dtos";
 export interface StudentRepository {
     register(data: RegisterAlumnoDto): Promise<Alumno>;
     createUser(uuid: string): Promise<Usuario>;
-    listBySede(sedeUuid: string): Promise<Matricula[]>;
+    listBySede(
+        sedeUuid: string,
+        year: string | undefined
+    ): Promise<Matricula[]>;
     searchByUuid(uuid: string): Promise<Alumno>;
     searchByDni(dni: string): Promise<Alumno>;
     updateInfo(uuid: string, data: Partial<RegisterAlumnoDto>): Promise<Alumno>;

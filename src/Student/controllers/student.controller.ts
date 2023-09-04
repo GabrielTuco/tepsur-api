@@ -30,9 +30,12 @@ export class StudentController {
 
     public getListBySede = async (req: Request, res: Response) => {
         try {
-            const { sede } = req.query;
+            const { sede, year } = req.query;
 
-            const alumnos = await this.studentService.listBySede(String(sede));
+            const alumnos = await this.studentService.listBySede(
+                String(sede),
+                String(year)
+            );
 
             return res.json(alumnos);
         } catch (error) {
