@@ -119,6 +119,7 @@ export class StudentService implements StudentRepository {
                 .leftJoinAndSelect("pm.forma_pago", "fp")
                 .leftJoinAndSelect("m.matriculaModulosModulo", "mmm")
                 .leftJoinAndSelect("mmm.modulo", "mo")
+                .leftJoinAndSelect("mmm.horario", "h")
                 .innerJoinAndSelect("m.carrera", "c")
                 .innerJoinAndSelect("m.sede", "s")
                 .innerJoinAndSelect("a.usuario", "u")
