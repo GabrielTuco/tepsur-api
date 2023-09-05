@@ -812,9 +812,6 @@ export class MatriculaService implements MatriculaRepository {
 
                     if (!matriculaModulo) {
                         const newMatriculaModulo = new MatriculaModulosModulo();
-                        const horario = await Horario.findOneBy({
-                            uuid: moduloData.horarioUuid,
-                        });
                         const modulo = await Modulo.findOneBy({
                             uuid: moduloData.moduloUuid,
                         });
@@ -841,14 +838,13 @@ export class MatriculaService implements MatriculaRepository {
                     return matriculaModulo;
                 })
             );
+
             await matricula.save();
             await matricula.reload();
-            const savedMatricula = await Matricula.createQueryBuilder("m")
-                .innerJoinAndSelect("m.alumno", "a")
-                .innerJoinAndSelect("m.carrera", "c")
-                .innerJoinAndSelect("m.matriculaModulosModulo", "mmm")
-                .where("m.uuid=:matriculaUuid", { matriculaUuid })
-                .getOne();
+
+            const { matricula: savedMatricula } = await this.findByUuid(
+                matriculaUuid
+            );
 
             return savedMatricula!;
         } catch (error) {
@@ -934,8 +930,6 @@ export class MatriculaService implements MatriculaRepository {
                 .leftJoinAndSelect("p.forma_pago", "fp")
                 .where("m.uuid=:uuid", { uuid })
                 .getOne();
-
-            console.log(matricula);
 
             if (!matricula) throw new NotFoundError("La matricula no existe");
 

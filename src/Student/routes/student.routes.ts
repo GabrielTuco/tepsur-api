@@ -96,6 +96,12 @@ const studentController = new StudentController(studentService);
  *              format: uuid
  *            required: true
  *            description: El uuid de la sede
+ *          - in: query
+ *            name: year
+ *            schema:
+ *              type: string
+ *            required: true
+ *            description: El año de filtrado
  *      responses:
  *          200:
  *              description: El listado de alumnos
@@ -116,6 +122,7 @@ router.get(
         validateJWT,
         checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
         query("sede").isUUID("4"),
+        query("year").isString(),
         validateFields,
     ],
     studentController.getListBySede
