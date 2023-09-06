@@ -257,13 +257,15 @@ export class StudentService implements StudentRepository {
             alumno.celular_referencia = celularReferencia!;
             alumno.sexo = sexo!;
             alumno.edad = edad!;
-            if (alumno.correo !== correo && !correo) {
-                const correoExists = await Alumno.findOneBy({ correo });
-                if (correoExists)
-                    throw new AlreadyExistsError(
-                        "El correo ya esta registrado"
-                    );
-                else alumno.correo = correo!;
+            if (correo) {
+                if (alumno.correo !== correo) {
+                    const correoExists = await Alumno.findOneBy({ correo });
+                    if (correoExists)
+                        throw new AlreadyExistsError(
+                            "El correo ya esta registrado"
+                        );
+                    else alumno.correo = correo!;
+                }
             }
             alumno.lugar_residencia = lugarResidencia!;
             alumno.direccion = direccionDb;
