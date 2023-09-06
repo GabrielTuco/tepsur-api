@@ -26,6 +26,7 @@ import { PagoPension } from "../Pension/entity/PagoPension.entity";
 import { Especializacion } from "../Especializacion/entity/Especializacion.entity";
 import { MatriculaModulosModulo } from "../Matricula/entity/MatriculaModulosModulo";
 import { MatriculaEspecializacion } from "../Especializacion/entity/MatriculaEspecializacion.entity";
+import { Certificado } from "../Certificados/entity/Certificado.entity";
 
 export const AppDataSource = new DataSource({
     type: "postgres",
@@ -60,6 +61,7 @@ export const AppDataSource = new DataSource({
         Pension,
         PagoPension,
         TarifaPensionCarrera,
+        Certificado,
     ],
     migrations: [],
     subscribers: [],

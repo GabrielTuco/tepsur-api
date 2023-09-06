@@ -257,7 +257,7 @@ export class StudentService implements StudentRepository {
             alumno.celular_referencia = celularReferencia!;
             alumno.sexo = sexo!;
             alumno.edad = edad!;
-            if (alumno.correo !== correo) {
+            if (alumno.correo !== correo && !correo) {
                 const correoExists = await Alumno.findOneBy({ correo });
                 if (correoExists)
                     throw new AlreadyExistsError(
