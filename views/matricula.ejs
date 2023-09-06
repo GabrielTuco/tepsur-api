@@ -90,6 +90,7 @@
                                 <td><b>Horario</b></td>
                                 <td><b>Fecha inicio</b></td>
                             </tr>
+                            <% if (matriculaModulosModulo.length>0) { %>
                             <tr>
                                 <td>
                                     <%= matriculaModulosModulo[0].modulo.nombre
@@ -111,6 +112,14 @@
                                     %>
                                 </td>
                             </tr>
+                            <% } else { %>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <% } %>
                         </table>
                     </td>
                 </tr>
