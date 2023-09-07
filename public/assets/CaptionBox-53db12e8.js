@@ -1,0 +1,1 @@
+import{j as o,l as t,b as r,T as n}from"./index-b05c3593.js";import{I as s}from"./Info-b8afdcbc.js";const c=({text:a})=>o(t,{flexDirection:"row",alignItems:"center",sx:{color:"gray"},gap:1,children:[r(s,{}),r(n,{textAlign:"left",variant:"caption",children:a})]});export{c as C};

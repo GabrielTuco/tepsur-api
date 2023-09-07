@@ -19,4 +19,5 @@ export interface Paths {
     tarifaPension: string;
     pension: string;
     utilidades: string;
+    certificados: string;
 }
