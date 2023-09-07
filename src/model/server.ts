@@ -126,6 +126,10 @@ class Server implements ServerBase {
     }
 
     routes() {
+        // this.app.get("/", (_req, res) => {
+        //     res.send("index.html");
+        // });
+
         this.app.get(this.paths.index, (_req, res) => {
             res.json({ msg: "Server online..." });
         });

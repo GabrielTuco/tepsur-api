@@ -25,4 +25,20 @@ router.post(
     certificadoController.postCertificado
 );
 
+router.get(
+    "/:uuid",
+    [validateJWT, checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE])],
+    certificadoController.getByUuid
+);
+router.get(
+    "/matricula/:uuid",
+    [validateJWT, checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE])],
+    certificadoController.getByMatricula
+);
+router.get(
+    "/",
+    [validateJWT, checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE])],
+    certificadoController.getAll
+);
+
 export default router;
