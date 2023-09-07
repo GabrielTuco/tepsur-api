@@ -1,6 +1,13 @@
 import { v2 as cloudinary } from "cloudinary";
 import fileUpload from "express-fileupload";
 
+/**
+ *
+ * @param {string|undefined} stringURL - Url del recurso a actualizar(segun sea el caso)
+ * @param {fileUpload.UploadedFile} image - La imagen a subir en el hosting de archivos
+ * @param {string} folderName - Nombre del folder donde se guardara la imagen
+ * @returns {Promise<string>} Retorna la url de la imagen guardada
+ */
 export const uploadImage = async (
     stringURL: string | undefined,
     image: fileUpload.UploadedFile,
