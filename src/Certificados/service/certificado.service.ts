@@ -10,6 +10,7 @@ interface CertificadoRepository {
     findByUuid: (u: string) => Promise<Certificado>;
     listAll: () => Promise<Certificado[]>;
     listByMatricula: (m: string) => Promise<Certificado[]>;
+    delete: (uuid: string) => Promise<string>;
 }
 
 export class CertificadoService implements CertificadoRepository {
@@ -67,6 +68,7 @@ export class CertificadoService implements CertificadoRepository {
             throw error;
         }
     };
+
     public listByMatricula = async (
         matriculaUuid: string
     ): Promise<Certificado[]> => {
@@ -79,6 +81,21 @@ export class CertificadoService implements CertificadoRepository {
                     matricula: { uuid: matriculaUuid },
                 },
             });
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    public delete = async (uuid: string): Promise<string> => {
+        try {
+            const certificado = await Certificado.findOneBy({ uuid });
+
+            if (!certificado)
+                throw new NotFoundError("El certificado no existe");
+
+            await Certificado.remove(certificado);
+
+            return uuid;
         } catch (error) {
             throw error;
         }

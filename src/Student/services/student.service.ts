@@ -6,12 +6,7 @@ import { DatabaseError } from "../../errors/DatabaseError";
 import { Alumno } from "../entity/Alumno.entity";
 import { StudentRepository } from "../interfaces/repositories";
 import { encryptPassword } from "../../helpers/encryptPassword";
-import {
-    GradoEstudios,
-    Grupo,
-    Horario,
-    Matricula,
-} from "../../Matricula/entity";
+import { GradoEstudios, Grupo, Horario } from "../../Matricula/entity";
 import { DireccionDto } from "../../Matricula/interfaces/dtos";
 import { RegisterAlumnoDto } from "../interfaces/dtos";
 import { NotFoundError } from "../../errors/NotFoundError";
