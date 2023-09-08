@@ -35,6 +35,7 @@ import {
 } from "../Matricula/routes";
 import pensionRoutes from "../Pension/routes/pension.routes";
 import ubigeoRoutes from "../routes/ubigeo.routes";
+import certificadoRoutes from "../Certificados/routes/certificado.routes";
 import { swaggerCustomCss } from "../swagger-custom-styles";
 import { DataSource } from "typeorm";
 import { Paths } from "../interfaces/routePaths";
@@ -45,7 +46,7 @@ class Server implements ServerBase {
     server: http.Server;
     constructor(
         private app: Application = express(),
-        private port: string | number = process.env.PORT || 3000,
+        private port: string | number = process.env.PORT ?? 8080,
         private paths: Paths = {
             index: "/api",
             auth: "/api/auth",
@@ -67,6 +68,7 @@ class Server implements ServerBase {
             tarifaPension: "/api/tarifa-pension",
             pension: "/api/pensiones",
             utilidades: "/api/utilidades",
+            certificados: "/api/certificados",
         }
     ) {
         //Cloudinary config
@@ -124,6 +126,10 @@ class Server implements ServerBase {
     }
 
     routes() {
+        // this.app.get("/", (_req, res) => {
+        //     res.send("index.html");
+        // });
+
         this.app.get(this.paths.index, (_req, res) => {
             res.json({ msg: "Server online..." });
         });
@@ -154,6 +160,7 @@ class Server implements ServerBase {
         this.app.use(this.paths.tarifaPension, tarifaPensionCarreraRoutes);
         this.app.use(this.paths.pension, pensionRoutes);
         this.app.use(this.paths.utilidades, ubigeoRoutes);
+        this.app.use(this.paths.certificados, certificadoRoutes);
     }
 
     listen() {

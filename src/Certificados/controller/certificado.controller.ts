@@ -41,4 +41,65 @@ export class CertificadoController {
             });
         }
     };
+
+    public getByUuid = async (req: Request, res: Response) => {
+        try {
+            const { uuid } = req.params;
+            const certificado = await this.certificadoService.findByUuid(uuid);
+
+            res.json(certificado);
+        } catch (error) {
+            console.log(error);
+            if (error instanceof DatabaseErrorBase) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                    name: error.name,
+                });
+            }
+            return res.status(500).json({
+                msg: "Internal server error",
+            });
+        }
+    };
+
+    public getByMatricula = async (req: Request, res: Response) => {
+        try {
+            const { uuid } = req.params;
+            const certificados = await this.certificadoService.listByMatricula(
+                uuid
+            );
+
+            res.json(certificados);
+        } catch (error) {
+            console.log(error);
+            if (error instanceof DatabaseErrorBase) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                    name: error.name,
+                });
+            }
+            return res.status(500).json({
+                msg: "Internal server error",
+            });
+        }
+    };
+
+    public getAll = async (_req: Request, res: Response) => {
+        try {
+            const certificados = await this.certificadoService.listAll();
+
+            res.json(certificados);
+        } catch (error) {
+            console.log(error);
+            if (error instanceof DatabaseErrorBase) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                    name: error.name,
+                });
+            }
+            return res.status(500).json({
+                msg: "Internal server error",
+            });
+        }
+    };
 }

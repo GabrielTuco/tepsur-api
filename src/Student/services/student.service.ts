@@ -116,6 +116,7 @@ export class StudentService implements StudentRepository {
         try {
             const alumno = await Alumno.createQueryBuilder("a")
                 .innerJoinAndSelect("a.matriculas", "m")
+                .leftJoinAndSelect("m.certificados", "cert")
                 .leftJoinAndSelect("m.pagoMatricula", "pm")
                 .leftJoinAndSelect("pm.forma_pago", "fp")
                 .leftJoinAndSelect("m.matriculaModulosModulo", "mmm")
