@@ -52,5 +52,5 @@ jobs:
         with:
           app-name: 'tepsur'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_228DF8F0564F46C4AA66F2B26DCF385A }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_ED3BBC5153054D62924BB6850EB1E65D }}
           package: .
