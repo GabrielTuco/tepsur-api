@@ -18,7 +18,7 @@ export const uploadImage = async (
         const nombre = nombreArr[nombreArr.length - 1];
         const [public_id] = nombre.split(".");
 
-        cloudinary.uploader.destroy(`tepsur/${folderName}/` + public_id); //Eliminar la imagen si existe
+        await cloudinary.uploader.destroy(`tepsur/${folderName}/` + public_id); //Eliminar la imagen si existe
     }
 
     const { secure_url } = await cloudinary.uploader.upload(

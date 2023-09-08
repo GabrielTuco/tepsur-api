@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { body } from "express-validator";
+import { body, param } from "express-validator";
 import { validateJWT } from "../../middlewares/validateJWT";
 import { checkAuthRole } from "../../middlewares/checkAuthRole";
 import { CertificadoService } from "../service/certificado.service";
@@ -39,6 +39,17 @@ router.get(
     "/",
     [validateJWT, checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE])],
     certificadoController.getAll
+);
+
+router.delete(
+    "/:uuid",
+    [
+        validateJWT,
+        checkAuthRole([ROLES.ROOT, ROLES.ADMIN, ROLES.SECRE]),
+        param("uuid").isUUID(4),
+        validateFields,
+    ],
+    certificadoController.deleteCertificado
 );
 
 export default router;

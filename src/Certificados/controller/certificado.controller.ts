@@ -102,4 +102,26 @@ export class CertificadoController {
             });
         }
     };
+
+    public deleteCertificado = async (req: Request, res: Response) => {
+        try {
+            const { uuid } = req.params;
+            const certificadoDeleted = await this.certificadoService.delete(
+                uuid
+            );
+
+            return res.json({ uuid: certificadoDeleted });
+        } catch (error) {
+            console.log(error);
+            if (error instanceof DatabaseErrorBase) {
+                return res.status(error.codeStatus).json({
+                    msg: error.message,
+                    name: error.name,
+                });
+            }
+            return res.status(500).json({
+                msg: "Internal server error",
+            });
+        }
+    };
 }

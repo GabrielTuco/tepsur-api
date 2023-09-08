@@ -1,5 +1,6 @@
 import { Matricula } from "../../Matricula/entity";
 import { NotFoundError } from "../../errors/NotFoundError";
+import { deleteImage } from "../../helpers/deleteImage";
 import { uploadImage } from "../../helpers/uploadImage";
 import { CreateCertificadoDto } from "../dto/createCertificado.dto";
 import { Certificado } from "../entity/Certificado.entity";
@@ -92,6 +93,8 @@ export class CertificadoService implements CertificadoRepository {
 
             if (!certificado)
                 throw new NotFoundError("El certificado no existe");
+
+            await deleteImage(certificado.url, "certificados");
 
             await Certificado.remove(certificado);
 
