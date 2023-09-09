@@ -1,8 +1,7 @@
 {
     "testEnvironmentOptions": {
         "jest": {
-            "verbose": true,
-            "extraGlobals": ["--develop"]
+            "verbose": true
         }
     },
     "preset": "ts-jest",

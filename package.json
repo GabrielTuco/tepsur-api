@@ -8,7 +8,7 @@
         "start": "tsc && node dist/index.js",
         "dev": "ts-node-dev --respawn src/index.ts --develop",
         "dev:remote": "ts-node-dev --respawn src/index.ts",
-        "test": "jest -c ./jest.unit.json --silent",
+        "test": "jest -c ./jest.unit.json ",
         "test:watch": "yarn test -- --watch",
         "swagger": "tsoa spec"
     },

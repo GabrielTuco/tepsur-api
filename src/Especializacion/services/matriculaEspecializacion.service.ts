@@ -196,6 +196,9 @@ export class MatriculaEspecilizacionService
                 data.alumno
             );
 
+            matricula.modalidad = data.modalidad;
+            matricula.fecha_inicio = data.fechaInicio;
+
             await matricula.save();
             await matricula.reload();
 

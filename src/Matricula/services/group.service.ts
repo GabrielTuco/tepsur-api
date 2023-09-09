@@ -13,7 +13,12 @@ import { DatabaseError } from "../../errors/DatabaseError";
 import { Docente } from "../../Teacher/entity/Docente.entity";
 import { Secretaria } from "../../Secretary/entity/Secretaria.entity";
 import { Sede } from "../../Sede/entity";
-import { CONDICION_ALUMNO, ESTADO_GRUPO } from "../../interfaces/enums";
+import {
+    CONDICION_ALUMNO,
+    ESTADO_GRUPO,
+    MODALIDAD,
+    TIPO_CARRERA,
+} from "../../interfaces/enums";
 import { PensionService } from "../../Pension/services/pension.service";
 import { NotFoundError } from "../../errors/NotFoundError";
 import { PagoPension, Pension } from "../../Pension/entity";
@@ -23,6 +28,7 @@ import { AppDataSource } from "../../db/dataSource";
 import exceljs from "exceljs";
 import { formatDate, getDateFormatWH } from "../helpers/formatDate";
 import { formatedTime } from "../../helpers/formatTime";
+import { generateArrayByNumber } from "../helpers/generateArrayByNumber";
 
 const pensionService = new PensionService();
 const studentService = new StudentService(pensionService);
@@ -30,6 +36,11 @@ const studentService = new StudentService(pensionService);
 type StudentsWithPensionGrupo = {
     matriculaGrupo: MatriculaGruposGrupo;
     pensionGrupo: Pension;
+};
+
+type MatriculaWithObservaciones = {
+    matricula: Matricula;
+    observaciones: string;
 };
 export class GroupService implements GroupRepository {
     /**
@@ -132,7 +143,7 @@ export class GroupService implements GroupRepository {
         try {
             const grupo = await Grupo.findOne({
                 where: { uuid: grupoUuid },
-                relations: { horario: true, pensiones: true },
+                relations: { horario: true, pensiones: true, carrera: true },
             });
             const secretaria = await Secretaria.findOneBy({
                 uuid: secretariaUuid,
@@ -155,10 +166,6 @@ export class GroupService implements GroupRepository {
                     else return undefined;
                 })
             );
-            type MatriculaWithObservaciones = {
-                matricula: Matricula;
-                observaciones: string;
-            };
 
             const studentsArray = students.filter(
                 (element): element is MatriculaWithObservaciones =>
@@ -207,30 +214,42 @@ export class GroupService implements GroupRepository {
 
                     matricula.matriculaGruposGrupo.push(newMatriculaGrupo);
 
-                    const tarifaPension =
-                        await TarifaPensionCarrera.createQueryBuilder("t")
-                            .innerJoinAndSelect("t.carrera", "c")
-                            .where("c.uuid=:uuid and t.modalidad=:modalidad", {
-                                uuid: matricula.carrera.uuid,
-                                modalidad: grupo.modalidad,
-                            })
-                            .getOne();
-
-                    const fechaLimite = moment(grupo.fecha_inicio)
-                        .add(15, "days")
-                        .toDate();
-                    const mesPension = fechaLimite.getMonth() + 1;
-
-                    const newPension = await pensionService.register({
+                    const pensiones = await this.generatePension(
                         matricula,
-                        grupo,
-                        monto: tarifaPension!.tarifa,
-                        fechaLimite,
-                        mes: mesPension,
-                    });
+                        grupo
+                    );
 
-                    await queryRunner.manager.save(newPension);
-                    grupo.pensiones.push(newPension);
+                    await Promise.all(
+                        pensiones.map(async (pension) => {
+                            await queryRunner.manager.save(pension);
+                            grupo.pensiones.push(pension);
+                        })
+                    );
+
+                    // const tarifaPension =
+                    //     await TarifaPensionCarrera.createQueryBuilder("t")
+                    //         .innerJoinAndSelect("t.carrera", "c")
+                    //         .where("c.uuid=:uuid and t.modalidad=:modalidad", {
+                    //             uuid: matricula.carrera.uuid,
+                    //             modalidad: grupo.modalidad,
+                    //         })
+                    //         .getOne();
+
+                    // const fechaLimite = moment(grupo.fecha_inicio)
+                    //     .add(15, "days")
+                    //     .toDate();
+                    // const mesPension = fechaLimite.getMonth() + 1;
+
+                    // const newPension = await pensionService.register({
+                    //     matricula,
+                    //     grupo,
+                    //     monto: tarifaPension!.tarifa,
+                    //     fechaLimite,
+                    //     mes: mesPension,
+                    // });
+
+                    // await queryRunner.manager.save(newPension);
+                    // grupo.pensiones.push(newPension);
 
                     await queryRunner.manager.save(grupo);
                     await queryRunner.manager.save(matricula);
@@ -249,6 +268,60 @@ export class GroupService implements GroupRepository {
             throw error;
         } finally {
             await queryRunner.release();
+        }
+    };
+
+    public generatePension = async (matricula: Matricula, grupo: Grupo) => {
+        const { tipo_carrera } = grupo.carrera;
+        const tarifaPension = await TarifaPensionCarrera.createQueryBuilder("t")
+            .innerJoinAndSelect("t.carrera", "c")
+            .where("c.uuid=:uuid and t.modalidad=:modalidad", {
+                uuid: matricula.carrera.uuid,
+                modalidad: grupo.modalidad,
+            })
+            .getOne();
+
+        if (tipo_carrera === TIPO_CARRERA.MODULAR) {
+            const fechaLimite = moment(grupo.fecha_inicio)
+                .add(15, "days")
+                .toDate();
+            const mesPension = fechaLimite.getMonth() + 1;
+
+            const newPension = await pensionService.register({
+                matricula,
+                grupo,
+                monto: tarifaPension!.tarifa,
+                fechaLimite,
+                mes: mesPension,
+            });
+
+            return [newPension];
+        } else {
+            const NUMBER_PENSIONES = 4;
+            let pensionesArray: number[] =
+                generateArrayByNumber(NUMBER_PENSIONES);
+            let fechaLimite: Date = moment(grupo.fecha_inicio)
+                .add(15, "days")
+                .toDate();
+            let mesPension = fechaLimite.getMonth() + 1;
+
+            const pensiones = await Promise.all(
+                pensionesArray.map(async () => {
+                    const newPension = await pensionService.register({
+                        matricula,
+                        grupo,
+                        monto: tarifaPension!.tarifa,
+                        fechaLimite,
+                        mes: mesPension,
+                    });
+                    fechaLimite = moment(fechaLimite).add(1, "month").toDate();
+                    mesPension = fechaLimite.getMonth() + 1;
+
+                    return newPension;
+                })
+            );
+
+            return pensiones;
         }
     };
 

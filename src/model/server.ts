@@ -83,6 +83,8 @@ class Server implements ServerBase {
 
         //Routes
         this.routes();
+
+        this.connectDB();
     }
     get getApp() {
         return this.app;
@@ -90,6 +92,7 @@ class Server implements ServerBase {
 
     async connectDB() {
         try {
+            console.log("Iniciando conexion con la base de datos...");
             this.dataSource = await AppDataSource.initialize();
             console.log("Database conected... OK");
         } catch (error) {
@@ -99,7 +102,7 @@ class Server implements ServerBase {
 
     public async closeConnectionDB() {
         try {
-            await this.dataSource.destroy();
+            if (this.dataSource) await this.dataSource.destroy();
         } catch (error) {
             console.log(error);
         }
@@ -169,7 +172,8 @@ class Server implements ServerBase {
         });
     }
     stop() {
-        this.server.close();
+        console.log(this.server);
+        if (this.server) this.server.close();
     }
 }
 
