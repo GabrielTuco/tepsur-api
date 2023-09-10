@@ -313,7 +313,9 @@ export class GroupService implements GroupRepository {
                     const newfechaLimite = moment(fechaLimite)
                         .add(i, "M")
                         .toDate();
-                    mesPension = fechaLimite.getMonth() + (i + 1);
+                    const mes = i + 1;
+                    mesPension =
+                        fechaLimite.getMonth() + (mes > 12 ? mes - 12 : mes);
 
                     const newPension = await pensionService.register({
                         matricula,
