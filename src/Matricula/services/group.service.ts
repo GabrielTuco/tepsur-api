@@ -298,15 +298,21 @@ export class GroupService implements GroupRepository {
             return [newPension];
         } else {
             const NUMBER_PENSIONES = 4;
+
             let pensionesArray: number[] =
                 generateArrayByNumber(NUMBER_PENSIONES);
+
             let fechaLimite: Date = moment(grupo.fecha_inicio)
                 .add(15, "days")
                 .toDate();
-            let mesPension = fechaLimite.getMonth() + 1;
+
+            let mesPension: number;
 
             const pensiones = await Promise.all(
-                pensionesArray.map(async () => {
+                pensionesArray.map(async (_, i) => {
+                    fechaLimite = moment(fechaLimite).add(i, "M").toDate();
+                    mesPension = fechaLimite.getMonth() + 1;
+
                     const newPension = await pensionService.register({
                         matricula,
                         grupo,
@@ -314,8 +320,6 @@ export class GroupService implements GroupRepository {
                         fechaLimite,
                         mes: mesPension,
                     });
-                    fechaLimite = moment(fechaLimite).add(1, "month").toDate();
-                    mesPension = fechaLimite.getMonth() + 1;
 
                     return newPension;
                 })
