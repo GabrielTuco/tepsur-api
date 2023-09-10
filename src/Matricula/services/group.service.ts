@@ -648,12 +648,12 @@ export class GroupService implements GroupRepository {
                                 sede.nombre,
                                 condicion,
                                 observacion,
-                                p.num_comprobante,
-                                getDateFormatWH(p.fecha),
-                                p.hora,
-                                `S/. ${p.monto}`,
-                                p.forma_pago.description,
-                                p.entidad,
+                                p.num_comprobante || "-",
+                                getDateFormatWH(p.fecha) || "-",
+                                p.hora || "-",
+                                `S/. ${p.monto}` || "-",
+                                p.forma_pago.description || "-",
+                                p.entidad || "-",
                             ]);
                         } else {
                             rowsData.push([
@@ -664,12 +664,12 @@ export class GroupService implements GroupRepository {
                                 "",
                                 "",
                                 "",
-                                p.num_comprobante,
-                                getDateFormatWH(p.fecha),
-                                p.hora,
-                                `S/. ${p.monto}`,
-                                p.forma_pago.description,
-                                p.entidad,
+                                p.num_comprobante || "-",
+                                getDateFormatWH(p.fecha) || "-",
+                                p.hora || "-",
+                                `S/. ${p.monto}` || "-",
+                                p.forma_pago.description || "-",
+                                p.entidad || "-",
                             ]);
                         }
                     });
@@ -683,12 +683,12 @@ export class GroupService implements GroupRepository {
                     sede.nombre,
                     condicion,
                     observacion,
-                    pago_pensiones[0].num_comprobante,
-                    getDateFormatWH(pago_pensiones[0].fecha),
-                    pago_pensiones[0].hora,
-                    `S/. ${pago_pensiones[0].monto}`,
-                    pago_pensiones[0].forma_pago.description,
-                    pago_pensiones[0].entidad,
+                    pago_pensiones[0].num_comprobante || "-",
+                    getDateFormatWH(pago_pensiones[0].fecha) || "-",
+                    pago_pensiones[0].hora || "-",
+                    `S/. ${pago_pensiones[0].monto}` || "-",
+                    pago_pensiones[0].forma_pago.description || "-",
+                    pago_pensiones[0].entidad || "-",
                 ]);
             });
 
