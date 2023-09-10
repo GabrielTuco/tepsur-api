@@ -872,23 +872,6 @@ export class MatriculaService implements MatriculaRepository {
                 )
                 .getMany();
 
-            const matriculas2 = await Matricula.createQueryBuilder("m")
-                .innerJoinAndSelect("m.alumno", "a")
-                .innerJoinAndSelect("m.carrera", "c")
-                .leftJoinAndSelect("m.pagoMatricula", "pm")
-                .leftJoinAndSelect("pm.forma_pago", "fp")
-                .leftJoinAndSelect("m.ultimo_grupo", "ug")
-                .where(
-                    `LOWER(a.dni) LIKE '%' || :query || '%'
-                    OR LOWER(a.nombres) LIKE '%' || :query || '%'
-                    OR LOWER(a.ape_paterno) LIKE '%' || :query || '%'
-                    OR LOWER(a.ape_materno) LIKE '%' || :query || '%'
-                    AND m.estado=TRUE and ug.estado='cerrado'`,
-                    { query: query.toLowerCase() }
-                )
-                .getQueryAndParameters();
-            console.log(matriculas2);
-
             const data = await Promise.all(
                 matriculas.map(async (m) => {
                     const ultimoPago = await pensionService.findUltimoPago(
