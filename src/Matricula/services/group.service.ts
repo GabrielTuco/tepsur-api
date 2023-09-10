@@ -683,12 +683,14 @@ export class GroupService implements GroupRepository {
                     sede.nombre,
                     condicion,
                     observacion,
-                    pago_pensiones[0].num_comprobante || "-",
-                    getDateFormatWH(pago_pensiones[0].fecha) || "-",
-                    pago_pensiones[0].hora || "-",
-                    `S/. ${pago_pensiones[0].monto}` || "-",
-                    pago_pensiones[0].forma_pago.description || "-",
-                    pago_pensiones[0].entidad || "-",
+                    pago_pensiones[0]?.num_comprobante || "-",
+                    pago_pensiones[0]?.fecha
+                        ? getDateFormatWH(pago_pensiones[0].fecha)
+                        : "-",
+                    pago_pensiones[0]?.hora || "-",
+                    `S/. ${pago_pensiones[0]?.monto || "-"}`,
+                    pago_pensiones[0]?.forma_pago.description || "-",
+                    pago_pensiones[0]?.entidad || "-",
                 ]);
             });
 
