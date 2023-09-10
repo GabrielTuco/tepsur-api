@@ -310,14 +310,16 @@ export class GroupService implements GroupRepository {
 
             const pensiones = await Promise.all(
                 pensionesArray.map(async (_, i) => {
-                    fechaLimite = moment(fechaLimite).add(i, "M").toDate();
-                    mesPension = fechaLimite.getMonth() + 1;
+                    const newfechaLimite = moment(fechaLimite)
+                        .add(i, "M")
+                        .toDate();
+                    mesPension = fechaLimite.getMonth() + (i + 1);
 
                     const newPension = await pensionService.register({
                         matricula,
                         grupo,
                         monto: tarifaPension!.tarifa,
-                        fechaLimite,
+                        fechaLimite: newfechaLimite,
                         mes: mesPension,
                     });
 
