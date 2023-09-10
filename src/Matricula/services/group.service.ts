@@ -16,7 +16,6 @@ import { Sede } from "../../Sede/entity";
 import {
     CONDICION_ALUMNO,
     ESTADO_GRUPO,
-    MODALIDAD,
     TIPO_CARRERA,
 } from "../../interfaces/enums";
 import { PensionService } from "../../Pension/services/pension.service";
@@ -26,8 +25,7 @@ import { StudentService } from "../../Student/services/student.service";
 import moment from "moment";
 import { AppDataSource } from "../../db/dataSource";
 import exceljs from "exceljs";
-import { formatDate, getDateFormatWH } from "../helpers/formatDate";
-import { formatedTime } from "../../helpers/formatTime";
+import { getDateFormatWH } from "../helpers/formatDate";
 import { generateArrayByNumber } from "../helpers/generateArrayByNumber";
 
 const pensionService = new PensionService();
