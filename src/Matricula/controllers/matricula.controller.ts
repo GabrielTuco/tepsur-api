@@ -9,7 +9,7 @@ import { Alumno } from "../../Student/entity";
 import { Matricula } from "../entity";
 import { MatriculaEspecilizacionService } from "../../Especializacion/services/matriculaEspecializacion.service";
 import { DatabaseErrorBase } from "../../errors/DatabaseErrorBase";
-import { formatDate } from "../helpers/formatDate";
+import { formatDate, getDateFormatWH } from "../helpers/formatDate";
 
 const gradoEstudioService = new GradoEstudiosService();
 const matriculaService = new MatriculaService();
@@ -227,12 +227,14 @@ export class MatriculaController {
                 const data = await matriculaEspeService.findByUuid(id);
                 return res.render("matriculaEspecializacion", {
                     ...data,
-                    fecha_inscripcion: formatDate(data.fecha_inscripcion),
+                    fecha_inscripcion: getDateFormatWH(data.fecha_inscripcion),
                 });
             } else {
                 return res.render("matricula", {
                     ...matricula,
-                    fecha_inscripcion: formatDate(matricula.fecha_inscripcion),
+                    fecha_inscripcion: getDateFormatWH(
+                        matricula.fecha_inscripcion
+                    ),
                 });
             }
         } catch (error) {
