@@ -146,6 +146,7 @@ export class MatriculaService implements MatriculaRepository {
                 });
                 newPagoMatricula.uuid = uuid();
                 newPagoMatricula.num_comprobante = pagoMatricula.numComprobante;
+                newPagoMatricula.entidad = pagoMatricula.entidad;
                 newPagoMatricula.forma_pago = metodoPago!;
                 newPagoMatricula.monto = pagoMatricula.monto;
                 newPagoMatricula.fecha = pagoMatricula.fecha;

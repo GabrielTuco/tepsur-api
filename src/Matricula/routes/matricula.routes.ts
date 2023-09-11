@@ -32,6 +32,8 @@ const matriculaController = new MatriculaController();
  *                  type: number
  *                  example: 2
  *                  description: UUID del tipo de forma de pago
+ *              entidad:
+ *                  type: string
  *              monto:
  *                  type: number
  *                  description: Monto de pago
@@ -244,6 +246,9 @@ router.post(
         //Pago de matricula(opcional)
         body("pagoMatricula").optional().isObject(),
         body("pagoMatricula.numComprobante").optional().isString(),
+        body("pagoMatricula.entidad")
+            .optional()
+            .isIn(Object.values(TIPO_ENTIDAD_FINANCIERA)),
         body("pagoMatricula.formaPagoUuid").optional().isNumeric(),
         body("pagoMatricula.fecha").optional().isString(),
         body("pagoMatricula.monto").optional().isNumeric(),

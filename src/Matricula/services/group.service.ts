@@ -705,8 +705,7 @@ export class GroupService implements GroupRepository {
             };
 
             data.map(({ matriculaGrupo, pensionGrupo }) => {
-                const { matricula, condicion, grupo, observacion } =
-                    matriculaGrupo;
+                const { matricula, condicion, observacion } = matriculaGrupo;
                 const { pago_pensiones } = pensionGrupo;
 
                 const { alumno, sede } = matricula;
@@ -874,19 +873,3 @@ export class GroupService implements GroupRepository {
         }
     };
 }
-
-// sheet.columns = [
-//     { header: "Nro", key: "orden", width: 5 },
-//     { header: "APELLIDOS Y NOMBRES", key: "nombre", width: 30 },
-//     { header: "DNI", key: "dni", width: 9 },
-//     { header: "N° CELULAR", key: "celular", width: 11 },
-//     { header: "SEDE", key: "sede", width: 30 },
-//     { header: "CONDICION", key: "condicion", width: 12 },
-//     { header: "OBS.", key: "observaciones", width: 30 },
-//     { header: "COD. BOUCHER", key: "boucher", width: 40 },
-//     { header: "FECHA", key: "fecha", width: 40 },
-//     { header: "HORA", key: "hora", width: 40 },
-//     { header: "MONTO", key: "monto", width: 40 },
-//     { header: "FORMA DE PAGO", key: "forma_pago", width: 40 },
-//     { header: "ENTIDAD", key: "entidad", width: 40 },
-// ];
