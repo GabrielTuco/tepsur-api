@@ -499,8 +499,6 @@ export class GroupService implements GroupRepository {
                     .where("g.uuid=:uuid", { uuid: grupo.uuid })
                     .getMany();
 
-            console.log();
-
             const data = await Promise.all(
                 studentsByGrupo.map(async (matriculaGrupo) => {
                     const pensionGrupo = await pensionService.findPensionGrupo(
@@ -527,105 +525,184 @@ export class GroupService implements GroupRepository {
         try {
             const grupo = await Grupo.findOne({
                 where: { uuid: grupoUuid },
-                relations: { carrera: true, modulo: true, docente: true },
+                relations: {
+                    carrera: true,
+                    modulo: true,
+                    docente: true,
+                    horario: true,
+                },
             });
             if (!grupo) throw new NotFoundError("El grupo no existe");
 
             const data = await this.listEstudents(grupoUuid);
 
-            const { docente, modulo, carrera } = grupo;
+            const { docente, modulo, carrera, horario } = grupo;
+            const { ape_materno, ape_paterno, nombres } = docente;
+
             let workbook = new exceljs.Workbook();
             const sheet = workbook.addWorksheet();
 
-            sheet.mergeCells("A1:E3");
-            sheet.getCell("A1").value = carrera.nombre.toUpperCase();
-            sheet.getCell("A1").border = {
+            //Configuracion de columnas
+            sheet.getColumn("A").width = 4;
+            sheet.getColumn("B").width = 26;
+            sheet.getColumn("C").width = 9;
+            sheet.getColumn("D").width = 12;
+            sheet.getColumn("E").width = 15;
+            sheet.getColumn("F").width = 15;
+            sheet.getColumn("G").width = 15;
+            sheet.getColumn("H").width = 30;
+            sheet.getColumn("I").width = 10;
+            sheet.getColumn("J").width = 8;
+            sheet.getColumn("K").width = 8;
+            sheet.getColumn("L").width = 17;
+            sheet.getColumn("M").width = 10;
+
+            //Definiendo estilos
+            const borderStyle: Partial<exceljs.Borders> = {
                 top: { style: "thin" },
                 left: { style: "thin" },
                 bottom: { style: "thin" },
                 right: { style: "thin" },
+            };
+
+            const centerAlignment: Partial<exceljs.Alignment> = {
+                vertical: "middle",
+                horizontal: "center",
+            };
+
+            const colorFillCell = (color: string): exceljs.Fill => ({
+                type: "pattern",
+                pattern: "solid",
+                fgColor: { argb: color },
+            });
+
+            sheet.mergeCells("A1:E3");
+            const nombreCarreraCell = sheet.getCell("A1");
+            nombreCarreraCell.value = carrera.nombre.toUpperCase();
+            nombreCarreraCell.alignment = centerAlignment;
+            nombreCarreraCell.border = borderStyle;
+            nombreCarreraCell.fill = colorFillCell("ECB938");
+            nombreCarreraCell.font = {
+                bold: true,
+                size: 16,
             };
 
             sheet.mergeCells("F1:G1");
-            sheet.getCell("F1").value = "MODULO";
-            sheet.getCell("H1").value = modulo.nombre.toUpperCase();
-            sheet.getCell("F1").border = {
-                top: { style: "thin" },
-                left: { style: "thin" },
-                bottom: { style: "thin" },
-                right: { style: "thin" },
-            };
-            sheet.getCell("H1").border = {
-                top: { style: "thin" },
-                left: { style: "thin" },
-                bottom: { style: "thin" },
-                right: { style: "thin" },
+            const nombreModuloLabel = sheet.getCell("F1");
+            const nombreModuloCell = sheet.getCell("H1");
+            nombreModuloLabel.value = "MODULO";
+            nombreModuloLabel.border = borderStyle;
+            nombreModuloLabel.alignment = centerAlignment;
+            nombreModuloLabel.fill = colorFillCell("F7E0A7");
+            nombreModuloCell.value = modulo.nombre.toUpperCase();
+            nombreModuloCell.border = borderStyle;
+            nombreModuloCell.font = {
+                bold: true,
             };
 
             sheet.mergeCells("F2:G2");
-            sheet.getCell("F2").value = "DOCENTE";
-            sheet.getCell("H2").value =
-                `${docente.ape_paterno} ${docente.ape_materno} ${docente.nombres}`.toUpperCase();
-            sheet.getCell("F2").border = {
-                top: { style: "thin" },
-                left: { style: "thin" },
-                bottom: { style: "thin" },
-                right: { style: "thin" },
-            };
-            sheet.getCell("H2").border = {
-                top: { style: "thin" },
-                left: { style: "thin" },
-                bottom: { style: "thin" },
-                right: { style: "thin" },
-            };
+            const nombreDocenteLabel = sheet.getCell("F2");
+            const nombreDocenteCell = sheet.getCell("H2");
+
+            nombreDocenteLabel.value = "DOCENTE";
+            nombreDocenteLabel.border = borderStyle;
+            nombreDocenteLabel.alignment = centerAlignment;
+            nombreDocenteLabel.fill = colorFillCell("F7E0A7");
+            nombreDocenteCell.value =
+                `${ape_paterno} ${ape_materno} ${nombres}`.toUpperCase();
+            nombreDocenteCell.border = borderStyle;
 
             sheet.mergeCells("F3:G3");
-            sheet.getCell("F3").value = "INICIO";
-            sheet.getCell("H3").value = grupo.modulo.nombre.toUpperCase();
-            sheet.getCell("F3").border = {
-                top: { style: "thin" },
-                left: { style: "thin" },
-                bottom: { style: "thin" },
-                right: { style: "thin" },
-            };
-            sheet.getCell("H3").border = {
-                top: { style: "thin" },
-                left: { style: "thin" },
-                bottom: { style: "thin" },
-                right: { style: "thin" },
-            };
+            const fechaInicioLabel = sheet.getCell("F3");
+            const fechaInicioCell = sheet.getCell("H3");
+            fechaInicioLabel.value = "INICIO";
+            fechaInicioLabel.border = borderStyle;
+            fechaInicioLabel.alignment = centerAlignment;
+            fechaInicioLabel.fill = colorFillCell("F7E0A7");
+            fechaInicioCell.value = getDateFormatWH(grupo.fecha_inicio);
+            fechaInicioCell.border = borderStyle;
 
+            sheet.mergeCells("F4:G4");
+            const horarioLabel = sheet.getCell("F4");
+            const horarioCell = sheet.getCell("H4");
+            horarioLabel.value = "HORARIO";
+            horarioLabel.border = borderStyle;
+            horarioLabel.alignment = centerAlignment;
+            horarioLabel.fill = colorFillCell("F7E0A7");
+            horarioCell.value = `${horario.hora_inicio} - ${horario.hora_fin}`;
+            horarioCell.border = borderStyle;
+
+            //Cabeceras de la tabla principal
             sheet.mergeCells("A6:G6");
             sheet.getCell("A6").value = "DATOS DEL ALUMNO";
-            sheet.getCell("A6").border = {
-                top: { style: "thin" },
-                left: { style: "thin" },
-                bottom: { style: "thin" },
-                right: { style: "thin" },
-            };
-            sheet.getCell("A6").fill = {
-                type: "pattern",
-                pattern: "solid",
-                fgColor: { argb: "ECB938" },
+            sheet.getCell("A6").border = borderStyle;
+            sheet.getCell("A6").fill = colorFillCell("ECB938");
+            sheet.getCell("A6").alignment = centerAlignment;
+            sheet.getCell("A6").font = {
+                bold: true,
+                size: 14,
             };
 
             sheet.mergeCells("H6:M6");
             sheet.getCell("H6").value = "DATOS DEL PAGO";
-            sheet.getCell("H6").border = {
-                top: { style: "thin" },
-                left: { style: "thin" },
-                bottom: { style: "thin" },
-                right: { style: "thin" },
-            };
-            sheet.getCell("H6").fill = {
-                type: "pattern",
-                pattern: "solid",
-                fgColor: { argb: "ECB938" },
+            sheet.getCell("H6").border = borderStyle;
+            sheet.getCell("H6").fill = colorFillCell("ECB938");
+            sheet.getCell("H6").alignment = centerAlignment;
+            sheet.getCell("H6").font = {
+                bold: true,
+                size: 14,
             };
 
+            let initialRowPosition: number = 7;
             let orden: number = 1;
 
-            const rowsData: (string | number)[][] = [];
+            sheet.insertRow(initialRowPosition++, [
+                "Nro",
+                "APELLIDOS Y NOMBRES",
+                "DNI",
+                "N° CELULAR",
+                "SEDE",
+                "CONDICION",
+                "OBS.",
+                "COD. BOUCHER",
+                "FECHA",
+                "HORA",
+                "MONTO",
+                "FORMA DE PAGO",
+                "ENTIDAD",
+            ]);
+
+            [
+                "A7",
+                "B7",
+                "C7",
+                "D7",
+                "E7",
+                "F7",
+                "G7",
+                "H7",
+                "I7",
+                "J7",
+                "K7",
+                "L7",
+                "M7",
+            ].map((cell) => {
+                sheet.getCell(cell).fill = colorFillCell("F7E0A7");
+                sheet.getCell(cell).font = {
+                    bold: true,
+                    size: 11,
+                };
+                sheet.getCell(cell).border = {
+                    left: { style: "thin" },
+                    right: { style: "thin" },
+                };
+            });
+
+            const mappedCondicion = {
+                nuevo: "NUEVO",
+                continua: "CONTINUA",
+                cambio_horario: "C. D. HORARIO",
+            };
 
             data.map(({ matriculaGrupo, pensionGrupo }) => {
                 const { matricula, condicion, grupo, observacion } =
@@ -638,13 +715,13 @@ export class GroupService implements GroupRepository {
                 if (pago_pensiones.length > 1) {
                     return pago_pensiones.map((p, i) => {
                         if (i === 0) {
-                            rowsData.push([
+                            sheet.insertRow(initialRowPosition++, [
                                 orden++,
                                 nombreCompleto,
                                 alumno.dni,
                                 alumno.celular,
                                 sede.nombre,
-                                condicion,
+                                mappedCondicion[condicion],
                                 observacion,
                                 p.num_comprobante || "-",
                                 getDateFormatWH(p.fecha) || "-",
@@ -654,7 +731,7 @@ export class GroupService implements GroupRepository {
                                 p.entidad || "-",
                             ]);
                         } else {
-                            rowsData.push([
+                            sheet.insertRow(initialRowPosition++, [
                                 "",
                                 "",
                                 "",
@@ -673,13 +750,13 @@ export class GroupService implements GroupRepository {
                     });
                 }
 
-                rowsData.push([
+                sheet.insertRow(initialRowPosition++, [
                     orden++,
                     nombreCompleto,
                     alumno.dni,
                     alumno.celular,
                     sede.nombre,
-                    condicion,
+                    mappedCondicion[condicion],
                     observacion,
                     pago_pensiones[0]?.num_comprobante || "-",
                     pago_pensiones[0]?.fecha
@@ -690,28 +767,6 @@ export class GroupService implements GroupRepository {
                     pago_pensiones[0]?.forma_pago.description || "-",
                     pago_pensiones[0]?.entidad || "-",
                 ]);
-            });
-
-            sheet.addTable({
-                name: "alumnosPensiones",
-                ref: "A7",
-                headerRow: true,
-                columns: [
-                    { name: "Nro" },
-                    { name: "APELLIDOS Y NOMBRES" },
-                    { name: "DNI" },
-                    { name: "N° CELULAR" },
-                    { name: "SEDE" },
-                    { name: "CONDICION" },
-                    { name: "OBS." },
-                    { name: "COD. BOUCHER" },
-                    { name: "FECHA" },
-                    { name: "HORA" },
-                    { name: "MONTO" },
-                    { name: "FORMA DE PAGO" },
-                    { name: "ENTIDAD" },
-                ],
-                rows: rowsData,
             });
 
             return { workbook, nombreArchivo: grupo.nombre };
